@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colorful ASCII Art</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+    }
+
+    #ascii-art {
+      font-family: monospace;
+      white-space: pre;
+      font-size: 18px;
+      color: white; /* Initial color */
+      transition: opacity 1s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="ascii-art">
+    _       __     __                        
+   | |     / /__  / /________  ____ ___  ___ 
+   | | /| / / _ \/ / ___/ __ \/ __ `__ \/ _ \
+   | |/ |/ /  __/ / /__/ /_/ / / / / / /  __/
+   |__/|__/\___/_/\___/\____/_/ /_/ /_/\___/ 
+  </div>
+
+  <script>
+    const asciiArtContainer = document.getElementById('ascii-art');
+
+    function changeColor() {
+      const hexCode = getRandomHexCode();
+      asciiArtContainer.style.color = hexCode;
+    }
+
+    function getRandomHexCode() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Change color every second (1000 milliseconds)
+    setInterval(changeColor, 1000);
+
+    // Wait for 3 seconds before fading to black, zooming in, and moving to the next page
+    setTimeout(() => {
+      // Fade to black effect
+      asciiArtContainer.style.opacity = '0';
+      // Zoom in effect
+      document.body.style.transform = 'scale(2)';
+      setTimeout(() => {
+        // Redirect to another page after the fade and zoom-in effects
+        window.location.href = '2.html'; // Replace 'your_next_page.html' with the actual URL
+      }, 1000); // Adjust the delay for the second timeout as needed
+    }, 3000); // Wait for 3 seconds before starting the fade and zoom-in effects
+  </script>
+</body>
+</html>
