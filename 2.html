@@ -13,6 +13,8 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      transform: scale(0.1);
+      opacity: 0;
       transition: transform 1s ease-in-out, opacity 1s ease-in-out;
     }
 
@@ -53,6 +55,12 @@
 
     // Change color every second (1000 milliseconds)
     setInterval(changeColor, 1000);
+
+    // Fade in effect
+    setTimeout(() => {
+      asciiArtContainer.style.opacity = '1';
+      document.body.style.transform = 'scale(1)';
+    }, 1000); // Adjust the delay for the fade-in effect
 
     // Wait for 3 seconds before fading to black, zooming in, and moving to the next page
     setTimeout(() => {
