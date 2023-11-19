@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Next Page</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    #next-page-content {
+      font-family: 'Arial', sans-serif;
+      font-size: 24px;
+      text-align: center;
+      opacity: 0; /* Set initial opacity to 0 */
+      animation: fadeIn 2s ease-in-out forwards; /* Animation definition */
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="next-page-content">
+    <h1>Welcome to the Next Page!</h1>
+    <p>This is the content of the next page.</p>
+    <p>You can customize this page with your own content.</p>
+  </div>
+</body>
+</html>
