@@ -3,469 +3,631 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flowchart Builder — Vanilla HTML/JS</title>
+  <title>Snake — Minimal, Apple‑Style</title>
+  <meta name="description" content="A clean, minimal, Apple‑style Snake game with touch controls, settings, and local high scores. Single‑file HTML."/>
   <style>
-    :root{
-      --bg: #0b0f14;
-      --panel: #121821;
-      --muted: #1b2330;
-      --text: #e6edf3;
-      --text-dim: #a7b0bc;
-      --accent: #5cc8ff;
-      --accent-2:#7ee787;
-      --warn:#ffb14d;
-      --danger:#ff6b6b;
-      --shadow: 0 6px 18px rgba(0,0,0,.35);
+    :root {
+      --bg: #f5f7fb;
+      --panel: rgba(255,255,255,0.6);
+      --panel-strong: rgba(255,255,255,0.85);
+      --text: #0b0c0f;
+      --muted: #6b7280;
+      --accent: #0ea5e9; /* Sky */
+      --good: #10b981;   /* Emerald */
+      --warn: #f59e0b;   /* Amber */
+      --danger: #ef4444; /* Red */
+      --grid: rgba(0,0,0,0.06);
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --radius: 18px;
     }
-    html,body{height:100%;}
-    body{
-      margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background:linear-gradient(180deg,#0a0e13,#0c121a 60%,#0a0e13);
-      color:var(--text);
-      overflow:hidden;
+    [data-theme="dark"] {
+      --bg: #0b0c10;
+      --panel: rgba(23,26,33,0.6);
+      --panel-strong: rgba(23,26,33,0.85);
+      --text: #eef2ff;
+      --muted: #9aa3b2;
+      --accent: #38bdf8;
+      --grid: rgba(255,255,255,0.06);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
-    /* Header / Toolbar */
-    .topbar{display:flex;align-items:center;gap:.75rem;padding:.6rem .8rem;background:var(--panel);box-shadow:var(--shadow);position:relative;z-index:3}
-    .brand{font-weight:700;letter-spacing:.2px}
-    .muted{color:var(--text-dim)}
-    .spacer{flex:1}
-    .toolbar{display:flex;flex-wrap:wrap;gap:.4rem}
-    button, .btn{
-      appearance:none;border:1px solid #222c3a;background:linear-gradient(180deg,#1a2330,#141c28);color:var(--text);
-      padding:.45rem .65rem;border-radius:.6rem;font-weight:600;letter-spacing:.2px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.04), var(--shadow);transition:transform .05s ease, background .2s ease, border-color .2s ease;user-select:none
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
+      background: radial-gradient(1200px 800px at 80% -10%, rgba(14,165,233,0.12), transparent 60%),
+                  radial-gradient(900px 700px at 10% 120%, rgba(16,185,129,0.12), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: 0.2px;
     }
-    button:hover{background:#1f2938}
-    button:active{transform:translateY(1px)}
-    button[aria-pressed="true"], .btn.on{background:#1f2b3d;border-color:#2a3a51;outline:2px solid #2a3a51}
-    button.small{padding:.32rem .5rem;font-size:.9rem}
-    .btn.accent{border-color:#1e3347;outline:1px solid #27485d; background:linear-gradient(180deg,#163048,#10273b)}
-    .btn.warn{border-color:#4a3520;outline:1px solid #5d4225;background:linear-gradient(180deg,#3b2b16,#2e2212)}
-    .kbd{font:600 .78rem/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1520;border:1px solid #232e3e;padding:.18rem .36rem;border-radius:.4rem;color:#9fb0c6;margin-left:.25rem}
-    label.switch{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .55rem;border:1px solid #222c3a;background:#141c20;border-radius:.65rem}
-    label.switch input{accent-color:var(--accent)}
 
-    /* Stage */
-    #stage{position:absolute;inset:48px 0 0 0;overflow:hidden;}
-    #viewport{position:absolute;inset:0;transform-origin:0 0;}
-    #edges{position:absolute;inset:0;pointer-events:none}
-    #nodes{position:absolute;inset:0}
+    .app {
+      max-width: 980px;
+      margin: 32px auto;
+      padding: 0 20px 40px;
+      display: grid;
+      gap: 18px;
+    }
 
-    /* Node */
-    .node{position:absolute;min-width:160px;max-width:360px;padding:10px 12px 12px 12px;border-radius:14px;background:linear-gradient(180deg,#142030,#101927);border:1px solid #29384c;box-shadow: 0 4px 18px rgba(0,0,0,.45);
-      cursor:grab; user-select:none; }
-    .node:active{cursor:grabbing}
-    .node.selected{outline:2px solid var(--accent);}
-    .node .label{outline:none;white-space:pre-wrap;word-break:break-word; caret-color:var(--accent);}
-    .node .title{font-weight:700;margin-bottom:.15rem}
-    .node .meta{font-size:.8rem;color:var(--text-dim);margin-top:.2rem}
-    .node .handles{position:absolute;inset: -8px -8px auto -8px;}
-    .handle{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid #132236;background:#0b1522;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-    .handle.in{left:-8px;top:50%;transform:translate(-30%,-50%);border-color:#274760}
-    .handle.out{right:-8px;top:50%;transform:translate(30%,-50%);border-color:#2c5f3b}
-    .handle::after{content:"";position:absolute;inset:2px;border-radius:50%;background:#213247}
-    .node .badge{position:absolute;top:-10px;right:-10px;background:#192538;border:1px solid #2f3e53;color:#8fb3ff;font:700 .7rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;padding:.25rem .35rem;border-radius:10px}
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      backdrop-filter: saturate(160%) blur(18px);
+      background: var(--panel);
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .hud .left { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 999px; font-weight: 600; font-size: 14px;
+      background: var(--panel-strong);
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,0.2); }
+    .chip.muted { background: transparent; border: 1px dashed rgba(0,0,0,0.12); color: var(--muted); font-weight: 500; }
 
-    /* Edge styles */
-    marker#arrow{fill:#8fb3ff}
-    path.edge{stroke:#8fb3ff;stroke-width:2px;fill:none;opacity:.95}
-    path.edge.sel{stroke:var(--accent-2)}
+    .actions { display: flex; gap: 8px; }
+    .btn {
+      appearance: none; border: 0; outline: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      height: 40px; padding: 0 14px; border-radius: 12px; font-weight: 600; font-size: 14px;
+      background: var(--panel-strong); color: var(--text);
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.25);
+      transition: transform .08s ease, background .2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
 
-    /* Minimap */
-    #minimap{position:absolute;right:12px;bottom:12px;width:220px;height:140px;background:#0e141d;border:1px solid #243245;border-radius:.8rem;box-shadow:var(--shadow);z-index:2}
-    #minimap canvas{display:block;width:100%;height:100%;}
-    #minimap .frame{position:absolute;border:2px dashed rgba(255,255,255,.35);border-radius:.25rem;pointer-events:none}
+    .stage {
+      position: relative;
+      display: grid; place-items: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: calc(var(--radius) + 6px);
+      backdrop-filter: blur(10px) saturate(140%);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      min-height: 520px;
+    }
 
-    /* Status bar */
-    .status{position:absolute;left:12px;bottom:12px;background:#0e141d;border:1px solid #243245;border-radius:.6rem;padding:.4rem .6rem;color:#9fb0c6;font:.9rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;box-shadow:var(--shadow)}
+    /* Canvas container keeps a neat square; canvas itself scales with DPR */
+    .board {
+      position: relative;
+      width: min(90vw, 720px);
+      aspect-ratio: 1 / 1;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+      background:
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / calc(100%/24) 100%,
+        linear-gradient(180deg, var(--grid) 1px, transparent 1px) 0 0 / 100% calc(100%/24),
+        radial-gradient(1200px 700px at 0% 0%, rgba(14,165,233,0.1), transparent),
+        radial-gradient(1200px 700px at 100% 100%, rgba(99,102,241,0.08), transparent),
+        var(--panel-strong);
+    }
 
-    /* Help Modal */
-    dialog{background:#0f1621;border:1px solid #2a3a51;border-radius:.9rem;color:var(--text);box-shadow:var(--shadow);width:min(800px,90vw)}
-    dialog::backdrop{background:rgba(5,10,16,.6)}
-    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #243245}
-    .modal-body{padding:12px 16px}
-    .modal-body h3{margin:.6rem 0}
-    .modal-body ul{margin:.4rem 0 .8rem 1.2rem}
-    .modal-body code{background:#0c121b;border:1px solid #213044;border-radius:.4rem;padding:.05rem .35rem}
+    canvas { display: block; width: 100%; height: 100%; }
 
-    /* Hidden input */
-    input[type=file]{display:none}
+    .overlay {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.04));
+      pointer-events: none; border-radius: inherit;
+    }
+
+    .toast {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 13px;
+      background: var(--panel-strong); border: 1px solid rgba(0,0,0,0.06); color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+
+    dialog { border: none; border-radius: 16px; background: var(--panel-strong); color: var(--text); box-shadow: var(--shadow); width: min(92vw, 520px); }
+    dialog::backdrop { backdrop-filter: blur(4px); background: rgba(0,0,0,0.2); }
+    .sheet { padding: 18px; display: grid; gap: 14px; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .row label { font-size: 14px; color: var(--muted); }
+    .row input[type="range"] { width: 55%; }
+    .row input[type="color"] { appearance: none; width: 34px; height: 24px; padding: 0; border: 0; background: none; }
+
+    .touch {
+      position: absolute; inset: auto 14px 14px auto; display: grid; gap: 10px;
+      grid-template-areas:
+        ". up ."
+        "left . right"
+        ". down .";
+      pointer-events: none;
+    }
+    .pad { grid-area: var(--area); pointer-events: auto; width: 64px; height: 64px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.08); background: var(--panel-strong); display: grid; place-items: center; box-shadow: var(--shadow); }
+    .pad svg { width: 28px; height: 28px; opacity: .9; }
+
+    @media (pointer:fine) and (hover:hover) {
+      .touch { display: none; }
+    }
+
+    small.hint { color: var(--muted); text-align: center; }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="brand">Flowchart Builder <span class="muted">· vanilla</span></div>
-    <div class="spacer"></div>
-    <div class="toolbar">
-      <button id="addNodeBtn" class="btn accent" title="Add a node (N)">+ Node<span class="kbd">N</span></button>
-      <button id="connectBtn" title="Connect nodes (C)">Connect<span class="kbd">C</span></button>
-      <button id="selectBtn" aria-pressed="true" title="Move/Select (V)">Select<span class="kbd">V</span></button>
-      <button id="deleteBtn" class="btn warn" title="Delete selected (Del)">Delete<span class="kbd">Del</span></button>
-      <button id="layoutBtn" title="Auto-layout (L)">Auto‑layout<span class="kbd">L</span></button>
-      <label class="switch" title="Snap nodes to grid (G)"><input id="snapToggle" type="checkbox" checked>Snap<span class="kbd">G</span></label>
-      <button id="helpBtn" title="Keyboard & tips (? or /)">Help<span class="kbd">?</span></button>
-      <button id="exportSvgBtn" title="Export vector SVG">Export SVG</button>
-      <button id="exportPngBtn" title="Export image PNG">Export PNG</button>
-      <button id="exportJsonBtn" title="Download project JSON">Export JSON</button>
-      <button id="importJsonBtn" title="Load project JSON">Import JSON</button>
-      <input id="fileInput" type="file" accept="application/json" />
+  <div class="app" id="app">
+    <div class="hud">
+      <div class="left">
+        <span class="chip"><span class="dot"></span> <span>Snake</span></span>
+        <span class="chip" id="scoreChip">Score · <b id="score">0</b></span>
+        <span class="chip" id="hiChip">High · <b id="hiscore">0</b></span>
+        <span class="chip muted" id="lvlChip">Lv <b id="level">1</b></span>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnPlay" title="Play / Pause" aria-label="Play">
+          <span id="iconPlay">▶︎</span>
+        </button>
+        <button class="btn" id="btnReset" title="New Game" aria-label="New Game">↺</button>
+        <button class="btn" id="btnSettings" title="Settings" aria-label="Settings">⚙︎</button>
+        <button class="btn" id="btnTheme" title="Theme" aria-label="Toggle theme">◐</button>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="board">
+        <canvas id="game" width="720" height="720"></canvas>
+        <div class="overlay" aria-hidden="true"></div>
+        <div class="toast" id="toast" hidden>Paused</div>
+        <div class="touch">
+          <button class="pad" style="--area:up" data-dir="up" aria-label="Up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
+          <button class="pad" style="--area:left" data-dir="left" aria-label="Left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg></button>
+          <button class="pad" style="--area:right" data-dir="right" aria-label="Right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+          <button class="pad" style="--area:down" data-dir="down" aria-label="Down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></button>
+        </div>
+      </div>
+      <small class="hint">Arrow keys / WASD to move · P to pause · R to restart · Settings for wrap/walls/speed · Works on touch</small>
     </div>
   </div>
 
-  <div id="stage">
-    <div id="viewport">
-      <svg id="edges"></svg>
-      <div id="nodes"></div>
-    </div>
-    <div id="minimap" title="Mini‑map (click to jump)">
-      <canvas></canvas>
-      <div class="frame"></div>
-    </div>
-    <div class="status" id="status">Ready.</div>
-  </div>
+  <!-- SETTINGS SHEET -->
+  <dialog id="settings">
+    <form method="dialog" class="sheet">
+      <h3 style="margin:0 0 6px">Settings</h3>
+      <div class="row"><label>Snake color</label><input type="color" id="optColor" value="#10b981"/></div>
+      <div class="row"><label>Base speed <span style="color:var(--muted)">(<span id="spdVal">6</span> tiles/s)</span></label><input type="range" id="optSpeed" min="4" max="16" step="1" value="6"/></div>
+      <div class="row"><label>Grid lines</label><input type="checkbox" id="optGrid" checked/></div>
+      <div class="row"><label>Wrap around edges</label><input type="checkbox" id="optWrap" checked/></div>
+      <div class="row"><label>Solid walls</label><input type="checkbox" id="optWalls"/></div>
+      <div class="row"><label>Bonuses & power‑ups</label><input type="checkbox" id="optPower" checked/></div>
+      <menu style="display:flex; gap:8px; justify-content:flex-end; margin:6px 0 0">
+        <button class="btn" value="cancel">Close</button>
+        <button class="btn" id="btnSave">Save</button>
+      </menu>
+    </form>
+  </dialog>
 
-  <dialog id="helpModal">
-    <div class="modal-head">
-      <strong>Quick Help</strong>
-      <button id="closeHelp" class="small">Close</button>
-    </div>
-    <div class="modal-body">
-      <h3>Basics</h3>
-      <ul>
-        <li><b>Add</b> nodes with <code>N</code>; drag to move. Edit text inline.</li>
-        <li><b>Connect</b> mode (<code>C</code>): drag from a node's right handle to another node's left handle.</li>
-        <li><b>Select</b> mode (<code>V</code>): click a node to select; <code>Del</code> deletes node or selected edge.</li>
-      </ul>
-      <h3>View</h3>
-      <ul>
-        <li><b>Pan</b>: drag empty space. <b>Zoom</b>: mouse wheel; <code>Ctrl/Cmd + 0</code> fits view.</li>
-        <li>Toggle <b>snap to grid</b> (<code>G</code>).</li>
-      </ul>
-      <h3>Advanced</h3>
-      <ul>
-        <li><b>Auto‑layout</b> (<code>L</code>) arranges nodes in a top‑down flow.</li>
-        <li><b>Undo/Redo</b>: <code>Ctrl/Cmd + Z</code> / <code>Ctrl/Cmd + Y</code>.</li>
-        <li><b>Export</b> to <b>SVG</b>, <b>PNG</b>, or <b>JSON</b>. Re‑load with <b>Import JSON</b>.</li>
-      </ul>
-      <p>Tip: Double‑click a node to focus its text. Press <code>Esc</code> to end editing.</p>
+  <!-- GAME OVER SHEET -->
+  <dialog id="gameover">
+    <div class="sheet">
+      <h3 style="margin:0">Game Over</h3>
+      <div class="row"><label>Score</label><b id="finalScore">0</b></div>
+      <div class="row"><label>High score</label><b id="finalHi">0</b></div>
+      <div class="row"><label>Level reached</label><b id="finalLv">1</b></div>
+      <menu style="display:flex; gap:8px; justify-content:flex-end; margin:6px 0 0">
+        <button class="btn" id="goShare" title="Copy score to clipboard">Share</button>
+        <button class="btn" id="goAgain">Play again</button>
+      </menu>
     </div>
   </dialog>
 
   <script>
-    // --- Minimal flowchart editor (no external libs) ---
-    const stage = document.getElementById('stage');
-    const viewport = document.getElementById('viewport');
-    const nodesEl = document.getElementById('nodes');
-    const edgesSvg = document.getElementById('edges');
-    const statusEl = document.getElementById('status');
+  ;(() => {
+    // ======= CONFIG =======
+    const COLS = 24, ROWS = 24; // fixed logical grid
+    const DPR = Math.max(1, Math.min(3, Math.floor(window.devicePixelRatio || 1)));
+    const STORAGE = {
+      hi: 'snake_hiscore_v1',
+      settings: 'snake_settings_v1'
+    };
 
-    const addNodeBtn = document.getElementById('addNodeBtn');
-    const connectBtn = document.getElementById('connectBtn');
-    const selectBtn = document.getElementById('selectBtn');
-    const deleteBtn = document.getElementById('deleteBtn');
-    const layoutBtn = document.getElementById('layoutBtn');
-    const snapToggle = document.getElementById('snapToggle');
-    const helpBtn = document.getElementById('helpBtn');
-    const exportJsonBtn = document.getElementById('exportJsonBtn');
-    const importJsonBtn = document.getElementById('importJsonBtn');
-    const exportSvgBtn = document.getElementById('exportSvgBtn');
-    const exportPngBtn = document.getElementById('exportPngBtn');
-    const fileInput = document.getElementById('fileInput');
+    const $ = sel => document.querySelector(sel);
+    const canvas = $('#game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = $('#score'), hiEl = $('#hiscore'), levelEl = $('#level');
+    const btnPlay = $('#btnPlay'), btnReset = $('#btnReset');
+    const btnSettings = $('#btnSettings'), btnTheme = $('#btnTheme');
+    const toast = $('#toast');
 
-    const helpModal = document.getElementById('helpModal');
-    document.getElementById('closeHelp').onclick = () => helpModal.close();
+    // Settings dialog elements
+    const dlgSettings = $('#settings');
+    const optColor = $('#optColor');
+    const optSpeed = $('#optSpeed');
+    const optGrid = $('#optGrid');
+    const optWrap = $('#optWrap');
+    const optWalls = $('#optWalls');
+    const optPower = $('#optPower');
+    const spdVal = $('#spdVal');
 
-    // state
-    let scale = 1, tx = 200, ty = 120; // initial pan/zoom
-    let mode = 'select'; // 'select' | 'connect'
-    let selected = { nodeId: null, edgeId: null };
-    let connectSource = null; // {nodeId}
+    // Game over dialog elements
+    const dlgOver = $('#gameover');
+    const goAgain = $('#goAgain');
+    const goShare = $('#goShare');
+    const finalScore = $('#finalScore');
+    const finalHi = $('#finalHi');
+    const finalLv = $('#finalLv');
 
-    const state = { nodes: [], edges: [] };
-    const history = []; let redoStack = [];
+    // ======= STATE =======
+    let settings = loadSettings();
+    applyThemeFromSystem();
 
-    function uid(prefix='n'){ return prefix + Math.random().toString(36).slice(2,9); }
-
-    function setMode(m){ mode = m; selectBtn.setAttribute('aria-pressed', m==='select'); connectBtn.setAttribute('aria-pressed', m==='connect');
-      info(`Mode: ${m}`); if(m!=='connect') connectSource=null; }
-
-    function applyTransform(){ viewport.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; drawEdges(); drawMinimap(); }
-
-    function worldToScreen(x,y){ return { x: x*scale + tx, y: y*scale + ty }; }
-    function screenToWorld(x,y){ return { x: (x - tx)/scale, y: (y - ty)/scale }; }
-
-    function snap(v){ return snapToggle.checked ? Math.round(v/10)*10 : v; }
-
-    function addNode(pos={x: 0, y: 0}, text='New step'){
-      const id = uid('n');
-      state.nodes.push({ id, x: pos.x, y: pos.y, w: 180, h: 64, text });
-      pushHistory();
-      render();
-      return id;
+    // Canvas scaling (CSS 720×720, internal * DPR)
+    function resizeCanvas() {
+      const cssSize = canvas.getBoundingClientRect().width; // square
+      canvas.width = Math.round(cssSize * DPR);
+      canvas.height = Math.round(cssSize * DPR);
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.scale(canvas.width / COLS, canvas.height / ROWS); // scale units to grid cells
+      ctx.imageSmoothingEnabled = false;
     }
+    new ResizeObserver(resizeCanvas).observe(canvas);
+    resizeCanvas();
 
-    function removeNode(id){
-      const idx = state.nodes.findIndex(n=>n.id===id);
-      if(idx>=0){ state.nodes.splice(idx,1); // remove edges
-        state.edges = state.edges.filter(e=>e.from!==id && e.to!==id);
-        pushHistory();
-        render();
+    // Hi score
+    let hiscore = Number(localStorage.getItem(STORAGE.hi) || 0);
+    hiEl.textContent = hiscore;
+
+    // Utility
+    const randInt = n => Math.floor(Math.random()*n);
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    // Game entities
+    class Snake {
+      constructor() {
+        const mid = { x: Math.floor(COLS/2), y: Math.floor(ROWS/2) };
+        this.body = [mid, {x: mid.x-1, y: mid.y}, {x: mid.x-2, y: mid.y}];
+        this.dir = {x: 1, y: 0};
+        this.nextDir = this.dir;
+        this.growBy = 0;
+      }
+      setDir(x, y) {
+        // prevent reversing into self
+        if (this.body.length > 1) {
+          const h = this.body[0];
+          const n = this.body[1];
+          if (h.x + x === n.x && h.y + y === n.y) return;
+        }
+        this.nextDir = {x, y};
+      }
+      step() {
+        this.dir = this.nextDir;
+        const head = this.body[0];
+        let nx = head.x + this.dir.x;
+        let ny = head.y + this.dir.y;
+
+        if (settings.walls) {
+          // hit borders = collision
+          if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) return false;
+        } else if (settings.wrap) {
+          if (nx < 0) nx = COLS - 1; else if (nx >= COLS) nx = 0;
+          if (ny < 0) ny = ROWS - 1; else if (ny >= ROWS) ny = 0;
+        } else {
+          if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) return false;
+        }
+
+        // move
+        this.body.unshift({x: nx, y: ny});
+        if (this.growBy > 0) this.growBy--; else this.body.pop();
+        return true;
+      }
+      intersects(pt, ignoreHead=false) {
+        return this.body.some((p,i) => (ignoreHead && i===0) ? false : (p.x===pt.x && p.y===pt.y));
       }
     }
 
-    function addEdge(from,to){ if(from===to) return; if(state.edges.some(e=>e.from===from && e.to===to)) return;
-      const id = uid('e'); state.edges.push({id, from, to}); pushHistory(); render(); }
-
-    function removeEdge(id){ state.edges = state.edges.filter(e=>e.id!==id); pushHistory(); render(); }
-
-    function nodeElById(id){ return nodesEl.querySelector(`.node[data-id="${id}"]`); }
-    function nodeById(id){ return state.nodes.find(n=>n.id===id); }
-
-    function render(){
-      // nodes
-      nodesEl.innerHTML = '';
-      state.nodes.forEach(n=>{
-        const el = document.createElement('div');
-        el.className = 'node'; el.dataset.id = n.id; el.style.left = n.x + 'px'; el.style.top = n.y + 'px';
-        el.style.width = n.w + 'px';
-        el.innerHTML = `\n          <div class="handles">\n            <div class="handle in" title="incoming"></div>\n            <div class="handle out" title="outgoing"></div>\n          </div>\n          <div class="label" contenteditable="true"></div>\n          <div class="badge">${n.id.slice(0,4)}</div>`;
-        const label = el.querySelector('.label'); label.textContent = n.text;
-        label.addEventListener('input',()=>{ n.text = label.textContent; throttlePush(); drawEdges(); drawMinimap(); });
-        label.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ label.blur(); el.focus(); } e.stopPropagation(); });
-        // drag node
-        let dragging=false, sx=0, sy=0, ox=0, oy=0;
-        el.addEventListener('pointerdown', (e)=>{
-          if(e.target.classList.contains('label')) return; // text editing won't drag
-          dragging=true; el.setPointerCapture(e.pointerId);
-          const w = screenToWorld(e.clientX, e.clientY); sx=w.x; sy=w.y; ox=n.x; oy=n.y; setSelected(n.id,null);
-        });
-        el.addEventListener('pointermove', (e)=>{
-          if(!dragging) return; const w = screenToWorld(e.clientX, e.clientY);
-          n.x = snap(ox + (w.x - sx)); n.y = snap(oy + (w.y - sy));
-          el.style.left = n.x + 'px'; el.style.top = n.y + 'px';
-          drawEdges(); drawMinimap();
-        });
-        el.addEventListener('pointerup', (e)=>{ if(!dragging) return; dragging=false; el.releasePointerCapture(e.pointerId); pushHistory(); });
-
-        // connect handles
-        const outH = el.querySelector('.handle.out');
-        const inH  = el.querySelector('.handle.in');
-        outH.addEventListener('pointerdown', (e)=>{ if(mode!=='connect') return; connectSource = n.id; info('Pick a target…'); e.stopPropagation(); });
-        inH.addEventListener('pointerdown', (e)=>{ if(mode!=='connect' || !connectSource) return; addEdge(connectSource, n.id); connectSource=null; info('Connected.'); e.stopPropagation(); });
-
-        // focus/select
-        el.addEventListener('pointerdown',()=> setSelected(n.id,null));
-
-        nodesEl.appendChild(el);
-      });
-      // selection styling
-      if(selected.nodeId){ const el = nodeElById(selected.nodeId); if(el){ el.classList.add('selected'); el.scrollIntoView?.({block:'nearest', inline:'nearest'}); } }
-      drawEdges(); drawMinimap();
+    class Food {
+      constructor(kind='normal', ttl=0) { this.kind=kind; this.ttl=ttl; this.pos=this.randomPos(); }
+      randomPos() {
+        let p;
+        do { p = {x: randInt(COLS), y: randInt(ROWS)}; } while (snake.intersects(p));
+        return p;
+      }
     }
 
-    function setSelected(nodeId=null, edgeId=null){ selected = { nodeId, edgeId }; document.querySelectorAll('.node').forEach(n=>n.classList.remove('selected')); if(nodeId){ nodeElById(nodeId)?.classList.add('selected'); }
-      drawEdges(); }
-
-    function drawEdges(){
-      edgesSvg.innerHTML = '<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z"/></marker></defs>';
-      edgesSvg.setAttribute('width', nodesEl.offsetWidth);
-      edgesSvg.setAttribute('height', nodesEl.offsetHeight);
-      state.edges.forEach(e=>{
-        const a = nodeById(e.from); const b = nodeById(e.to); if(!a||!b) return;
-        const ap = worldToScreen(a.x + a.w, a.y + a.h/2); // right center
-        const bp = worldToScreen(b.x, b.y + b.h/2); // left center
-        // transform back to viewport space because <svg> isn't transformed itself visually; but it's inside viewport which is transformed.
-        const ax = a.x + a.w, ay = a.y + a.h/2; const bx = b.x, by = b.y + b.h/2;
-        const dx = Math.max(60, (bx - ax) * .5);
-        const path = `M ${ax} ${ay} C ${ax+dx} ${ay}, ${bx-dx} ${by}, ${bx} ${by}`;
-        const p = document.createElementNS('http://www.w3.org/2000/svg','path');
-        p.setAttribute('d', path);
-        p.setAttribute('class', 'edge' + (selected.edgeId===e.id?' sel':''));
-        p.setAttribute('marker-end','url(#arrow)');
-        p.addEventListener('pointerdown', (ev)=>{ setSelected(null, e.id); ev.stopPropagation(); });
-        edgesSvg.appendChild(p);
-      });
-      // scale the svg to follow viewport transform by setting a transform attribute on the <svg> content via a <g>
-      // Simpler: set viewBox to world units and let CSS transform scale the whole viewport.
-      const bounds = getContentBounds();
-      edgesSvg.setAttribute('viewBox', `${bounds.minX-200} ${bounds.minY-200} ${Math.max(600,bounds.w+400)} ${Math.max(400,bounds.h+400)}`);
+    // Minimal particle effect when eating
+    const particles = [];
+    function spawnParticles(x,y, color) {
+      for (let i=0;i<10;i++) particles.push({x,y, vx:(Math.random()-0.5)*0.8, vy:(Math.random()-0.5)*0.8, life: 18, color});
     }
 
-    // Pan + Zoom
-    let panning=false, panStart={x:0,y:0}, panOrigin={x:0,y:0};
-    stage.addEventListener('pointerdown', (e)=>{
-      const target = e.target; const isOnNode = target.closest?.('.node'); const isOnHandle = target.classList?.contains('handle');
-      if(isOnNode || isOnHandle) return; panning=true; panStart={x:e.clientX,y:e.clientY}; panOrigin={x:tx,y:ty}; stage.setPointerCapture(e.pointerId); setSelected(null,null);
-    });
-    stage.addEventListener('pointermove', (e)=>{ if(!panning) return; tx = panOrigin.x + (e.clientX - panStart.x); ty = panOrigin.y + (e.clientY - panStart.y); applyTransform(); });
-    stage.addEventListener('pointerup', (e)=>{ if(!panning) return; panning=false; stage.releasePointerCapture(e.pointerId); });
+    // ======= GAME LOOP =======
+    let snake, food, bonus=null, score, level, speed, paused = true, over = false;
+    let acc = 0, lastTime = performance.now();
 
-    stage.addEventListener('wheel', (e)=>{
-      if(!e.ctrlKey) e.preventDefault();
-      const delta = e.deltaY < 0 ? 1.1 : 0.9; const mx=e.clientX,my=e.clientY;
-      const before = screenToWorld(mx,my);
-      scale = Math.min(2.5, Math.max(0.25, scale * delta));
-      const after = screenToWorld(mx,my);
-      tx += (mx - (after.x*scale + tx));
-      ty += (my - (after.y*scale + ty));
-      applyTransform();
-    }, {passive:false});
+    function newGame() {
+      snake = new Snake();
+      food = new Food('normal');
+      bonus = null;
+      score = 0; level = 1; speed = settings.speed; // tiles per second
+      paused = true; over = false; acc = 0; lastTime = performance.now();
+      updateHUD();
+      showToast('Press ▶︎ to start');
+      draw();
+    }
 
-    // Keyboard
-    window.addEventListener('keydown', (e)=>{
-      if(e.key==='n' || e.key==='N'){ addNode(centerWorld(), 'Step'); }
-      else if(e.key==='c' || e.key==='C'){ setMode('connect'); }
-      else if(e.key==='v' || e.key==='V'){ setMode('select'); }
-      else if(e.key==='Delete'){ if(selected.nodeId) removeNode(selected.nodeId); else if(selected.edgeId) removeEdge(selected.edgeId); }
-      else if(e.key==='g' || e.key==='G'){ snapToggle.checked=!snapToggle.checked; info('Snap: '+(snapToggle.checked?'on':'off')); }
-      else if(e.key==='l' || e.key==='L'){ autoLayout(); }
-      else if((e.ctrlKey||e.metaKey) && e.key==='z'){ undo(); e.preventDefault(); }
-      else if((e.ctrlKey||e.metaKey) && (e.key==='y' || (e.shiftKey && e.key==='Z'))){ redo(); e.preventDefault(); }
-      else if((e.ctrlKey||e.metaKey) && e.key==='0'){ fitView(); e.preventDefault(); }
-      else if(e.key==='?' || e.key==='/'){ helpModal.open ? helpModal.close() : helpModal.showModal(); }
-    });
+    function updateHUD() {
+      scoreEl.textContent = score;
+      hiEl.textContent = hiscore;
+      levelEl.textContent = level;
+    }
+
+    function maybeLevelUp() {
+      const step = 6; // every N foods
+      const nextLevelAt = step * level;
+      if (score >= nextLevelAt) {
+        level++;
+        speed = Math.min(18, speed + 1);
+        showToast(`Level ${level}`);
+      }
+    }
+
+    function spawnBonus() {
+      if (!settings.power) return;
+      if (bonus || Math.random() > 0.22) return; // chance gate
+      bonus = new Food('bonus', 7 * 60); // ~7s at 60fps
+    }
+
+    function tick() {
+      if (paused || over) return;
+      // advance snake by one tile
+      const ok = snake.step();
+      if (!ok) return gameOver();
+
+      const head = snake.body[0];
+
+      // self collision
+      if (snake.intersects(head, true)) return gameOver();
+
+      // eat normal food
+      if (head.x===food.pos.x && head.y===food.pos.y) {
+        score += 1;
+        snake.growBy += 1;
+        spawnParticles(head.x+0.5, head.y+0.5, settings.color);
+        food = new Food('normal');
+        spawnBonus();
+        maybeLevelUp();
+      }
+
+      // eat bonus
+      if (bonus && head.x===bonus.pos.x && head.y===bonus.pos.y) {
+        score += 5;
+        snake.growBy += 2;
+        spawnParticles(head.x+0.5, head.y+0.5, '#f59e0b');
+        bonus = null;
+        maybeLevelUp();
+      }
+
+      // decay bonus
+      if (bonus) { bonus.ttl--; if (bonus.ttl<=0) bonus = null; }
+
+      // decay particles
+      for (let i=particles.length-1;i>=0;i--) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy; p.life--; if (p.life<=0) particles.splice(i,1);
+      }
+    }
+
+    function draw() {
+      // logical units are tiles; we scaled context to COLS×ROWS
+      // clear
+      ctx.save();
+      ctx.clearRect(0,0,COLS,ROWS);
+
+      // optional light grid overlay handled by CSS background; draw overlays only
+      if (!settings.grid) {
+        // cover CSS grid by drawing a panel background
+        ctx.fillStyle = 'rgba(0,0,0,0.0)';
+        ctx.fillRect(0,0,COLS,ROWS);
+      }
+
+      // draw bonus first (ring)
+      if (bonus) {
+        const {x,y} = bonus.pos;
+        ctx.fillStyle = '#f59e0bb8';
+        roundRect(ctx, x+0.12, y+0.12, 0.76, 0.76, 0.2);
+        ctx.fill();
+        // timer arc
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(245,158,11,0.9)';
+        ctx.lineWidth = 0.12;
+        const pct = bonus.ttl / (7*60);
+        ctx.arc(x+0.5, y+0.5, 0.45, -Math.PI/2, -Math.PI/2 + 2*Math.PI*pct);
+        ctx.stroke();
+      }
+
+      // draw food
+      ctx.fillStyle = '#ef4444cc';
+      roundRect(ctx, food.pos.x+0.16, food.pos.y+0.16, 0.68, 0.68, 0.18);
+      ctx.fill();
+
+      // draw snake
+      ctx.fillStyle = hexToRgba(settings.color, 0.92);
+      snake.body.forEach((p,i) => {
+        const r = i===0 ? 0.26 : 0.22;
+        roundRect(ctx, p.x+0.08, p.y+0.08, 0.84, 0.84, 0.24);
+        ctx.fill();
+        if (i===0) {
+          // eyes
+          ctx.fillStyle = 'rgba(0,0,0,0.6)';
+          const ex = p.x + (snake.dir.x!==0 ? 0.65 : 0.35);
+          const ey = p.y + (snake.dir.y===1 ? 0.65 : snake.dir.y===-1 ? 0.35 : 0.5);
+          ctx.beginPath(); ctx.arc(ex-0.14, ey-0.14, 0.06, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(ex, ey, 0.06, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = hexToRgba(settings.color, 0.92);
+        }
+      });
+
+      // particles
+      particles.forEach(p => {
+        ctx.globalAlpha = clamp(p.life/18, 0, 1);
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 0.08, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      ctx.restore();
+    }
+
+    function loop(t) {
+      const dt = Math.min(100, t - lastTime); // clamp large jumps
+      lastTime = t;
+      if (!paused && !over) {
+        acc += dt;
+        const stepMs = 1000 / speed;
+        while (acc >= stepMs) { tick(); acc -= stepMs; }
+      }
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    function gameOver() {
+      over = true; paused = true;
+      if (score > hiscore) { hiscore = score; localStorage.setItem(STORAGE.hi, String(hiscore)); }
+      finalScore.textContent = score;
+      finalHi.textContent = hiscore;
+      finalLv.textContent = level;
+      dlgOver.showModal();
+    }
+
+    // ======= INPUT =======
+    const keyDirs = {
+      ArrowUp: [0,-1], ArrowDown: [0,1], ArrowLeft: [-1,0], ArrowRight: [1,0],
+      w: [0,-1], s: [0,1], a: [-1,0], d: [1,0], W:[0,-1], S:[0,1], A:[-1,0], D:[1,0]
+    };
+    document.addEventListener('keydown', e => {
+      if (keyDirs[e.key]) { e.preventDefault(); const [x,y] = keyDirs[e.key]; snake.setDir(x,y); }
+      if (e.key==='p' || e.key==='P') togglePause();
+      if (e.key==='r' || e.key==='R') { newGame(); }
+      if (e.key===' ') { e.preventDefault(); togglePause(); }
+    }, { passive:false });
 
     // Buttons
-    addNodeBtn.onclick = ()=> addNode(centerWorld(), 'Step');
-    connectBtn.onclick = ()=> setMode('connect');
-    selectBtn.onclick = ()=> setMode('select');
-    deleteBtn.onclick = ()=> { if(selected.nodeId) removeNode(selected.nodeId); else if(selected.edgeId) removeEdge(selected.edgeId); };
-    layoutBtn.onclick = ()=> autoLayout();
-    helpBtn.onclick = ()=> helpModal.showModal();
+    btnPlay.addEventListener('click', togglePause);
+    btnReset.addEventListener('click', () => newGame());
+    btnSettings.addEventListener('click', () => openSettings());
+    btnTheme.addEventListener('click', toggleTheme);
 
-    exportJsonBtn.onclick = ()=> download('flowchart.json', JSON.stringify({version:1, nodes:state.nodes, edges:state.edges}, null, 2));
-    importJsonBtn.onclick = ()=> fileInput.click();
-    fileInput.onchange = async (e)=>{
-      const file = e.target.files[0]; if(!file) return;
-      const text = await file.text();
-      try{ const data = JSON.parse(text); if(!data.nodes||!data.edges) throw new Error('Invalid');
-        state.nodes = data.nodes; state.edges = data.edges; pushHistory(); render(); info('Project loaded.');
-      }catch(err){ alert('Could not load JSON: '+err.message); }
-      fileInput.value='';
-    };
-
-    exportSvgBtn.onclick = ()=> download('flowchart.svg', buildSVG());
-    exportPngBtn.onclick = ()=> exportPNG();
-
-    // Helpers
-    function centerWorld(){ const rect = stage.getBoundingClientRect(); const center = screenToWorld(rect.width/2, rect.height/2); return {x:snap(center.x-90), y:snap(center.y-30)}; }
-
-    function info(msg){ statusEl.textContent = msg; clearTimeout(info._t); info._t = setTimeout(()=>{ statusEl.textContent='Ready.'; }, 1800); }
-
-    function pushHistory(){ history.push(JSON.stringify(state)); if(history.length>200) history.shift(); redoStack=[]; }
-    const throttlePush = throttle(()=>pushHistory(), 600);
-    function undo(){ if(history.length<2) return; redoStack.push(history.pop()); const prev = history[history.length-1]; const s = JSON.parse(prev); state.nodes=s.nodes; state.edges=s.edges; render(); info('Undo'); }
-    function redo(){ if(!redoStack.length) return; const next = redoStack.pop(); history.push(next); const s = JSON.parse(next); state.nodes=s.nodes; state.edges=s.edges; render(); info('Redo'); }
-    function throttle(fn, wait){ let t=0; return (...args)=>{ const now=Date.now(); if(now-t>wait){ t=now; fn(...args); } } }
-
-    function getContentBounds(){
-      if(state.nodes.length===0) return {minX:0,minY:0,maxX:600,maxY:400,w:600,h:400};
-      let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-      state.nodes.forEach(n=>{ minX=Math.min(minX,n.x); minY=Math.min(minY,n.y); maxX=Math.max(maxX,n.x+n.w); maxY=Math.max(maxY,n.y+n.h); });
-      return {minX, minY, maxX, maxY, w:maxX-minX, h:maxY-minY};
-    }
-
-    function autoLayout(){
-      // simple DAG-ish layered layout
-      const nodes = state.nodes;
-      const incoming = new Map(nodes.map(n=>[n.id,0]));
-      state.edges.forEach(e=> incoming.set(e.to, (incoming.get(e.to)||0)+1));
-      const roots = nodes.filter(n=> (incoming.get(n.id)||0)===0);
-      const layers=[]; const visited = new Set(); const queue=[...roots]; if(queue.length===0 && nodes[0]) queue.push(nodes[0]);
-      while(queue.length){ const layerSize=queue.length; const layer=[]; for(let i=0;i<layerSize;i++){ const n = queue.shift(); if(visited.has(n.id)) continue; visited.add(n.id); layer.push(n);
-        state.edges.filter(e=>e.from===n.id).forEach(e=>{ const t = nodeById(e.to); if(t && !visited.has(t.id)) queue.push(t); });
-      } if(layer.length) layers.push(layer); }
-      // if some nodes disconnected, add them
-      nodes.forEach(n=>{ if(!visited.has(n.id)) { layers.push([n]); visited.add(n.id);} });
-
-      const gapX=240,gapY=120; const bounds = getContentBounds(); let y = snap(bounds.minY);
-      layers.forEach((layer, li)=>{
-        let x = snap(bounds.minX + li*gapX);
-        layer.forEach((n, ni)=>{ n.x = x; n.y = snap(bounds.minY + ni*gapY); });
+    // Touch controls
+    document.querySelectorAll('.pad').forEach(el => {
+      el.addEventListener('click', () => {
+        const dir = el.dataset.dir;
+        const map = {up:[0,-1], down:[0,1], left:[-1,0], right:[1,0]};
+        const [x,y] = map[dir];
+        snake.setDir(x,y);
+        if (paused && !over) togglePause(false);
       });
-      pushHistory(); render(); info('Auto‑layout applied');
-    }
-
-    // Build SVG string representing current graph
-    function buildSVG(){
-      const pad=40; const b = getContentBounds(); const W = Math.max(400, b.w+pad*2), H=Math.max(300,b.h+pad*2);
-      const ox = b.minX - pad, oy = b.minY - pad;
-      const esc = (s)=> String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      function pathFor(e){ const a=nodeById(e.from), b=nodeById(e.to); if(!a||!b) return '';
-        const ax=a.x+a.w, ay=a.y+a.h/2, bx=b.x, by=b.y+b.h/2; const dx=Math.max(60,(bx-ax)*.5);
-        return `M ${ax-ox} ${ay-oy} C ${ax-ox+dx} ${ay-oy}, ${bx-ox-dx} ${by-oy}, ${bx-ox} ${by-oy}`; }
-      const edges = state.edges.map(e=>`<path d="${pathFor(e)}" stroke="#87b7ff" stroke-width="2" fill="none" marker-end="url(#arr)"/>`).join('');
-      const nodes = state.nodes.map(n=>{
-        return `<g transform="translate(${n.x-ox},${n.y-oy})">\n          <rect rx="12" ry="12" width="${n.w}" height="${n.h}" fill="#152436" stroke="#29405b" />\n          <text x="12" y="24" font-family="ui-sans-serif,system-ui,Segoe UI,Roboto" font-size="14" fill="#e6edf3">${esc(n.text)}</text>\n        </g>`;
-      }).join('');
-      const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">\n  <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#87b7ff"/></marker></defs>\n  <g>\n    <rect x="0" y="0" width="${W}" height="${H}" fill="#0d141d"/>\n    <g transform="translate(${pad - (b.minX-ox)} ${pad - (b.minY-oy)})"></g>\n    ${edges}\n    ${nodes}\n  </g>\n</svg>`;
-      return svg;
-    }
-
-    async function exportPNG(){
-      const svg = buildSVG();
-      const img = new Image();
-      const svgBlob = new Blob([svg], {type:'image/svg+xml'});
-      const url = URL.createObjectURL(svgBlob);
-      await new Promise(res=>{ img.onload=res; img.src=url; });
-      const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight; const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0); URL.revokeObjectURL(url);
-      canvas.toBlob((blob)=>{ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'flowchart.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000); });
-    }
-
-    function download(name, text){ const a=document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type: name.endsWith('.json')?'application/json':'image/svg+xml'})); a.download = name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000); }
-
-    // Minimap
-    const minimap = document.querySelector('#minimap');
-    const mmCanvas = minimap.querySelector('canvas');
-    const mmFrame = minimap.querySelector('.frame');
-    const mmCtx = mmCanvas.getContext('2d');
-
-    function drawMinimap(){
-      const b = getContentBounds();
-      const W = minimap.clientWidth, H = minimap.clientHeight; mmCanvas.width=W; mmCanvas.height=H;
-      const sx = W / Math.max(b.w||1, 400); const sy = H / Math.max(b.h||1, 300); const s = Math.min(sx, sy);
-      const ox = b.minX, oy = b.minY;
-      // background
-      mmCtx.fillStyle = '#0a1018'; mmCtx.fillRect(0,0,W,H);
-      // edges
-      mmCtx.strokeStyle = '#4f7ab2'; mmCtx.lineWidth = 1;
-      state.edges.forEach(e=>{ const a=nodeById(e.from), b=nodeById(e.to); if(!a||!b) return; const ax=(a.x+a.w-ox)*s, ay=(a.y+a.h/2-oy)*s, bx=(b.x-ox)*s, by=(b.y+b.h/2-oy)*s; mmCtx.beginPath(); mmCtx.moveTo(ax,ay); mmCtx.lineTo(bx,by); mmCtx.stroke(); });
-      // nodes
-      state.nodes.forEach(n=>{ mmCtx.fillStyle='#1e2a3a'; mmCtx.strokeStyle='#33506f'; mmCtx.lineWidth=1; mmCtx.fillRect((n.x-ox)*s, (n.y-oy)*s, n.w*s, n.h*s); mmCtx.strokeRect((n.x-ox)*s, (n.y-oy)*s, n.w*s, n.h*s); });
-      // viewport frame
-      const tl = screenToWorld(0,0); const br = screenToWorld(stage.clientWidth, stage.clientHeight);
-      const fx = (tl.x-ox)*s, fy=(tl.y-oy)*s, fw=(br.x-tl.x)*s, fh=(br.y-tl.y)*s; mmFrame.style.left=fx+'px'; mmFrame.style.top=fy+'px'; mmFrame.style.width=fw+'px'; mmFrame.style.height=fh+'px';
-    }
-
-    minimap.addEventListener('pointerdown', (e)=>{
-      const rect = minimap.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-      const b = getContentBounds(); const sx = minimap.clientWidth / Math.max(b.w||1,400); const sy = minimap.clientHeight / Math.max(b.h||1,300); const s = Math.min(sx,sy);
-      const wx = b.minX + x / s; const wy = b.minY + y / s; // world coords
-      // center that world point in the viewport
-      const sp = worldToScreen(wx,wy); const cx = stage.clientWidth/2, cy = stage.clientHeight/2;
-      tx += (cx - sp.x); ty += (cy - sp.y); applyTransform();
     });
 
-    // Initialize with a tiny demo graph
-    function seed(){
-      state.nodes = [];
-      const a = addNode({x:0,y:0}, 'Start');
-      const b = addNode({x:0,y:140}, 'Process something');
-      const c = addNode({x:0,y:280}, 'Decision?');
-      const d = addNode({x:260,y:280}, 'Do thing A');
-      const e = addNode({x:-260,y:280}, 'Do thing B');
-      addEdge(a,b); addEdge(b,c); addEdge(c,d); addEdge(c,e);
-      pushHistory();
-      fitView();
+    // ======= SETTINGS =======
+    function openSettings() {
+      // preload current
+      optColor.value = settings.color;
+      optSpeed.value = String(settings.speed);
+      spdVal.textContent = settings.speed;
+      optGrid.checked = settings.grid;
+      optWrap.checked = settings.wrap;
+      optWalls.checked = settings.walls;
+      optPower.checked = settings.power;
+      dlgSettings.showModal();
     }
 
-    function fitView(){
-      const b = getContentBounds(); const pad=100; const vw = stage.clientWidth - pad*2, vh = stage.clientHeight - pad*2; const sx = vw / Math.max(200,b.w), sy = vh / Math.max(150,b.h); scale = Math.max(.35, Math.min(1.8, Math.min(sx,sy)));
-      tx = pad - b.minX*scale; ty = 48 + pad - b.minY*scale; applyTransform();
+    optSpeed.addEventListener('input', () => { spdVal.textContent = optSpeed.value; });
+
+    $('#btnSave').addEventListener('click', (e) => {
+      e.preventDefault();
+      settings.color = optColor.value;
+      settings.speed = Number(optSpeed.value);
+      settings.grid = !!optGrid.checked;
+      settings.wrap = !!optWrap.checked;
+      settings.walls = !!optWalls.checked;
+      settings.power = !!optPower.checked;
+      // prevent invalid combo: walls overrides wrap
+      if (settings.walls) settings.wrap = false;
+      saveSettings();
+      dlgSettings.close();
+      showToast('Saved');
+      // apply immediately
+      speed = settings.speed;
+    });
+
+    function loadSettings() {
+      const d = { color: '#10b981', speed: 6, grid: true, wrap: true, walls: false, power: true };
+      try { Object.assign(d, JSON.parse(localStorage.getItem(STORAGE.settings) || '{}')); } catch {}
+      return d;
+    }
+    function saveSettings() { localStorage.setItem(STORAGE.settings, JSON.stringify(settings)); }
+
+    // Theme
+    function applyThemeFromSystem() {
+      const stored = localStorage.getItem('snake_theme');
+      const dark = stored ? stored==='dark' : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    }
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur==='dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('snake_theme', next);
+    }
+
+    // Pause / Play
+    function togglePause(forceState) {
+      if (over) { newGame(); return; }
+      if (typeof forceState==='boolean') paused = !forceState ? true : false; // (unused)
+      paused = !paused;
+      if (!paused) { lastTime = performance.now(); hideToast(); btnPlay.setAttribute('aria-label','Pause'); $('#iconPlay').textContent = '⏸'; }
+      else { showToast('Paused'); btnPlay.setAttribute('aria-label','Play'); $('#iconPlay').textContent = '▶︎'; }
+    }
+
+    function showToast(msg) { toast.textContent = msg; toast.hidden = false; clearTimeout(showToast._t); showToast._t = setTimeout(() => { hideToast(); }, 1600); }
+    function hideToast() { toast.hidden = true; }
+
+    // Game over actions
+    goAgain.addEventListener('click', () => { dlgOver.close(); newGame(); });
+    goShare.addEventListener('click', async () => {
+      const text = `I scored ${score} on Minimal Snake (Lv ${level}). Can you beat it?`;
+      try {
+        if (navigator.share) await navigator.share({ text, title: 'Minimal Snake' });
+        else {
+          await navigator.clipboard.writeText(text);
+          showToast('Copied');
+        }
+      } catch {}
+    });
+
+    // Helpers
+    function roundRect(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr, y);
+      ctx.arcTo(x+w, y, x+w, y+h, rr);
+      ctx.arcTo(x+w, y+h, x, y+h, rr);
+      ctx.arcTo(x, y+h, x, y, rr);
+      ctx.arcTo(x, y, x+w, y, rr);
+      ctx.closePath();
+    }
+    function hexToRgba(hex, a=1) {
+      const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      if (!m) return hex; const r=parseInt(m[1],16), g=parseInt(m[2],16), b=parseInt(m[3],16);
+      return `rgba(${r},${g},${b},${a})`;
     }
 
     // Start
-    seed(); render(); applyTransform();
+    newGame();
+    requestAnimationFrame(loop);
+  })();
   </script>
 </body>
 </html>
