@@ -1,73 +1,350 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Shape Viewer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Your Name — Resume</title>
+  <meta name="description" content="Minimal, Apple‑style resume site for a clean professional presence." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'></text></svg>">
   <style>
+    /* --- Base / Apple‑like system styling --- */
+    :root {
+      --bg: #ffffff;
+      --bg-elev: #f5f5f7;
+      --text: #111111;
+      --muted: #6e6e73;
+      --link: #0071e3; /* Apple blue */
+      --border: #e5e5ea;
+      --card: #ffffff;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
+      --bg-rgb: 255,255,255;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --bg-elev: #0b0b0c;
+        --text: #f5f5f7;
+        --muted: #9a9aa1;
+        --link: #2997ff;
+        --border: #2c2c2e;
+        --card: #0b0b0c;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+        --bg-rgb: 0,0,0;
+      }
+    }
+    /* Optional manual override via toggle */
+    [data-theme="light"] {
+      --bg: #ffffff; --bg-elev:#f5f5f7; --text:#111; --muted:#6e6e73; --link:#0071e3; --border:#e5e5ea; --card:#ffffff; --shadow:0 10px 30px rgba(0,0,0,.06); --bg-rgb:255,255,255;
+    }
+    [data-theme="dark"] {
+      --bg: #000; --bg-elev:#0b0b0c; --text:#f5f5f7; --muted:#9a9aa1; --link:#2997ff; --border:#2c2c2e; --card:#0b0b0c; --shadow:0 10px 30px rgba(0,0,0,.35); --bg-rgb:0,0,0;
+    }
+
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      overflow: hidden;
-      background-color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(0,0,0,0.04), transparent),
+                  radial-gradient(900px 500px at 90% -20%, rgba(0,0,0,0.03), transparent),
+                  var(--bg);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
     }
-    #container {
-      width: 100vw;
-      height: 100vh;
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* --- Navigation --- */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      background: color-mix(in oklab, var(--bg) 70%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight: 600; letter-spacing: .2px; }
+    .brand .logo { width: 18px; height: 18px; display:inline-grid; place-items:center; border-radius:6px; background: linear-gradient(135deg,#111, #333); color:#fff; font-size:12px; }
+    .nav a { text-decoration: none; color: var(--text); opacity: .9; margin-left: 18px; font-size: 15px; }
+    .nav a:hover { opacity: 1; }
+
+    /* --- Hero --- */
+    .hero { padding: 72px 0 32px; }
+    .title { font-size: clamp(32px, 5vw, 54px); font-weight: 700; letter-spacing: -.5px; margin: 0 0 12px; }
+    .subtitle { font-size: clamp(16px, 2.2vw, 20px); color: var(--muted); margin: 0 0 24px; }
+    .cta { display:flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      appearance: none; border: 1px solid var(--border); background: var(--card); color: var(--text);
+      padding: 10px 16px; border-radius: 999px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(0,0,0,.08); }
+    .btn.primary { background: var(--link); color: #fff; border-color: transparent; }
+
+    /* --- Sections --- */
+    section { padding: 48px 0; }
+    .section-title { font-size: 22px; font-weight: 700; margin: 0 0 16px; letter-spacing: .2px; }
+    .section-desc { color: var(--muted); margin: 0 0 24px; }
+
+    /* Cards */
+    .card { background: color-mix(in oklab, var(--card) 94%, transparent); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; }
+
+    /* --- Experience Timeline --- */
+    .timeline { position: relative; margin-left: 12px; }
+    .timeline::before { content: ""; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .job { position: relative; margin: 0 0 22px 0; padding-left: 28px; }
+    .job::before { content: ""; position: absolute; left: 2px; top: 6px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--link); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+    .job h3 { margin: 0; font-size: 18px; }
+    .job .meta { color: var(--muted); font-size: 14px; margin-top: 4px; }
+    .job ul { margin: 10px 0 0 18px; padding: 0; }
+
+    /* --- Projects Grid --- */
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .grid > * { grid-column: span 12; }
+    @media (min-width: 720px) { .grid > * { grid-column: span 6; } }
+    @media (min-width: 1024px) { .grid > * { grid-column: span 4; } }
+
+    .project { display:flex; flex-direction:column; gap:12px; }
+    .thumb { aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background:
+      radial-gradient(1200px 400px at -10% -40%, rgba(41,151,255,.13), transparent),
+      radial-gradient(1200px 400px at 110% -40%, rgba(88,86,214,.13), transparent),
+      linear-gradient(180deg, color-mix(in oklab, var(--bg-elev) 90%, transparent), var(--bg));
+    }
+    .project h4 { margin: 0; font-size: 17px; }
+    .project p { margin: 0; color: var(--muted); }
+    .project .links { margin-top: 6px; display:flex; gap: 10px; }
+    .icon { width: 18px; height: 18px; display:inline-block; vertical-align: middle; }
+
+    /* --- Skills Pills --- */
+    .pills { display:flex; flex-wrap: wrap; gap: 10px; }
+    .pill { border: 1px solid var(--border); background: var(--card); padding: 8px 12px; border-radius: 999px; font-size: 14px; }
+
+    /* --- Footer --- */
+    footer { padding: 28px 0 60px; color: var(--muted); font-size: 14px; }
+
+    /* --- Floating Back‑to‑Top --- */
+    .to-top { position: fixed; right: 18px; bottom: 22px; opacity: 0; transform: translateY(8px); pointer-events: none; transition: all .2s ease; }
+    .to-top.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    /* --- Animations --- */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px) } to { opacity:1; transform:none } }
+    .reveal { animation: fadeUp .6s ease both; }
+
+    /* --- Print Styles (for PDF) --- */
+    @media print {
+      .nav, .cta, .to-top, .project .links { display: none !important; }
+      body { background: #fff; }
+      .card { box-shadow: none; }
+      a { color: #000; text-decoration: none; }
     }
   </style>
 </head>
 <body>
-  <div id="container"></div>
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden></div>
+        <span>Your Name</span>
+      </div>
+      <nav aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+        <a href="#" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="about" class="hero reveal">
+      <h1 class="title">Your Name</h1>
+      <p class="subtitle">Product‑minded Engineer • Minimalist Designer • Builder. Based in Anywhere, USA.</p>
+      <div class="cta">
+        <a class="btn primary" href="mailto:you@example.com">Email Me</a>
+        <a class="btn" href="#projects">View Projects</a>
+        <button class="btn" onclick="window.print()" title="Print to PDF">Download PDF</button>
+      </div>
+    </section>
+
+    <section id="experience" class="reveal">
+      <h2 class="section-title">Experience</h2>
+      <p class="section-desc">A quick look at roles where I shipped polished, user‑centric work.</p>
+      <div class="card">
+        <div class="timeline">
+          <article class="job">
+            <h3>Senior Product Engineer · <strong>Company One</strong></h3>
+            <div class="meta">2023 — Present · Remote</div>
+            <ul>
+              <li>Led redesign of checkout, increasing conversion by 14% YoY.</li>
+              <li>Shipped design system components across web/iOS with accessibility built‑in.</li>
+              <li>Mentored 4 engineers; introduced performance budgets and CI quality gates.</li>
+            </ul>
+          </article>
+          <article class="job">
+            <h3>Frontend Engineer · <strong>Studio Two</strong></h3>
+            <div class="meta">2021 — 2023 · New York, NY</div>
+            <ul>
+              <li>Built high‑fidelity marketing pages with Apple‑like motion and typography.</li>
+              <li>Optimized Core Web Vitals; shipped sub‑1s LCP for key pages.</li>
+            </ul>
+          </article>
+          <article class="job">
+            <h3>Design Intern · <strong>Indie Lab</strong></h3>
+            <div class="meta">2020 — 2021 · San Francisco, CA</div>
+            <ul>
+              <li>Prototyped concepts in Figma; delivered interactive demos with vanilla JS.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="reveal">
+      <h2 class="section-title">Projects</h2>
+      <p class="section-desc">Selected work. Clean, purposeful, and performance‑minded.</p>
+      <div class="grid">
+        <article class="card project">
+          <div class="thumb" role="img" aria-label="Project screenshot placeholder"></div>
+          <div>
+            <h4>Project Aurora</h4>
+            <p>3D product explorer with WebGL and buttery scroll‑linked motion.</p>
+            <div class="links">
+              <a href="#" aria-label="Open live demo" title="Live demo">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M10 7h7v7"/></svg>
+              </a>
+              <a href="#" aria-label="Open source on GitHub" title="Source">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.79 23.4c.6.1.82-.26.82-.58v-2.2c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.35-1.77-1.35-1.77-1.1-.76.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.85 2.84 1.31 3.53 1 .11-.8.42-1.32.76-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.25-3.21-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.78.84 1.25 1.9 1.25 3.22 0 4.58-2.8 5.6-5.48 5.9.43.38.81 1.1.81 2.22v3.3c0 .32.22.7.82.58A12 12 0 0012 .5z"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="thumb" role="img" aria-label="Project screenshot placeholder"></div>
+          <div>
+            <h4>Minimal Commerce</h4>
+            <p>Headless storefront template with native‑feeling transitions.</p>
+            <div class="links">
+              <a href="#" title="Live demo"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M10 7h7v7"/></svg></a>
+              <a href="#" title="Source"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.79 23.4c.6.1.82-.26.82-.58v-2.2c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.35-1.77-1.35-1.77-1.1-.76.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.85 2.84 1.31 3.53 1 .11-.8.42-1.32.76-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.25-3.21-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.78.84 1.25 1.9 1.25 3.22 0 4.58-2.8 5.6-5.48 5.9.43.38.81 1.1.81 2.22v3.3c0 .32.22.7.82.58A12 12 0 0012 .5z"/></svg></a>
+            </div>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="thumb" role="img" aria-label="Project screenshot placeholder"></div>
+          <div>
+            <h4>Motion Lab</h4>
+            <p>Micro‑interactions library for tasteful, tactile UI feedback.</p>
+            <div class="links">
+              <a href="#" title="Live demo"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M10 7h7v7"/></svg></a>
+              <a href="#" title="Source"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.79 23.4c.6.1.82-.26.82-.58v-2.2c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.35-1.77-1.35-1.77-1.1-.76.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.85 2.84 1.31 3.53 1 .11-.8.42-1.32.76-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.25-3.21-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.78.84 1.25 1.9 1.25 3.22 0 4.58-2.8 5.6-5.48 5.9.43.38.81 1.1.81 2.22v3.3c0 .32.22.7.82.58A12 12 0 0012 .5z"/></svg></a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="skills" class="reveal">
+      <h2 class="section-title">Skills</h2>
+      <p class="section-desc">A compact stack I use daily.</p>
+      <div class="card">
+        <div class="pills">
+          <span class="pill">JavaScript (ES202x)</span>
+          <span class="pill">TypeScript</span>
+          <span class="pill">React</span>
+          <span class="pill">Node</span>
+          <span class="pill">CSS / Motion</span>
+          <span class="pill">Figma</span>
+          <span class="pill">iOS HIG</span>
+          <span class="pill">Web Performance</span>
+          <span class="pill">A11y</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="education" class="reveal">
+      <h2 class="section-title">Education</h2>
+      <div class="card">
+        <p><strong>B.S., Human‑Centered Computing</strong> — Great University (2016–2020)</p>
+        <p class="section-desc">Coursework: UX, Algorithms, Systems, Typography, Product.</p>
+      </div>
+    </section>
+
+    <section id="contact" class="reveal">
+      <h2 class="section-title">Contact</h2>
+      <div class="card">
+        <p>Open to roles and collaborations. The simplest way to reach me is email.</p>
+        <div class="cta">
+          <a class="btn primary" href="mailto:you@example.com">you@example.com</a>
+          <a class="btn" href="tel:+1234567890">+1 (234) 567‑890</a>
+          <button class="btn" id="copyEmail" data-email="you@example.com">Copy email</button>
+          <a class="btn" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="container">
+      <footer>
+        <div>© <span id="year"></span> Your Name. Crafted with a light touch—like it should be.</div>
+      </footer>
+    </footer>
+  </main>
+
+  <button class="btn to-top" id="toTop" aria-label="Back to top">⌃</button>
+
   <script>
-    let scene, camera, renderer, controls;
-    init();
-    animate();
-    function init() {
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x222222);
-      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 0, 5);
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.getElementById('container').appendChild(renderer.domElement);
+    // Theme toggle with localStorage
+    const root = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+    toggle?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
 
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
+    // Back‑to‑top visibility
+    const toTop = document.getElementById('toTop');
+    const onScroll = () => {
+      if (window.scrollY > 600) toTop.classList.add('show'); else toTop.classList.remove('show');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-      // create geometry
-      const geometry = new THREE.TorusKnotGeometry(1, 0.3, 128, 64);
-      const material = new THREE.MeshStandardMaterial({ color: 0x00ffff, metalness: 0.3, roughness: 0.2 });
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+    // Copy email
+    const copyBtn = document.getElementById('copyEmail');
+    copyBtn?.addEventListener('click', async () => {
+      const email = copyBtn.dataset.email;
+      try { await navigator.clipboard.writeText(email); copyBtn.textContent = 'Copied!'; setTimeout(() => copyBtn.textContent = 'Copy email', 1600); } catch {}
+    });
 
-      // lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-      scene.add(ambientLight);
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-      directionalLight.position.set(5, 5, 5);
-      scene.add(directionalLight);
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 
-      // handle window resize
-      window.addEventListener('resize', onWindowResize, false);
-    }
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      scene.traverse(function (object) {
-        if (object instanceof THREE.Mesh) {
-          object.rotation.x += 0.005;
-          object.rotation.y += 0.01;
-        }
-      });
-      renderer.render(scene, camera);
-    }
+  <!-- SEO: Person schema (fill with your details) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Your Name",
+    "jobTitle": "Product Engineer",
+    "email": "mailto:you@example.com",
+    "telephone": "+1-234-567-890",
+    "url": "https://yourdomain.com",
+    "sameAs": [
+      "https://www.linkedin.com/in/yourprofile",
+      "https://github.com/yourhandle"
+    ]
+  }
   </script>
 </body>
 </html>
