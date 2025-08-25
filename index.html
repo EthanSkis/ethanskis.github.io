@@ -1,350 +1,471 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <title>Your Name — Resume</title>
-  <meta name="description" content="Minimal, Apple‑style resume site for a clean professional presence." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'></text></svg>">
+  <title>Flowchart Builder — Vanilla HTML/JS</title>
   <style>
-    /* --- Base / Apple‑like system styling --- */
-    :root {
-      --bg: #ffffff;
-      --bg-elev: #f5f5f7;
-      --text: #111111;
-      --muted: #6e6e73;
-      --link: #0071e3; /* Apple blue */
-      --border: #e5e5ea;
-      --card: #ffffff;
-      --radius: 16px;
-      --shadow: 0 10px 30px rgba(0,0,0,.06);
-      --bg-rgb: 255,255,255;
+    :root{
+      --bg: #0b0f14;
+      --panel: #121821;
+      --muted: #1b2330;
+      --text: #e6edf3;
+      --text-dim: #a7b0bc;
+      --accent: #5cc8ff;
+      --accent-2:#7ee787;
+      --warn:#ffb14d;
+      --danger:#ff6b6b;
+      --shadow: 0 6px 18px rgba(0,0,0,.35);
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #000000;
-        --bg-elev: #0b0b0c;
-        --text: #f5f5f7;
-        --muted: #9a9aa1;
-        --link: #2997ff;
-        --border: #2c2c2e;
-        --card: #0b0b0c;
-        --shadow: 0 10px 30px rgba(0,0,0,.35);
-        --bg-rgb: 0,0,0;
-      }
+    html,body{height:100%;}
+    body{
+      margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background:linear-gradient(180deg,#0a0e13,#0c121a 60%,#0a0e13);
+      color:var(--text);
+      overflow:hidden;
     }
-    /* Optional manual override via toggle */
-    [data-theme="light"] {
-      --bg: #ffffff; --bg-elev:#f5f5f7; --text:#111; --muted:#6e6e73; --link:#0071e3; --border:#e5e5ea; --card:#ffffff; --shadow:0 10px 30px rgba(0,0,0,.06); --bg-rgb:255,255,255;
+    /* Header / Toolbar */
+    .topbar{display:flex;align-items:center;gap:.75rem;padding:.6rem .8rem;background:var(--panel);box-shadow:var(--shadow);position:relative;z-index:3}
+    .brand{font-weight:700;letter-spacing:.2px}
+    .muted{color:var(--text-dim)}
+    .spacer{flex:1}
+    .toolbar{display:flex;flex-wrap:wrap;gap:.4rem}
+    button, .btn{
+      appearance:none;border:1px solid #222c3a;background:linear-gradient(180deg,#1a2330,#141c28);color:var(--text);
+      padding:.45rem .65rem;border-radius:.6rem;font-weight:600;letter-spacing:.2px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.04), var(--shadow);transition:transform .05s ease, background .2s ease, border-color .2s ease;user-select:none
     }
-    [data-theme="dark"] {
-      --bg: #000; --bg-elev:#0b0b0c; --text:#f5f5f7; --muted:#9a9aa1; --link:#2997ff; --border:#2c2c2e; --card:#0b0b0c; --shadow:0 10px 30px rgba(0,0,0,.35); --bg-rgb:0,0,0;
-    }
+    button:hover{background:#1f2938}
+    button:active{transform:translateY(1px)}
+    button[aria-pressed="true"], .btn.on{background:#1f2b3d;border-color:#2a3a51;outline:2px solid #2a3a51}
+    button.small{padding:.32rem .5rem;font-size:.9rem}
+    .btn.accent{border-color:#1e3347;outline:1px solid #27485d; background:linear-gradient(180deg,#163048,#10273b)}
+    .btn.warn{border-color:#4a3520;outline:1px solid #5d4225;background:linear-gradient(180deg,#3b2b16,#2e2212)}
+    .kbd{font:600 .78rem/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1520;border:1px solid #232e3e;padding:.18rem .36rem;border-radius:.4rem;color:#9fb0c6;margin-left:.25rem}
+    label.switch{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .55rem;border:1px solid #222c3a;background:#141c20;border-radius:.65rem}
+    label.switch input{accent-color:var(--accent)}
 
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
-      background: radial-gradient(1200px 600px at 10% -10%, rgba(0,0,0,0.04), transparent),
-                  radial-gradient(900px 500px at 90% -20%, rgba(0,0,0,0.03), transparent),
-                  var(--bg);
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.5;
-    }
+    /* Stage */
+    #stage{position:absolute;inset:48px 0 0 0;overflow:hidden;}
+    #viewport{position:absolute;inset:0;transform-origin:0 0;}
+    #edges{position:absolute;inset:0;pointer-events:none}
+    #nodes{position:absolute;inset:0}
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    /* Node */
+    .node{position:absolute;min-width:160px;max-width:360px;padding:10px 12px 12px 12px;border-radius:14px;background:linear-gradient(180deg,#142030,#101927);border:1px solid #29384c;box-shadow: 0 4px 18px rgba(0,0,0,.45);
+      cursor:grab; user-select:none; }
+    .node:active{cursor:grabbing}
+    .node.selected{outline:2px solid var(--accent);}
+    .node .label{outline:none;white-space:pre-wrap;word-break:break-word; caret-color:var(--accent);}
+    .node .title{font-weight:700;margin-bottom:.15rem}
+    .node .meta{font-size:.8rem;color:var(--text-dim);margin-top:.2rem}
+    .node .handles{position:absolute;inset: -8px -8px auto -8px;}
+    .handle{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid #132236;background:#0b1522;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+    .handle.in{left:-8px;top:50%;transform:translate(-30%,-50%);border-color:#274760}
+    .handle.out{right:-8px;top:50%;transform:translate(30%,-50%);border-color:#2c5f3b}
+    .handle::after{content:"";position:absolute;inset:2px;border-radius:50%;background:#213247}
+    .node .badge{position:absolute;top:-10px;right:-10px;background:#192538;border:1px solid #2f3e53;color:#8fb3ff;font:700 .7rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;padding:.25rem .35rem;border-radius:10px}
 
-    /* --- Navigation --- */
-    .nav {
-      position: sticky; top: 0; z-index: 50;
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      background: color-mix(in oklab, var(--bg) 70%, transparent);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-    .brand { display:flex; align-items:center; gap:10px; font-weight: 600; letter-spacing: .2px; }
-    .brand .logo { width: 18px; height: 18px; display:inline-grid; place-items:center; border-radius:6px; background: linear-gradient(135deg,#111, #333); color:#fff; font-size:12px; }
-    .nav a { text-decoration: none; color: var(--text); opacity: .9; margin-left: 18px; font-size: 15px; }
-    .nav a:hover { opacity: 1; }
+    /* Edge styles */
+    marker#arrow{fill:#8fb3ff}
+    path.edge{stroke:#8fb3ff;stroke-width:2px;fill:none;opacity:.95}
+    path.edge.sel{stroke:var(--accent-2)}
 
-    /* --- Hero --- */
-    .hero { padding: 72px 0 32px; }
-    .title { font-size: clamp(32px, 5vw, 54px); font-weight: 700; letter-spacing: -.5px; margin: 0 0 12px; }
-    .subtitle { font-size: clamp(16px, 2.2vw, 20px); color: var(--muted); margin: 0 0 24px; }
-    .cta { display:flex; gap: 12px; flex-wrap: wrap; }
-    .btn {
-      appearance: none; border: 1px solid var(--border); background: var(--card); color: var(--text);
-      padding: 10px 16px; border-radius: 999px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow);
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-    }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(0,0,0,.08); }
-    .btn.primary { background: var(--link); color: #fff; border-color: transparent; }
+    /* Minimap */
+    #minimap{position:absolute;right:12px;bottom:12px;width:220px;height:140px;background:#0e141d;border:1px solid #243245;border-radius:.8rem;box-shadow:var(--shadow);z-index:2}
+    #minimap canvas{display:block;width:100%;height:100%;}
+    #minimap .frame{position:absolute;border:2px dashed rgba(255,255,255,.35);border-radius:.25rem;pointer-events:none}
 
-    /* --- Sections --- */
-    section { padding: 48px 0; }
-    .section-title { font-size: 22px; font-weight: 700; margin: 0 0 16px; letter-spacing: .2px; }
-    .section-desc { color: var(--muted); margin: 0 0 24px; }
+    /* Status bar */
+    .status{position:absolute;left:12px;bottom:12px;background:#0e141d;border:1px solid #243245;border-radius:.6rem;padding:.4rem .6rem;color:#9fb0c6;font:.9rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;box-shadow:var(--shadow)}
 
-    /* Cards */
-    .card { background: color-mix(in oklab, var(--card) 94%, transparent); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; }
+    /* Help Modal */
+    dialog{background:#0f1621;border:1px solid #2a3a51;border-radius:.9rem;color:var(--text);box-shadow:var(--shadow);width:min(800px,90vw)}
+    dialog::backdrop{background:rgba(5,10,16,.6)}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #243245}
+    .modal-body{padding:12px 16px}
+    .modal-body h3{margin:.6rem 0}
+    .modal-body ul{margin:.4rem 0 .8rem 1.2rem}
+    .modal-body code{background:#0c121b;border:1px solid #213044;border-radius:.4rem;padding:.05rem .35rem}
 
-    /* --- Experience Timeline --- */
-    .timeline { position: relative; margin-left: 12px; }
-    .timeline::before { content: ""; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--border); }
-    .job { position: relative; margin: 0 0 22px 0; padding-left: 28px; }
-    .job::before { content: ""; position: absolute; left: 2px; top: 6px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--link); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
-    .job h3 { margin: 0; font-size: 18px; }
-    .job .meta { color: var(--muted); font-size: 14px; margin-top: 4px; }
-    .job ul { margin: 10px 0 0 18px; padding: 0; }
-
-    /* --- Projects Grid --- */
-    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
-    .grid > * { grid-column: span 12; }
-    @media (min-width: 720px) { .grid > * { grid-column: span 6; } }
-    @media (min-width: 1024px) { .grid > * { grid-column: span 4; } }
-
-    .project { display:flex; flex-direction:column; gap:12px; }
-    .thumb { aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background:
-      radial-gradient(1200px 400px at -10% -40%, rgba(41,151,255,.13), transparent),
-      radial-gradient(1200px 400px at 110% -40%, rgba(88,86,214,.13), transparent),
-      linear-gradient(180deg, color-mix(in oklab, var(--bg-elev) 90%, transparent), var(--bg));
-    }
-    .project h4 { margin: 0; font-size: 17px; }
-    .project p { margin: 0; color: var(--muted); }
-    .project .links { margin-top: 6px; display:flex; gap: 10px; }
-    .icon { width: 18px; height: 18px; display:inline-block; vertical-align: middle; }
-
-    /* --- Skills Pills --- */
-    .pills { display:flex; flex-wrap: wrap; gap: 10px; }
-    .pill { border: 1px solid var(--border); background: var(--card); padding: 8px 12px; border-radius: 999px; font-size: 14px; }
-
-    /* --- Footer --- */
-    footer { padding: 28px 0 60px; color: var(--muted); font-size: 14px; }
-
-    /* --- Floating Back‑to‑Top --- */
-    .to-top { position: fixed; right: 18px; bottom: 22px; opacity: 0; transform: translateY(8px); pointer-events: none; transition: all .2s ease; }
-    .to-top.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-
-    /* --- Animations --- */
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px) } to { opacity:1; transform:none } }
-    .reveal { animation: fadeUp .6s ease both; }
-
-    /* --- Print Styles (for PDF) --- */
-    @media print {
-      .nav, .cta, .to-top, .project .links { display: none !important; }
-      body { background: #fff; }
-      .card { box-shadow: none; }
-      a { color: #000; text-decoration: none; }
-    }
+    /* Hidden input */
+    input[type=file]{display:none}
   </style>
 </head>
 <body>
-  <header class="nav">
-    <div class="container nav-inner">
-      <div class="brand">
-        <div class="logo" aria-hidden></div>
-        <span>Your Name</span>
-      </div>
-      <nav aria-label="Primary">
-        <a href="#about">About</a>
-        <a href="#experience">Experience</a>
-        <a href="#projects">Projects</a>
-        <a href="#skills">Skills</a>
-        <a href="#contact">Contact</a>
-        <a href="#" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</a>
-      </nav>
+  <div class="topbar">
+    <div class="brand">Flowchart Builder <span class="muted">· vanilla</span></div>
+    <div class="spacer"></div>
+    <div class="toolbar">
+      <button id="addNodeBtn" class="btn accent" title="Add a node (N)">+ Node<span class="kbd">N</span></button>
+      <button id="connectBtn" title="Connect nodes (C)">Connect<span class="kbd">C</span></button>
+      <button id="selectBtn" aria-pressed="true" title="Move/Select (V)">Select<span class="kbd">V</span></button>
+      <button id="deleteBtn" class="btn warn" title="Delete selected (Del)">Delete<span class="kbd">Del</span></button>
+      <button id="layoutBtn" title="Auto-layout (L)">Auto‑layout<span class="kbd">L</span></button>
+      <label class="switch" title="Snap nodes to grid (G)"><input id="snapToggle" type="checkbox" checked>Snap<span class="kbd">G</span></label>
+      <button id="helpBtn" title="Keyboard & tips (? or /)">Help<span class="kbd">?</span></button>
+      <button id="exportSvgBtn" title="Export vector SVG">Export SVG</button>
+      <button id="exportPngBtn" title="Export image PNG">Export PNG</button>
+      <button id="exportJsonBtn" title="Download project JSON">Export JSON</button>
+      <button id="importJsonBtn" title="Load project JSON">Import JSON</button>
+      <input id="fileInput" type="file" accept="application/json" />
     </div>
-  </header>
+  </div>
 
-  <main class="container">
-    <section id="about" class="hero reveal">
-      <h1 class="title">Your Name</h1>
-      <p class="subtitle">Product‑minded Engineer • Minimalist Designer • Builder. Based in Anywhere, USA.</p>
-      <div class="cta">
-        <a class="btn primary" href="mailto:you@example.com">Email Me</a>
-        <a class="btn" href="#projects">View Projects</a>
-        <button class="btn" onclick="window.print()" title="Print to PDF">Download PDF</button>
-      </div>
-    </section>
+  <div id="stage">
+    <div id="viewport">
+      <svg id="edges"></svg>
+      <div id="nodes"></div>
+    </div>
+    <div id="minimap" title="Mini‑map (click to jump)">
+      <canvas></canvas>
+      <div class="frame"></div>
+    </div>
+    <div class="status" id="status">Ready.</div>
+  </div>
 
-    <section id="experience" class="reveal">
-      <h2 class="section-title">Experience</h2>
-      <p class="section-desc">A quick look at roles where I shipped polished, user‑centric work.</p>
-      <div class="card">
-        <div class="timeline">
-          <article class="job">
-            <h3>Senior Product Engineer · <strong>Company One</strong></h3>
-            <div class="meta">2023 — Present · Remote</div>
-            <ul>
-              <li>Led redesign of checkout, increasing conversion by 14% YoY.</li>
-              <li>Shipped design system components across web/iOS with accessibility built‑in.</li>
-              <li>Mentored 4 engineers; introduced performance budgets and CI quality gates.</li>
-            </ul>
-          </article>
-          <article class="job">
-            <h3>Frontend Engineer · <strong>Studio Two</strong></h3>
-            <div class="meta">2021 — 2023 · New York, NY</div>
-            <ul>
-              <li>Built high‑fidelity marketing pages with Apple‑like motion and typography.</li>
-              <li>Optimized Core Web Vitals; shipped sub‑1s LCP for key pages.</li>
-            </ul>
-          </article>
-          <article class="job">
-            <h3>Design Intern · <strong>Indie Lab</strong></h3>
-            <div class="meta">2020 — 2021 · San Francisco, CA</div>
-            <ul>
-              <li>Prototyped concepts in Figma; delivered interactive demos with vanilla JS.</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="projects" class="reveal">
-      <h2 class="section-title">Projects</h2>
-      <p class="section-desc">Selected work. Clean, purposeful, and performance‑minded.</p>
-      <div class="grid">
-        <article class="card project">
-          <div class="thumb" role="img" aria-label="Project screenshot placeholder"></div>
-          <div>
-            <h4>Project Aurora</h4>
-            <p>3D product explorer with WebGL and buttery scroll‑linked motion.</p>
-            <div class="links">
-              <a href="#" aria-label="Open live demo" title="Live demo">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M10 7h7v7"/></svg>
-              </a>
-              <a href="#" aria-label="Open source on GitHub" title="Source">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.79 23.4c.6.1.82-.26.82-.58v-2.2c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.35-1.77-1.35-1.77-1.1-.76.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.85 2.84 1.31 3.53 1 .11-.8.42-1.32.76-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.25-3.21-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.78.84 1.25 1.9 1.25 3.22 0 4.58-2.8 5.6-5.48 5.9.43.38.81 1.1.81 2.22v3.3c0 .32.22.7.82.58A12 12 0 0012 .5z"/></svg>
-              </a>
-            </div>
-          </div>
-        </article>
-        <article class="card project">
-          <div class="thumb" role="img" aria-label="Project screenshot placeholder"></div>
-          <div>
-            <h4>Minimal Commerce</h4>
-            <p>Headless storefront template with native‑feeling transitions.</p>
-            <div class="links">
-              <a href="#" title="Live demo"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M10 7h7v7"/></svg></a>
-              <a href="#" title="Source"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.79 23.4c.6.1.82-.26.82-.58v-2.2c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.35-1.77-1.35-1.77-1.1-.76.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.85 2.84 1.31 3.53 1 .11-.8.42-1.32.76-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.25-3.21-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.78.84 1.25 1.9 1.25 3.22 0 4.58-2.8 5.6-5.48 5.9.43.38.81 1.1.81 2.22v3.3c0 .32.22.7.82.58A12 12 0 0012 .5z"/></svg></a>
-            </div>
-          </div>
-        </article>
-        <article class="card project">
-          <div class="thumb" role="img" aria-label="Project screenshot placeholder"></div>
-          <div>
-            <h4>Motion Lab</h4>
-            <p>Micro‑interactions library for tasteful, tactile UI feedback.</p>
-            <div class="links">
-              <a href="#" title="Live demo"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M10 7h7v7"/></svg></a>
-              <a href="#" title="Source"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.79 23.4c.6.1.82-.26.82-.58v-2.2c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.35-1.77-1.35-1.77-1.1-.76.08-.74.08-.74 1.22.09 1.86 1.25 1.86 1.25 1.08 1.85 2.84 1.31 3.53 1 .11-.8.42-1.32.76-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.25-3.21-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.78.84 1.25 1.9 1.25 3.22 0 4.58-2.8 5.6-5.48 5.9.43.38.81 1.1.81 2.22v3.3c0 .32.22.7.82.58A12 12 0 0012 .5z"/></svg></a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="skills" class="reveal">
-      <h2 class="section-title">Skills</h2>
-      <p class="section-desc">A compact stack I use daily.</p>
-      <div class="card">
-        <div class="pills">
-          <span class="pill">JavaScript (ES202x)</span>
-          <span class="pill">TypeScript</span>
-          <span class="pill">React</span>
-          <span class="pill">Node</span>
-          <span class="pill">CSS / Motion</span>
-          <span class="pill">Figma</span>
-          <span class="pill">iOS HIG</span>
-          <span class="pill">Web Performance</span>
-          <span class="pill">A11y</span>
-        </div>
-      </div>
-    </section>
-
-    <section id="education" class="reveal">
-      <h2 class="section-title">Education</h2>
-      <div class="card">
-        <p><strong>B.S., Human‑Centered Computing</strong> — Great University (2016–2020)</p>
-        <p class="section-desc">Coursework: UX, Algorithms, Systems, Typography, Product.</p>
-      </div>
-    </section>
-
-    <section id="contact" class="reveal">
-      <h2 class="section-title">Contact</h2>
-      <div class="card">
-        <p>Open to roles and collaborations. The simplest way to reach me is email.</p>
-        <div class="cta">
-          <a class="btn primary" href="mailto:you@example.com">you@example.com</a>
-          <a class="btn" href="tel:+1234567890">+1 (234) 567‑890</a>
-          <button class="btn" id="copyEmail" data-email="you@example.com">Copy email</button>
-          <a class="btn" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="btn" href="https://github.com" target="_blank" rel="noopener">GitHub</a>
-        </div>
-      </div>
-    </section>
-
-    <footer class="container">
-      <footer>
-        <div>© <span id="year"></span> Your Name. Crafted with a light touch—like it should be.</div>
-      </footer>
-    </footer>
-  </main>
-
-  <button class="btn to-top" id="toTop" aria-label="Back to top">⌃</button>
+  <dialog id="helpModal">
+    <div class="modal-head">
+      <strong>Quick Help</strong>
+      <button id="closeHelp" class="small">Close</button>
+    </div>
+    <div class="modal-body">
+      <h3>Basics</h3>
+      <ul>
+        <li><b>Add</b> nodes with <code>N</code>; drag to move. Edit text inline.</li>
+        <li><b>Connect</b> mode (<code>C</code>): drag from a node's right handle to another node's left handle.</li>
+        <li><b>Select</b> mode (<code>V</code>): click a node to select; <code>Del</code> deletes node or selected edge.</li>
+      </ul>
+      <h3>View</h3>
+      <ul>
+        <li><b>Pan</b>: drag empty space. <b>Zoom</b>: mouse wheel; <code>Ctrl/Cmd + 0</code> fits view.</li>
+        <li>Toggle <b>snap to grid</b> (<code>G</code>).</li>
+      </ul>
+      <h3>Advanced</h3>
+      <ul>
+        <li><b>Auto‑layout</b> (<code>L</code>) arranges nodes in a top‑down flow.</li>
+        <li><b>Undo/Redo</b>: <code>Ctrl/Cmd + Z</code> / <code>Ctrl/Cmd + Y</code>.</li>
+        <li><b>Export</b> to <b>SVG</b>, <b>PNG</b>, or <b>JSON</b>. Re‑load with <b>Import JSON</b>.</li>
+      </ul>
+      <p>Tip: Double‑click a node to focus its text. Press <code>Esc</code> to end editing.</p>
+    </div>
+  </dialog>
 
   <script>
-    // Theme toggle with localStorage
-    const root = document.documentElement;
-    const toggle = document.getElementById('themeToggle');
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
-    toggle?.addEventListener('click', (e) => {
-      e.preventDefault();
-      const current = root.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
+    // --- Minimal flowchart editor (no external libs) ---
+    const stage = document.getElementById('stage');
+    const viewport = document.getElementById('viewport');
+    const nodesEl = document.getElementById('nodes');
+    const edgesSvg = document.getElementById('edges');
+    const statusEl = document.getElementById('status');
+
+    const addNodeBtn = document.getElementById('addNodeBtn');
+    const connectBtn = document.getElementById('connectBtn');
+    const selectBtn = document.getElementById('selectBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const layoutBtn = document.getElementById('layoutBtn');
+    const snapToggle = document.getElementById('snapToggle');
+    const helpBtn = document.getElementById('helpBtn');
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const importJsonBtn = document.getElementById('importJsonBtn');
+    const exportSvgBtn = document.getElementById('exportSvgBtn');
+    const exportPngBtn = document.getElementById('exportPngBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    const helpModal = document.getElementById('helpModal');
+    document.getElementById('closeHelp').onclick = () => helpModal.close();
+
+    // state
+    let scale = 1, tx = 200, ty = 120; // initial pan/zoom
+    let mode = 'select'; // 'select' | 'connect'
+    let selected = { nodeId: null, edgeId: null };
+    let connectSource = null; // {nodeId}
+
+    const state = { nodes: [], edges: [] };
+    const history = []; let redoStack = [];
+
+    function uid(prefix='n'){ return prefix + Math.random().toString(36).slice(2,9); }
+
+    function setMode(m){ mode = m; selectBtn.setAttribute('aria-pressed', m==='select'); connectBtn.setAttribute('aria-pressed', m==='connect');
+      info(`Mode: ${m}`); if(m!=='connect') connectSource=null; }
+
+    function applyTransform(){ viewport.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; drawEdges(); drawMinimap(); }
+
+    function worldToScreen(x,y){ return { x: x*scale + tx, y: y*scale + ty }; }
+    function screenToWorld(x,y){ return { x: (x - tx)/scale, y: (y - ty)/scale }; }
+
+    function snap(v){ return snapToggle.checked ? Math.round(v/10)*10 : v; }
+
+    function addNode(pos={x: 0, y: 0}, text='New step'){
+      const id = uid('n');
+      state.nodes.push({ id, x: pos.x, y: pos.y, w: 180, h: 64, text });
+      pushHistory();
+      render();
+      return id;
+    }
+
+    function removeNode(id){
+      const idx = state.nodes.findIndex(n=>n.id===id);
+      if(idx>=0){ state.nodes.splice(idx,1); // remove edges
+        state.edges = state.edges.filter(e=>e.from!==id && e.to!==id);
+        pushHistory();
+        render();
+      }
+    }
+
+    function addEdge(from,to){ if(from===to) return; if(state.edges.some(e=>e.from===from && e.to===to)) return;
+      const id = uid('e'); state.edges.push({id, from, to}); pushHistory(); render(); }
+
+    function removeEdge(id){ state.edges = state.edges.filter(e=>e.id!==id); pushHistory(); render(); }
+
+    function nodeElById(id){ return nodesEl.querySelector(`.node[data-id="${id}"]`); }
+    function nodeById(id){ return state.nodes.find(n=>n.id===id); }
+
+    function render(){
+      // nodes
+      nodesEl.innerHTML = '';
+      state.nodes.forEach(n=>{
+        const el = document.createElement('div');
+        el.className = 'node'; el.dataset.id = n.id; el.style.left = n.x + 'px'; el.style.top = n.y + 'px';
+        el.style.width = n.w + 'px';
+        el.innerHTML = `\n          <div class="handles">\n            <div class="handle in" title="incoming"></div>\n            <div class="handle out" title="outgoing"></div>\n          </div>\n          <div class="label" contenteditable="true"></div>\n          <div class="badge">${n.id.slice(0,4)}</div>`;
+        const label = el.querySelector('.label'); label.textContent = n.text;
+        label.addEventListener('input',()=>{ n.text = label.textContent; throttlePush(); drawEdges(); drawMinimap(); });
+        label.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ label.blur(); el.focus(); } e.stopPropagation(); });
+        // drag node
+        let dragging=false, sx=0, sy=0, ox=0, oy=0;
+        el.addEventListener('pointerdown', (e)=>{
+          if(e.target.classList.contains('label')) return; // text editing won't drag
+          dragging=true; el.setPointerCapture(e.pointerId);
+          const w = screenToWorld(e.clientX, e.clientY); sx=w.x; sy=w.y; ox=n.x; oy=n.y; setSelected(n.id,null);
+        });
+        el.addEventListener('pointermove', (e)=>{
+          if(!dragging) return; const w = screenToWorld(e.clientX, e.clientY);
+          n.x = snap(ox + (w.x - sx)); n.y = snap(oy + (w.y - sy));
+          el.style.left = n.x + 'px'; el.style.top = n.y + 'px';
+          drawEdges(); drawMinimap();
+        });
+        el.addEventListener('pointerup', (e)=>{ if(!dragging) return; dragging=false; el.releasePointerCapture(e.pointerId); pushHistory(); });
+
+        // connect handles
+        const outH = el.querySelector('.handle.out');
+        const inH  = el.querySelector('.handle.in');
+        outH.addEventListener('pointerdown', (e)=>{ if(mode!=='connect') return; connectSource = n.id; info('Pick a target…'); e.stopPropagation(); });
+        inH.addEventListener('pointerdown', (e)=>{ if(mode!=='connect' || !connectSource) return; addEdge(connectSource, n.id); connectSource=null; info('Connected.'); e.stopPropagation(); });
+
+        // focus/select
+        el.addEventListener('pointerdown',()=> setSelected(n.id,null));
+
+        nodesEl.appendChild(el);
+      });
+      // selection styling
+      if(selected.nodeId){ const el = nodeElById(selected.nodeId); if(el){ el.classList.add('selected'); el.scrollIntoView?.({block:'nearest', inline:'nearest'}); } }
+      drawEdges(); drawMinimap();
+    }
+
+    function setSelected(nodeId=null, edgeId=null){ selected = { nodeId, edgeId }; document.querySelectorAll('.node').forEach(n=>n.classList.remove('selected')); if(nodeId){ nodeElById(nodeId)?.classList.add('selected'); }
+      drawEdges(); }
+
+    function drawEdges(){
+      edgesSvg.innerHTML = '<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z"/></marker></defs>';
+      edgesSvg.setAttribute('width', nodesEl.offsetWidth);
+      edgesSvg.setAttribute('height', nodesEl.offsetHeight);
+      state.edges.forEach(e=>{
+        const a = nodeById(e.from); const b = nodeById(e.to); if(!a||!b) return;
+        const ap = worldToScreen(a.x + a.w, a.y + a.h/2); // right center
+        const bp = worldToScreen(b.x, b.y + b.h/2); // left center
+        // transform back to viewport space because <svg> isn't transformed itself visually; but it's inside viewport which is transformed.
+        const ax = a.x + a.w, ay = a.y + a.h/2; const bx = b.x, by = b.y + b.h/2;
+        const dx = Math.max(60, (bx - ax) * .5);
+        const path = `M ${ax} ${ay} C ${ax+dx} ${ay}, ${bx-dx} ${by}, ${bx} ${by}`;
+        const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p.setAttribute('d', path);
+        p.setAttribute('class', 'edge' + (selected.edgeId===e.id?' sel':''));
+        p.setAttribute('marker-end','url(#arrow)');
+        p.addEventListener('pointerdown', (ev)=>{ setSelected(null, e.id); ev.stopPropagation(); });
+        edgesSvg.appendChild(p);
+      });
+      // scale the svg to follow viewport transform by setting a transform attribute on the <svg> content via a <g>
+      // Simpler: set viewBox to world units and let CSS transform scale the whole viewport.
+      const bounds = getContentBounds();
+      edgesSvg.setAttribute('viewBox', `${bounds.minX-200} ${bounds.minY-200} ${Math.max(600,bounds.w+400)} ${Math.max(400,bounds.h+400)}`);
+    }
+
+    // Pan + Zoom
+    let panning=false, panStart={x:0,y:0}, panOrigin={x:0,y:0};
+    stage.addEventListener('pointerdown', (e)=>{
+      const target = e.target; const isOnNode = target.closest?.('.node'); const isOnHandle = target.classList?.contains('handle');
+      if(isOnNode || isOnHandle) return; panning=true; panStart={x:e.clientX,y:e.clientY}; panOrigin={x:tx,y:ty}; stage.setPointerCapture(e.pointerId); setSelected(null,null);
+    });
+    stage.addEventListener('pointermove', (e)=>{ if(!panning) return; tx = panOrigin.x + (e.clientX - panStart.x); ty = panOrigin.y + (e.clientY - panStart.y); applyTransform(); });
+    stage.addEventListener('pointerup', (e)=>{ if(!panning) return; panning=false; stage.releasePointerCapture(e.pointerId); });
+
+    stage.addEventListener('wheel', (e)=>{
+      if(!e.ctrlKey) e.preventDefault();
+      const delta = e.deltaY < 0 ? 1.1 : 0.9; const mx=e.clientX,my=e.clientY;
+      const before = screenToWorld(mx,my);
+      scale = Math.min(2.5, Math.max(0.25, scale * delta));
+      const after = screenToWorld(mx,my);
+      tx += (mx - (after.x*scale + tx));
+      ty += (my - (after.y*scale + ty));
+      applyTransform();
+    }, {passive:false});
+
+    // Keyboard
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='n' || e.key==='N'){ addNode(centerWorld(), 'Step'); }
+      else if(e.key==='c' || e.key==='C'){ setMode('connect'); }
+      else if(e.key==='v' || e.key==='V'){ setMode('select'); }
+      else if(e.key==='Delete'){ if(selected.nodeId) removeNode(selected.nodeId); else if(selected.edgeId) removeEdge(selected.edgeId); }
+      else if(e.key==='g' || e.key==='G'){ snapToggle.checked=!snapToggle.checked; info('Snap: '+(snapToggle.checked?'on':'off')); }
+      else if(e.key==='l' || e.key==='L'){ autoLayout(); }
+      else if((e.ctrlKey||e.metaKey) && e.key==='z'){ undo(); e.preventDefault(); }
+      else if((e.ctrlKey||e.metaKey) && (e.key==='y' || (e.shiftKey && e.key==='Z'))){ redo(); e.preventDefault(); }
+      else if((e.ctrlKey||e.metaKey) && e.key==='0'){ fitView(); e.preventDefault(); }
+      else if(e.key==='?' || e.key==='/'){ helpModal.open ? helpModal.close() : helpModal.showModal(); }
     });
 
-    // Back‑to‑top visibility
-    const toTop = document.getElementById('toTop');
-    const onScroll = () => {
-      if (window.scrollY > 600) toTop.classList.add('show'); else toTop.classList.remove('show');
+    // Buttons
+    addNodeBtn.onclick = ()=> addNode(centerWorld(), 'Step');
+    connectBtn.onclick = ()=> setMode('connect');
+    selectBtn.onclick = ()=> setMode('select');
+    deleteBtn.onclick = ()=> { if(selected.nodeId) removeNode(selected.nodeId); else if(selected.edgeId) removeEdge(selected.edgeId); };
+    layoutBtn.onclick = ()=> autoLayout();
+    helpBtn.onclick = ()=> helpModal.showModal();
+
+    exportJsonBtn.onclick = ()=> download('flowchart.json', JSON.stringify({version:1, nodes:state.nodes, edges:state.edges}, null, 2));
+    importJsonBtn.onclick = ()=> fileInput.click();
+    fileInput.onchange = async (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      const text = await file.text();
+      try{ const data = JSON.parse(text); if(!data.nodes||!data.edges) throw new Error('Invalid');
+        state.nodes = data.nodes; state.edges = data.edges; pushHistory(); render(); info('Project loaded.');
+      }catch(err){ alert('Could not load JSON: '+err.message); }
+      fileInput.value='';
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // Copy email
-    const copyBtn = document.getElementById('copyEmail');
-    copyBtn?.addEventListener('click', async () => {
-      const email = copyBtn.dataset.email;
-      try { await navigator.clipboard.writeText(email); copyBtn.textContent = 'Copied!'; setTimeout(() => copyBtn.textContent = 'Copy email', 1600); } catch {}
+    exportSvgBtn.onclick = ()=> download('flowchart.svg', buildSVG());
+    exportPngBtn.onclick = ()=> exportPNG();
+
+    // Helpers
+    function centerWorld(){ const rect = stage.getBoundingClientRect(); const center = screenToWorld(rect.width/2, rect.height/2); return {x:snap(center.x-90), y:snap(center.y-30)}; }
+
+    function info(msg){ statusEl.textContent = msg; clearTimeout(info._t); info._t = setTimeout(()=>{ statusEl.textContent='Ready.'; }, 1800); }
+
+    function pushHistory(){ history.push(JSON.stringify(state)); if(history.length>200) history.shift(); redoStack=[]; }
+    const throttlePush = throttle(()=>pushHistory(), 600);
+    function undo(){ if(history.length<2) return; redoStack.push(history.pop()); const prev = history[history.length-1]; const s = JSON.parse(prev); state.nodes=s.nodes; state.edges=s.edges; render(); info('Undo'); }
+    function redo(){ if(!redoStack.length) return; const next = redoStack.pop(); history.push(next); const s = JSON.parse(next); state.nodes=s.nodes; state.edges=s.edges; render(); info('Redo'); }
+    function throttle(fn, wait){ let t=0; return (...args)=>{ const now=Date.now(); if(now-t>wait){ t=now; fn(...args); } } }
+
+    function getContentBounds(){
+      if(state.nodes.length===0) return {minX:0,minY:0,maxX:600,maxY:400,w:600,h:400};
+      let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+      state.nodes.forEach(n=>{ minX=Math.min(minX,n.x); minY=Math.min(minY,n.y); maxX=Math.max(maxX,n.x+n.w); maxY=Math.max(maxY,n.y+n.h); });
+      return {minX, minY, maxX, maxY, w:maxX-minX, h:maxY-minY};
+    }
+
+    function autoLayout(){
+      // simple DAG-ish layered layout
+      const nodes = state.nodes;
+      const incoming = new Map(nodes.map(n=>[n.id,0]));
+      state.edges.forEach(e=> incoming.set(e.to, (incoming.get(e.to)||0)+1));
+      const roots = nodes.filter(n=> (incoming.get(n.id)||0)===0);
+      const layers=[]; const visited = new Set(); const queue=[...roots]; if(queue.length===0 && nodes[0]) queue.push(nodes[0]);
+      while(queue.length){ const layerSize=queue.length; const layer=[]; for(let i=0;i<layerSize;i++){ const n = queue.shift(); if(visited.has(n.id)) continue; visited.add(n.id); layer.push(n);
+        state.edges.filter(e=>e.from===n.id).forEach(e=>{ const t = nodeById(e.to); if(t && !visited.has(t.id)) queue.push(t); });
+      } if(layer.length) layers.push(layer); }
+      // if some nodes disconnected, add them
+      nodes.forEach(n=>{ if(!visited.has(n.id)) { layers.push([n]); visited.add(n.id);} });
+
+      const gapX=240,gapY=120; const bounds = getContentBounds(); let y = snap(bounds.minY);
+      layers.forEach((layer, li)=>{
+        let x = snap(bounds.minX + li*gapX);
+        layer.forEach((n, ni)=>{ n.x = x; n.y = snap(bounds.minY + ni*gapY); });
+      });
+      pushHistory(); render(); info('Auto‑layout applied');
+    }
+
+    // Build SVG string representing current graph
+    function buildSVG(){
+      const pad=40; const b = getContentBounds(); const W = Math.max(400, b.w+pad*2), H=Math.max(300,b.h+pad*2);
+      const ox = b.minX - pad, oy = b.minY - pad;
+      const esc = (s)=> String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      function pathFor(e){ const a=nodeById(e.from), b=nodeById(e.to); if(!a||!b) return '';
+        const ax=a.x+a.w, ay=a.y+a.h/2, bx=b.x, by=b.y+b.h/2; const dx=Math.max(60,(bx-ax)*.5);
+        return `M ${ax-ox} ${ay-oy} C ${ax-ox+dx} ${ay-oy}, ${bx-ox-dx} ${by-oy}, ${bx-ox} ${by-oy}`; }
+      const edges = state.edges.map(e=>`<path d="${pathFor(e)}" stroke="#87b7ff" stroke-width="2" fill="none" marker-end="url(#arr)"/>`).join('');
+      const nodes = state.nodes.map(n=>{
+        return `<g transform="translate(${n.x-ox},${n.y-oy})">\n          <rect rx="12" ry="12" width="${n.w}" height="${n.h}" fill="#152436" stroke="#29405b" />\n          <text x="12" y="24" font-family="ui-sans-serif,system-ui,Segoe UI,Roboto" font-size="14" fill="#e6edf3">${esc(n.text)}</text>\n        </g>`;
+      }).join('');
+      const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">\n  <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#87b7ff"/></marker></defs>\n  <g>\n    <rect x="0" y="0" width="${W}" height="${H}" fill="#0d141d"/>\n    <g transform="translate(${pad - (b.minX-ox)} ${pad - (b.minY-oy)})"></g>\n    ${edges}\n    ${nodes}\n  </g>\n</svg>`;
+      return svg;
+    }
+
+    async function exportPNG(){
+      const svg = buildSVG();
+      const img = new Image();
+      const svgBlob = new Blob([svg], {type:'image/svg+xml'});
+      const url = URL.createObjectURL(svgBlob);
+      await new Promise(res=>{ img.onload=res; img.src=url; });
+      const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight; const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0); URL.revokeObjectURL(url);
+      canvas.toBlob((blob)=>{ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'flowchart.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000); });
+    }
+
+    function download(name, text){ const a=document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type: name.endsWith('.json')?'application/json':'image/svg+xml'})); a.download = name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000); }
+
+    // Minimap
+    const minimap = document.querySelector('#minimap');
+    const mmCanvas = minimap.querySelector('canvas');
+    const mmFrame = minimap.querySelector('.frame');
+    const mmCtx = mmCanvas.getContext('2d');
+
+    function drawMinimap(){
+      const b = getContentBounds();
+      const W = minimap.clientWidth, H = minimap.clientHeight; mmCanvas.width=W; mmCanvas.height=H;
+      const sx = W / Math.max(b.w||1, 400); const sy = H / Math.max(b.h||1, 300); const s = Math.min(sx, sy);
+      const ox = b.minX, oy = b.minY;
+      // background
+      mmCtx.fillStyle = '#0a1018'; mmCtx.fillRect(0,0,W,H);
+      // edges
+      mmCtx.strokeStyle = '#4f7ab2'; mmCtx.lineWidth = 1;
+      state.edges.forEach(e=>{ const a=nodeById(e.from), b=nodeById(e.to); if(!a||!b) return; const ax=(a.x+a.w-ox)*s, ay=(a.y+a.h/2-oy)*s, bx=(b.x-ox)*s, by=(b.y+b.h/2-oy)*s; mmCtx.beginPath(); mmCtx.moveTo(ax,ay); mmCtx.lineTo(bx,by); mmCtx.stroke(); });
+      // nodes
+      state.nodes.forEach(n=>{ mmCtx.fillStyle='#1e2a3a'; mmCtx.strokeStyle='#33506f'; mmCtx.lineWidth=1; mmCtx.fillRect((n.x-ox)*s, (n.y-oy)*s, n.w*s, n.h*s); mmCtx.strokeRect((n.x-ox)*s, (n.y-oy)*s, n.w*s, n.h*s); });
+      // viewport frame
+      const tl = screenToWorld(0,0); const br = screenToWorld(stage.clientWidth, stage.clientHeight);
+      const fx = (tl.x-ox)*s, fy=(tl.y-oy)*s, fw=(br.x-tl.x)*s, fh=(br.y-tl.y)*s; mmFrame.style.left=fx+'px'; mmFrame.style.top=fy+'px'; mmFrame.style.width=fw+'px'; mmFrame.style.height=fh+'px';
+    }
+
+    minimap.addEventListener('pointerdown', (e)=>{
+      const rect = minimap.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+      const b = getContentBounds(); const sx = minimap.clientWidth / Math.max(b.w||1,400); const sy = minimap.clientHeight / Math.max(b.h||1,300); const s = Math.min(sx,sy);
+      const wx = b.minX + x / s; const wy = b.minY + y / s; // world coords
+      // center that world point in the viewport
+      const sp = worldToScreen(wx,wy); const cx = stage.clientWidth/2, cy = stage.clientHeight/2;
+      tx += (cx - sp.x); ty += (cy - sp.y); applyTransform();
     });
 
-    // Year
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+    // Initialize with a tiny demo graph
+    function seed(){
+      state.nodes = [];
+      const a = addNode({x:0,y:0}, 'Start');
+      const b = addNode({x:0,y:140}, 'Process something');
+      const c = addNode({x:0,y:280}, 'Decision?');
+      const d = addNode({x:260,y:280}, 'Do thing A');
+      const e = addNode({x:-260,y:280}, 'Do thing B');
+      addEdge(a,b); addEdge(b,c); addEdge(c,d); addEdge(c,e);
+      pushHistory();
+      fitView();
+    }
 
-  <!-- SEO: Person schema (fill with your details) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Your Name",
-    "jobTitle": "Product Engineer",
-    "email": "mailto:you@example.com",
-    "telephone": "+1-234-567-890",
-    "url": "https://yourdomain.com",
-    "sameAs": [
-      "https://www.linkedin.com/in/yourprofile",
-      "https://github.com/yourhandle"
-    ]
-  }
+    function fitView(){
+      const b = getContentBounds(); const pad=100; const vw = stage.clientWidth - pad*2, vh = stage.clientHeight - pad*2; const sx = vw / Math.max(200,b.w), sy = vh / Math.max(150,b.h); scale = Math.max(.35, Math.min(1.8, Math.min(sx,sy)));
+      tx = pad - b.minX*scale; ty = 48 + pad - b.minY*scale; applyTransform();
+    }
+
+    // Start
+    seed(); render(); applyTransform();
   </script>
 </body>
 </html>
