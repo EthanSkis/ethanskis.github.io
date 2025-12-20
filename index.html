@@ -1,139 +1,363 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Animated Dots Wallpaper</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Earnings Tracker</title>
   <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background-color: #1c1c1c;
-      overflow: hidden;
+    :root{
+      --bg0:#07070a;
+      --bg1:#0d0d13;
+      --card:#0f0f18cc;
+      --gold:#d6b35a;
+      --gold2:#f3de9a;
+      --muted:#b9b9c6;
+      --text:#f2f2f6;
+      --ring: rgba(214,179,90,.35);
+      --shadow: 0 30px 80px rgba(0,0,0,.55);
     }
 
-    canvas {
-      display: block;
-      background-color: #1c1c1c;
-      cursor: none;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(214,179,90,.10), transparent 55%),
+        radial-gradient(900px 700px at 80% 90%, rgba(214,179,90,.08), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .frame{
+      width:min(920px, 100%);
+      padding:40px 34px;
+      border-radius:22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(214,179,90,.22);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .frame:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: linear-gradient(135deg, rgba(214,179,90,.18), transparent 35%, rgba(214,179,90,.10));
+      filter: blur(18px);
+      opacity:.55;
+      pointer-events:none;
+    }
+
+    .inner{
+      position:relative;
+      z-index:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      gap:18px;
+    }
+
+    .title{
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:3px;
+      color:rgba(243,222,154,.85);
+    }
+
+    .big{
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(52px, 8vw, 88px);
+      line-height:1;
+      margin:6px 0 0;
+      padding:18px 22px;
+      border-radius:18px;
+      background: rgba(15,15,24,.55);
+      border: 1px solid rgba(214,179,90,.28);
+      box-shadow: 0 0 0 6px rgba(214,179,90,.06);
+      min-width:min(720px, 100%);
+    }
+
+    .big .currency{
+      color:var(--gold2);
+      text-shadow: 0 0 18px rgba(214,179,90,.25);
+    }
+
+    .sub{
+      font-variant-numeric: tabular-nums;
+      color:var(--muted);
+      font-size: clamp(18px, 2.6vw, 22px);
+      margin-top:-6px;
+    }
+
+    .sub strong{
+      color:var(--gold);
+      font-weight:700;
+    }
+
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+      margin-top:10px;
+    }
+
+    .pill{
+      font-size:13px;
+      color:rgba(242,242,246,.92);
+      background: rgba(15,15,24,.50);
+      border: 1px solid rgba(214,179,90,.18);
+      padding:10px 12px;
+      border-radius:999px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .dot{
+      width:8px; height:8px; border-radius:50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 6px rgba(214,179,90,.12);
+    }
+
+    .btns{
+      margin-top:16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+    }
+
+    button{
+      border: 1px solid rgba(214,179,90,.30);
+      background: rgba(214,179,90,.10);
+      color: var(--text);
+      padding:10px 14px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:600;
+      letter-spacing:.2px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover{
+      background: rgba(214,179,90,.16);
+      border-color: rgba(214,179,90,.45);
+    }
+    button:active{ transform: translateY(1px); }
+    button.secondary{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.12);
+    }
+
+    input{
+      width: 140px;
+      border-radius: 12px;
+      border: 1px solid rgba(214,179,90,.22);
+      background: rgba(15,15,24,.55);
+      color: var(--text);
+      padding:10px 12px;
+      outline:none;
+    }
+    input:focus{
+      box-shadow: 0 0 0 5px var(--ring);
+      border-color: rgba(214,179,90,.45);
+    }
+
+    .smallnote{
+      margin-top:4px;
+      font-size:12px;
+      color: rgba(185,185,198,.75);
     }
   </style>
 </head>
 <body>
-  <canvas id="dotsCanvas"></canvas>
+  <main class="frame">
+    <div class="inner">
+      <div class="title">Live Earnings</div>
+
+      <div class="big" aria-live="polite">
+        <span class="currency" id="total">$0.00</span>
+      </div>
+
+      <div class="sub">
+        Tips (est.): <strong id="tips">$0.00</strong>
+      </div>
+
+      <div class="row" role="list">
+        <div class="pill" role="listitem"><span class="dot"></span> Wage: <span id="wageRate">$14.00</span>/hr</div>
+        <div class="pill" role="listitem"><span class="dot"></span> Tips: <span id="tipRate">$2.75</span>/hr</div>
+        <div class="pill" role="listitem"><span class="dot"></span> Started: <span id="startedAt">Not set</span></div>
+      </div>
+
+      <div class="btns">
+        <button id="startNow">Start now</button>
+        <button class="secondary" id="pause">Pause</button>
+        <button class="secondary" id="reset">Reset</button>
+        <span style="display:flex;gap:8px;align-items:center;">
+          <input id="startTime" type="time" step="1" />
+          <button class="secondary" id="setTime">Set start time</button>
+        </span>
+      </div>
+
+      <div class="smallnote">
+        Updates every 0.1¢ (one tenth of a cent).
+      </div>
+    </div>
+  </main>
 
   <script>
-    const canvas = document.getElementById('dotsCanvas');
-    const ctx = canvas.getContext('2d');
+    // Rates
+    const WAGE_PER_HOUR = 14.00;
+    const TIPS_PER_HOUR = 2.75;
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    // Update to the 10th of a cent => $0.001 precision
+    const PRECISION = 0.001;
 
-    const dots = [];
-    const numDots = 125;
-    const mouse = { x: null, y: null, radius: 150 };
+    // Per-millisecond earning rates
+    const wagePerMs = WAGE_PER_HOUR / 3600000;
+    const tipsPerMs = TIPS_PER_HOUR / 3600000;
 
-    class Dot {
-      constructor() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = (Math.random() - 0.5) * 0.8;
-        this.radius = Math.random() * 2 + 1;
-      }
+    // Figure out how often to tick so the total changes by ~0.001 each tick.
+    // totalRate = (wage+tips) per ms. intervalMs = PRECISION / totalRate.
+    const totalPerMs = wagePerMs + tipsPerMs;
+    const intervalMs = Math.max(16, Math.round(PRECISION / totalPerMs)); // clamp to ~60fps
 
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
+    const $total = document.getElementById("total");
+    const $tips  = document.getElementById("tips");
+    const $startedAt = document.getElementById("startedAt");
 
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
+    document.getElementById("wageRate").textContent = WAGE_PER_HOUR.toFixed(2);
+    document.getElementById("tipRate").textContent  = TIPS_PER_HOUR.toFixed(2);
 
-        const dx = this.x - mouse.x;
-        const dy = this.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < mouse.radius && mouse.x && mouse.y) {
-          const angle = Math.atan2(dy, dx);
-          const force = (mouse.radius - dist) / mouse.radius;
-          const moveX = Math.cos(angle) * force * 2;
-          const moveY = Math.sin(angle) * force * 2;
-          this.x += moveX;
-          this.y += moveY;
+    let startEpochMs = null;
+    let paused = true;
+    let pauseAccumulatedMs = 0; // total time spent paused (to subtract out)
+    let pausedAtMs = null;
+    let timer = null;
+
+    function formatMoney(x) {
+      // x already quantized to 0.001 but we *display* cents
+      return "$" + x.toFixed(2);
+    }
+
+    function quantize(x) {
+      return Math.round(x / PRECISION) * PRECISION;
+    }
+
+    function setStartedLabel(date) {
+      $startedAt.textContent = date.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+    }
+
+    function effectiveElapsedMs(nowMs) {
+      if (startEpochMs == null) return 0;
+      const base = nowMs - startEpochMs - pauseAccumulatedMs;
+      return Math.max(0, base);
+    }
+
+    function render() {
+      const now = Date.now();
+
+      // if currently paused, don't advance elapsed time
+      const elapsedMs = paused ? effectiveElapsedMs(pausedAtMs ?? now) : effectiveElapsedMs(now);
+
+      const wage = elapsedMs * wagePerMs;
+      const tips = elapsedMs * tipsPerMs;
+      const total = wage + tips;
+
+      const tipsQ  = quantize(tips);
+      const totalQ = quantize(total);
+
+      $tips.textContent  = formatMoney(tipsQ).replace("$", "$");
+      $total.textContent = formatMoney(totalQ);
+    }
+
+    function startLoop() {
+      if (timer) clearInterval(timer);
+      timer = setInterval(render, intervalMs);
+      render();
+    }
+
+    function startNow() {
+      startEpochMs = Date.now();
+      pauseAccumulatedMs = 0;
+      pausedAtMs = null;
+      paused = false;
+      setStartedLabel(new Date(startEpochMs));
+      startLoop();
+    }
+
+    function pauseToggle() {
+      if (startEpochMs == null) return;
+
+      paused = !paused;
+      const btn = document.getElementById("pause");
+
+      if (paused) {
+        pausedAtMs = Date.now();
+        btn.textContent = "Resume";
+        render();
+      } else {
+        // add paused duration
+        const now = Date.now();
+        if (pausedAtMs != null) {
+          pauseAccumulatedMs += (now - pausedAtMs);
         }
-      }
-
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#aaa';
-        ctx.fill();
+        pausedAtMs = null;
+        btn.textContent = "Pause";
       }
     }
 
-    for (let i = 0; i < numDots; i++) {
-      dots.push(new Dot());
+    function resetAll() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      startEpochMs = null;
+      pauseAccumulatedMs = 0;
+      pausedAtMs = null;
+      paused = true;
+      document.getElementById("pause").textContent = "Pause";
+      $startedAt.textContent = "Not set";
+      $total.textContent = "$0.00";
+      $tips.textContent = "$0.00";
     }
 
-    function connectDots() {
-      for (let i = 0; i < numDots; i++) {
-        for (let j = i + 1; j < numDots; j++) {
-          const dx = dots[i].x - dots[j].x;
-          const dy = dots[i].y - dots[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(150,150,150,${1 - dist / 120})`;
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(dots[i].x, dots[i].y);
-            ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.stroke();
-          }
-        }
+    function setStartTimeFromInput() {
+      const input = document.getElementById("startTime").value;
+      if (!input) return;
+
+      const [hh, mm, ss = "0"] = input.split(":");
+      const now = new Date();
+      const start = new Date(now);
+      start.setHours(parseInt(hh, 10), parseInt(mm, 10), parseInt(ss, 10), 0);
+
+      // If the time is in the future today, assume they meant that time yesterday
+      if (start.getTime() > now.getTime()) {
+        start.setDate(start.getDate() - 1);
       }
 
-      if (mouse.x && mouse.y) {
-        for (let i = 0; i < numDots; i++) {
-          const dx = dots[i].x - mouse.x;
-          const dy = dots[i].y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 180) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(200,200,200,${1 - dist / 180})`;
-            ctx.lineWidth = 0.6;
-            ctx.moveTo(dots[i].x, dots[i].y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.stroke();
-          }
-        }
-      }
+      startEpochMs = start.getTime();
+      pauseAccumulatedMs = 0;
+      pausedAtMs = null;
+      paused = false;
+      document.getElementById("pause").textContent = "Pause";
+      setStartedLabel(start);
+      startLoop();
     }
 
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      for (const dot of dots) {
-        dot.update();
-        dot.draw();
-      }
-      connectDots();
-      requestAnimationFrame(animate);
-    }
+    // Wire up buttons
+    document.getElementById("startNow").addEventListener("click", startNow);
+    document.getElementById("pause").addEventListener("click", pauseToggle);
+    document.getElementById("reset").addEventListener("click", resetAll);
+    document.getElementById("setTime").addEventListener("click", setStartTimeFromInput);
 
-    animate();
-
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    window.addEventListener('mousemove', e => {
-      mouse.x = e.x;
-      mouse.y = e.y;
-    });
-
-    window.addEventListener('mouseout', () => {
-      mouse.x = null;
-      mouse.y = null;
-    });
+    // Initial paint
+    render();
   </script>
 </body>
 </html>
