@@ -1,363 +1,317 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Earnings Tracker</title>
-  <style>
-    :root{
-      --bg0:#07070a;
-      --bg1:#0d0d13;
-      --card:#0f0f18cc;
-      --gold:#d6b35a;
-      --gold2:#f3de9a;
-      --muted:#b9b9c6;
-      --text:#f2f2f6;
-      --ring: rgba(214,179,90,.35);
-      --shadow: 0 30px 80px rgba(0,0,0,.55);
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Earnings</title>
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(214,179,90,.10), transparent 55%),
-        radial-gradient(900px 700px at 80% 90%, rgba(214,179,90,.08), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      letter-spacing:.2px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
+<style>
+:root{
+  --bg0:#07070a;
+  --bg1:#0d0d13;
+  --gold:#d6b35a;
+  --gold2:#f3de9a;
+  --text:#f2f2f6;
+  --muted:#b9b9c6;
+  --shadow:0 30px 80px rgba(0,0,0,.55);
+}
 
-    .frame{
-      width:min(920px, 100%);
-      padding:40px 34px;
-      border-radius:22px;
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(214,179,90,.22);
-      position:relative;
-      overflow:hidden;
-    }
+*{box-sizing:border-box}
+html,body{height:100%}
 
-    .frame:before{
-      content:"";
-      position:absolute; inset:-2px;
-      background: linear-gradient(135deg, rgba(214,179,90,.18), transparent 35%, rgba(214,179,90,.10));
-      filter: blur(18px);
-      opacity:.55;
-      pointer-events:none;
-    }
+body{
+  margin:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(1000px 600px at 20% 10%, rgba(214,179,90,.12), transparent 55%),
+    radial-gradient(900px 700px at 80% 90%, rgba(214,179,90,.08), transparent 60%),
+    linear-gradient(180deg,var(--bg0),var(--bg1));
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+}
 
-    .inner{
-      position:relative;
-      z-index:1;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      text-align:center;
-      gap:18px;
-    }
+.container{
+  width:min(900px,100%);
+  padding:42px 36px;
+  border-radius:22px;
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+  border:1px solid rgba(214,179,90,.25);
+  box-shadow:var(--shadow);
+  text-align:center;
+}
 
-    .title{
-      font-size:14px;
-      text-transform:uppercase;
-      letter-spacing:3px;
-      color:rgba(243,222,154,.85);
-    }
+.title{
+  text-transform:uppercase;
+  letter-spacing:3px;
+  font-size:14px;
+  color:var(--gold2);
+  margin-bottom:18px;
+}
 
-    .big{
-      font-variant-numeric: tabular-nums;
-      font-size: clamp(52px, 8vw, 88px);
-      line-height:1;
-      margin:6px 0 0;
-      padding:18px 22px;
-      border-radius:18px;
-      background: rgba(15,15,24,.55);
-      border: 1px solid rgba(214,179,90,.28);
-      box-shadow: 0 0 0 6px rgba(214,179,90,.06);
-      min-width:min(720px, 100%);
-    }
+.toggle{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:18px;
+}
 
-    .big .currency{
-      color:var(--gold2);
-      text-shadow: 0 0 18px rgba(214,179,90,.25);
-    }
+.toggle button{
+  padding:10px 18px;
+  border-radius:999px;
+  border:1px solid rgba(214,179,90,.35);
+  background:rgba(214,179,90,.12);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:600;
+}
 
-    .sub{
-      font-variant-numeric: tabular-nums;
-      color:var(--muted);
-      font-size: clamp(18px, 2.6vw, 22px);
-      margin-top:-6px;
-    }
+.toggle button.inactive{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.15);
+  color:var(--muted);
+}
 
-    .sub strong{
-      color:var(--gold);
-      font-weight:700;
-    }
+.display{
+  font-variant-numeric:tabular-nums;
+  font-size:clamp(54px,8vw,92px);
+  padding:22px 26px;
+  border-radius:20px;
+  background:rgba(15,15,24,.55);
+  border:1px solid rgba(214,179,90,.3);
+  box-shadow:0 0 0 6px rgba(214,179,90,.06);
+  margin-bottom:24px;
+}
 
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:center;
-      margin-top:10px;
-    }
+.money-frac{
+  font-size:.25em;
+  opacity:.85;
+  margin-left:2px;
+}
 
-    .pill{
-      font-size:13px;
-      color:rgba(242,242,246,.92);
-      background: rgba(15,15,24,.50);
-      border: 1px solid rgba(214,179,90,.18);
-      padding:10px 12px;
-      border-radius:999px;
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+.stats{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
 
-    .dot{
-      width:8px; height:8px; border-radius:50%;
-      background: var(--gold);
-      box-shadow: 0 0 0 6px rgba(214,179,90,.12);
-    }
+.stat{
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(15,15,24,.5);
+  border:1px solid rgba(214,179,90,.2);
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
 
-    .btns{
-      margin-top:16px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:center;
-    }
+.stat input{
+  width:90px;
+  border-radius:10px;
+  border:1px solid rgba(214,179,90,.35);
+  background:rgba(214,179,90,.12);
+  color:var(--text);
+  padding:6px 8px;
+  font-weight:600;
+}
 
-    button{
-      border: 1px solid rgba(214,179,90,.30);
-      background: rgba(214,179,90,.10);
-      color: var(--text);
-      padding:10px 14px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-weight:600;
-      letter-spacing:.2px;
-      transition: transform .08s ease, background .2s ease, border-color .2s ease;
-    }
-    button:hover{
-      background: rgba(214,179,90,.16);
-      border-color: rgba(214,179,90,.45);
-    }
-    button:active{ transform: translateY(1px); }
-    button.secondary{
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.12);
-    }
+.controls{
+  margin-top:24px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
 
-    input{
-      width: 140px;
-      border-radius: 12px;
-      border: 1px solid rgba(214,179,90,.22);
-      background: rgba(15,15,24,.55);
-      color: var(--text);
-      padding:10px 12px;
-      outline:none;
-    }
-    input:focus{
-      box-shadow: 0 0 0 5px var(--ring);
-      border-color: rgba(214,179,90,.45);
-    }
+.controls button,
+.controls input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid rgba(214,179,90,.35);
+  background:rgba(214,179,90,.12);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:600;
+}
 
-    .smallnote{
-      margin-top:4px;
-      font-size:12px;
-      color: rgba(185,185,198,.75);
-    }
-  </style>
+.controls button.secondary{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.15);
+}
+
+.controls input{
+  background:rgba(15,15,24,.55);
+}
+
+.note{
+  margin-top:10px;
+  font-size:12px;
+  color:rgba(185,185,198,.75);
+}
+</style>
 </head>
+
 <body>
-  <main class="frame">
-    <div class="inner">
-      <div class="title">Live Earnings</div>
 
-      <div class="big" aria-live="polite">
-        <span class="currency" id="total">$0.00</span>
-      </div>
+<div class="container">
+  <div class="title">Live Earnings</div>
 
-      <div class="sub">
-        Tips (est.): <strong id="tips">$0.00</strong>
-      </div>
+  <div class="toggle">
+    <button data-view="total">Total</button>
+    <button data-view="wage" class="inactive">Wage</button>
+    <button data-view="tips" class="inactive">Tips</button>
+  </div>
 
-      <div class="row" role="list">
-        <div class="pill" role="listitem"><span class="dot"></span> Wage: <span id="wageRate">$14.00</span>/hr</div>
-        <div class="pill" role="listitem"><span class="dot"></span> Tips: <span id="tipRate">$2.75</span>/hr</div>
-        <div class="pill" role="listitem"><span class="dot"></span> Started: <span id="startedAt">Not set</span></div>
-      </div>
+  <div class="display" id="bigDisplay">$0.000</div>
 
-      <div class="btns">
-        <button id="startNow">Start now</button>
-        <button class="secondary" id="pause">Pause</button>
-        <button class="secondary" id="reset">Reset</button>
-        <span style="display:flex;gap:8px;align-items:center;">
-          <input id="startTime" type="time" step="1" />
-          <button class="secondary" id="setTime">Set start time</button>
-        </span>
-      </div>
-
-      <div class="smallnote">
-        Updates every 0.1¢ (one tenth of a cent).
-      </div>
+  <div class="stats">
+    <div class="stat">
+      Wage $
+      <input type="number" id="wageInput" step="0.25" value="14.00">
+      /hr
     </div>
-  </main>
+    <div class="stat">
+      Tips $
+      <input type="number" id="tipsInput" step="0.25" value="2.75">
+      /hr
+    </div>
+  </div>
 
-  <script>
-    // Rates
-    const WAGE_PER_HOUR = 14.00;
-    const TIPS_PER_HOUR = 2.75;
+  <div class="controls">
+    <button id="start">Start now</button>
+    <button id="pause" class="secondary">Pause</button>
+    <button id="reset" class="secondary">Reset</button>
+    <input type="time" id="startTime" step="1">
+    <button id="setTime" class="secondary">Set start time</button>
+  </div>
 
-    // Update to the 10th of a cent => $0.001 precision
-    const PRECISION = 0.001;
+  <div class="note">Updates internally every 0.1¢</div>
+</div>
 
-    // Per-millisecond earning rates
-    const wagePerMs = WAGE_PER_HOUR / 3600000;
-    const tipsPerMs = TIPS_PER_HOUR / 3600000;
+<script>
+const PRECISION = 0.001;
 
-    // Figure out how often to tick so the total changes by ~0.001 each tick.
-    // totalRate = (wage+tips) per ms. intervalMs = PRECISION / totalRate.
-    const totalPerMs = wagePerMs + tipsPerMs;
-    const intervalMs = Math.max(16, Math.round(PRECISION / totalPerMs)); // clamp to ~60fps
+let wageRate = 14;
+let tipRate = 2.75;
 
-    const $total = document.getElementById("total");
-    const $tips  = document.getElementById("tips");
-    const $startedAt = document.getElementById("startedAt");
+let startTime = null;
+let paused = true;
+let pausedAt = 0;
+let pausedTotal = 0;
+let view = "total";
 
-    document.getElementById("wageRate").textContent = WAGE_PER_HOUR.toFixed(2);
-    document.getElementById("tipRate").textContent  = TIPS_PER_HOUR.toFixed(2);
+const bigDisplay = document.getElementById("bigDisplay");
+const wageInput = document.getElementById("wageInput");
+const tipsInput = document.getElementById("tipsInput");
 
-    let startEpochMs = null;
-    let paused = true;
-    let pauseAccumulatedMs = 0; // total time spent paused (to subtract out)
-    let pausedAtMs = null;
-    let timer = null;
+function quantize(v){
+  return Math.round(v / PRECISION) * PRECISION;
+}
 
-    function formatMoney(x) {
-      // x already quantized to 0.001 but we *display* cents
-      return "$" + x.toFixed(2);
-    }
+function formatMoney(v){
+  const s = v.toFixed(3);
+  const [whole, frac] = s.split(".");
+  return `$${whole}.${frac.slice(0,2)}<span class="money-frac">${frac[2]}</span>`;
+}
 
-    function quantize(x) {
-      return Math.round(x / PRECISION) * PRECISION;
-    }
+function elapsed(now){
+  return Math.max(0, now - startTime - pausedTotal);
+}
 
-    function setStartedLabel(date) {
-      $startedAt.textContent = date.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
-    }
+function render(){
+  if (!startTime) return;
 
-    function effectiveElapsedMs(nowMs) {
-      if (startEpochMs == null) return 0;
-      const base = nowMs - startEpochMs - pauseAccumulatedMs;
-      return Math.max(0, base);
-    }
+  const now = paused ? pausedAt : Date.now();
+  const ms = elapsed(now);
 
-    function render() {
-      const now = Date.now();
+  const wagePerMs = wageRate / 3600000;
+  const tipsPerMs = tipRate / 3600000;
 
-      // if currently paused, don't advance elapsed time
-      const elapsedMs = paused ? effectiveElapsedMs(pausedAtMs ?? now) : effectiveElapsedMs(now);
+  const wage = quantize(ms * wagePerMs);
+  const tips = quantize(ms * tipsPerMs);
+  const total = quantize(wage + tips);
 
-      const wage = elapsedMs * wagePerMs;
-      const tips = elapsedMs * tipsPerMs;
-      const total = wage + tips;
+  let value = total;
+  if (view === "wage") value = wage;
+  if (view === "tips") value = tips;
 
-      const tipsQ  = quantize(tips);
-      const totalQ = quantize(total);
+  bigDisplay.innerHTML = formatMoney(value);
+}
 
-      $tips.textContent  = formatMoney(tipsQ).replace("$", "$");
-      $total.textContent = formatMoney(totalQ);
-    }
+let loop;
+function startLoop(){
+  clearInterval(loop);
+  loop = setInterval(render, 16);
+}
 
-    function startLoop() {
-      if (timer) clearInterval(timer);
-      timer = setInterval(render, intervalMs);
-      render();
-    }
+document.getElementById("start").onclick = () => {
+  startTime = Date.now();
+  pausedTotal = 0;
+  paused = false;
+  startLoop();
+};
 
-    function startNow() {
-      startEpochMs = Date.now();
-      pauseAccumulatedMs = 0;
-      pausedAtMs = null;
-      paused = false;
-      setStartedLabel(new Date(startEpochMs));
-      startLoop();
-    }
+document.getElementById("pause").onclick = e => {
+  if (!startTime) return;
+  paused = !paused;
 
-    function pauseToggle() {
-      if (startEpochMs == null) return;
+  if (paused){
+    pausedAt = Date.now();
+    e.target.textContent = "Resume";
+  } else {
+    pausedTotal += Date.now() - pausedAt;
+    e.target.textContent = "Pause";
+  }
+};
 
-      paused = !paused;
-      const btn = document.getElementById("pause");
+document.getElementById("reset").onclick = () => {
+  clearInterval(loop);
+  startTime = null;
+  paused = true;
+  pausedTotal = 0;
+  bigDisplay.innerHTML = "$0.000";
+};
 
-      if (paused) {
-        pausedAtMs = Date.now();
-        btn.textContent = "Resume";
-        render();
-      } else {
-        // add paused duration
-        const now = Date.now();
-        if (pausedAtMs != null) {
-          pauseAccumulatedMs += (now - pausedAtMs);
-        }
-        pausedAtMs = null;
-        btn.textContent = "Pause";
-      }
-    }
+document.getElementById("setTime").onclick = () => {
+  const t = document.getElementById("startTime").value;
+  if (!t) return;
 
-    function resetAll() {
-      if (timer) clearInterval(timer);
-      timer = null;
-      startEpochMs = null;
-      pauseAccumulatedMs = 0;
-      pausedAtMs = null;
-      paused = true;
-      document.getElementById("pause").textContent = "Pause";
-      $startedAt.textContent = "Not set";
-      $total.textContent = "$0.00";
-      $tips.textContent = "$0.00";
-    }
+  const [h,m,s="0"] = t.split(":");
+  const now = new Date();
+  const start = new Date(now);
+  start.setHours(+h,+m,+s,0);
+  if (start > now) start.setDate(start.getDate()-1);
 
-    function setStartTimeFromInput() {
-      const input = document.getElementById("startTime").value;
-      if (!input) return;
+  startTime = start.getTime();
+  pausedTotal = 0;
+  paused = false;
+  document.getElementById("pause").textContent = "Pause";
+  startLoop();
+};
 
-      const [hh, mm, ss = "0"] = input.split(":");
-      const now = new Date();
-      const start = new Date(now);
-      start.setHours(parseInt(hh, 10), parseInt(mm, 10), parseInt(ss, 10), 0);
+wageInput.oninput = () => {
+  wageRate = Math.max(0, parseFloat(wageInput.value) || 0);
+  render();
+};
 
-      // If the time is in the future today, assume they meant that time yesterday
-      if (start.getTime() > now.getTime()) {
-        start.setDate(start.getDate() - 1);
-      }
+tipsInput.oninput = () => {
+  tipRate = Math.max(0, parseFloat(tipsInput.value) || 0);
+  render();
+};
 
-      startEpochMs = start.getTime();
-      pauseAccumulatedMs = 0;
-      pausedAtMs = null;
-      paused = false;
-      document.getElementById("pause").textContent = "Pause";
-      setStartedLabel(start);
-      startLoop();
-    }
-
-    // Wire up buttons
-    document.getElementById("startNow").addEventListener("click", startNow);
-    document.getElementById("pause").addEventListener("click", pauseToggle);
-    document.getElementById("reset").addEventListener("click", resetAll);
-    document.getElementById("setTime").addEventListener("click", setStartTimeFromInput);
-
-    // Initial paint
+document.querySelectorAll(".toggle button").forEach(btn => {
+  btn.onclick = () => {
+    view = btn.dataset.view;
+    document.querySelectorAll(".toggle button").forEach(b =>
+      b.classList.toggle("inactive", b !== btn)
+    );
     render();
-  </script>
+  };
+});
+</script>
+
 </body>
 </html>
