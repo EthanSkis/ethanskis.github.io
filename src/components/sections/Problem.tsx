@@ -1,6 +1,5 @@
 import { ArrowRight } from 'lucide-react';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const painPoints = [
   {
@@ -21,13 +20,11 @@ const painPoints = [
 ];
 
 export function Problem() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="problem"
       className="py-24 lg:py-32 bg-[#f5f5f7]"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Problem"
     >
       <Container>

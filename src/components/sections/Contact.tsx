@@ -3,7 +3,6 @@ import { Check } from 'lucide-react';
 import Button from '../ui/Button';
 import { Input, Textarea, Select } from '../ui/Input';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import { sendContactNotification } from '../../lib/telegram';
 
 interface FormData {
@@ -30,7 +29,6 @@ const businessTypes = [
 ];
 
 export function Contact() {
-  const sectionRef = useScrollAnimation();
   const [formData, setFormData] = useState<FormData>({ name: '', email: '', businessType: '', message: '' });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,7 +62,6 @@ export function Contact() {
     <section
       id="contact"
       className="py-24 lg:py-32 bg-white"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Contact"
     >
       <Container size="md">

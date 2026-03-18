@@ -1,15 +1,12 @@
 import { Container } from '../layout/Container';
 import { CalendlyEmbed } from '../ui/CalendlyEmbed';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 export function Booking() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="booking"
       className="py-24 lg:py-32 bg-[#f5f5f7]"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Book a free audit"
     >
       <Container size="md">

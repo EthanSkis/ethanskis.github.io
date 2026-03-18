@@ -1,7 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import Button from '../ui/Button';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const services = [
   {
@@ -28,13 +27,11 @@ const services = [
 ];
 
 export function Solution() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="services"
       className="py-24 lg:py-32 bg-white"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Services"
     >
       <Container>

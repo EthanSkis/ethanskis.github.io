@@ -1,7 +1,6 @@
 import { ArrowRight, Check } from 'lucide-react';
 import Button from '../ui/Button';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const plans = [
   {
@@ -58,13 +57,11 @@ const plans = [
 ];
 
 export function Pricing() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="pricing"
       className="py-24 lg:py-32 bg-white"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Pricing"
     >
       <Container>

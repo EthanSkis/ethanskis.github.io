@@ -1,16 +1,13 @@
 import { ArrowRight } from 'lucide-react';
 import Button from '../ui/Button';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 export function CTA() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="cta"
       className="py-24 lg:py-32 bg-[#1d1d1f]"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Call to action"
     >
       <Container size="md">
