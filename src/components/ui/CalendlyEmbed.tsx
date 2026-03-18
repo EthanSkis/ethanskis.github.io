@@ -26,7 +26,7 @@ export function CalendlyEmbed({
     <div
       className="calendly-inline-widget w-full rounded-2xl overflow-hidden border border-[#d2d2d7]"
       data-url={url}
-      style={{ minWidth: '320px', height: '700px' }}
+      style={{ minWidth: '320px', height: '900px' }}
     />
   );
 }
