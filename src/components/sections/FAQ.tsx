@@ -1,6 +1,5 @@
 import { Container } from '../layout/Container';
 import { Accordion } from '../ui/Accordion';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const faqs = [
   {
@@ -41,13 +40,11 @@ const faqs = [
 ];
 
 export function FAQ() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="faq"
       className="py-24 lg:py-32 bg-[#f5f5f7]"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Frequently asked questions"
     >
       <Container size="md">

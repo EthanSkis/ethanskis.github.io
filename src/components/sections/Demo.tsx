@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Play, Check } from 'lucide-react';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const highlights = [
   'Watch a lead go from email to booked call in under 3 minutes—automatically',
@@ -11,13 +10,11 @@ const highlights = [
 
 export function Demo() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="demo"
       className="py-24 lg:py-32 bg-white"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Demo"
     >
       <Container>

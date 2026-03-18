@@ -1,5 +1,4 @@
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const testimonials = [
   {
@@ -45,13 +44,11 @@ const stats = [
 ];
 
 export function Testimonials() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="testimonials"
       className="py-24 lg:py-32 bg-[#f5f5f7]"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Client results"
     >
       <Container>

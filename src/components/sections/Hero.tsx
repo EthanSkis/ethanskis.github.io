@@ -1,16 +1,13 @@
 import { ArrowRight } from 'lucide-react';
 import Button from '../ui/Button';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 export function Hero() {
-  const sectionRef = useScrollAnimation();
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
     <section
-      ref={sectionRef as React.RefObject<HTMLElement>}
       className="pt-32 pb-24 lg:pt-40 lg:pb-32 text-center bg-white"
       aria-label="Hero"
     >

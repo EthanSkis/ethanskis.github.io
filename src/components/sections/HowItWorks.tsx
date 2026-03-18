@@ -1,7 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import Button from '../ui/Button';
 import { Container } from '../layout/Container';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const steps = [
   {
@@ -35,13 +34,11 @@ const steps = [
 ];
 
 export function HowItWorks() {
-  const sectionRef = useScrollAnimation();
 
   return (
     <section
       id="how-it-works"
       className="py-24 lg:py-32 bg-[#f5f5f7]"
-      ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="How it works"
     >
       <Container>
