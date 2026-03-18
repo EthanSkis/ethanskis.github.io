@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import { Input, Textarea, Select } from '../ui/Input';
 import { Container } from '../layout/Container';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { sendContactNotification } from '../../lib/telegram';
 
 interface FormData {
   name: string;
@@ -49,7 +50,7 @@ export function Contact() {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
+    await sendContactNotification(formData);
     setIsSubmitting(false);
     setIsSuccess(true);
   };
