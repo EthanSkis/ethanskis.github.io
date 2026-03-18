@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface AccordionItem {
@@ -16,32 +16,33 @@ export function Accordion({ items, className }: AccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn('divide-y divide-[#d2d2d7]', className)}>
       {items.map((item, index) => (
-        <div
-          key={index}
-          className="border border-gray-200 rounded-xl overflow-hidden"
-        >
+        <div key={index}>
           <button
-            className="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#0d9488] min-h-[56px]"
+            className="w-full flex items-center justify-between py-5 text-left hover:opacity-70 transition-opacity duration-200 focus:outline-none focus-visible:opacity-70 min-h-[56px]"
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
             aria-expanded={openIndex === index}
           >
-            <span className="font-semibold text-[#1e293b] pr-4">{item.question}</span>
-            <ChevronDown
+            <span className="font-medium text-[#1d1d1f] pr-8 text-[17px] leading-snug">
+              {item.question}
+            </span>
+            <span
               className={cn(
-                'w-5 h-5 text-[#0d9488] flex-shrink-0 transition-transform duration-200',
-                openIndex === index && 'rotate-180'
+                'w-6 h-6 rounded-full bg-[#f5f5f7] flex items-center justify-center flex-shrink-0 transition-transform duration-300',
+                openIndex === index && 'rotate-45'
               )}
-            />
+            >
+              <Plus className="w-3.5 h-3.5 text-[#1d1d1f]" />
+            </span>
           </button>
           <div
             className={cn(
               'overflow-hidden transition-all duration-300',
-              openIndex === index ? 'max-h-96' : 'max-h-0'
+              openIndex === index ? 'max-h-96 pb-5' : 'max-h-0'
             )}
           >
-            <p className="px-5 pb-5 text-[#64748b] leading-relaxed">{item.answer}</p>
+            <p className="text-[#6e6e73] leading-relaxed text-[15px]">{item.answer}</p>
           </div>
         </div>
       ))}

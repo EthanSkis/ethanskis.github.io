@@ -9,9 +9,9 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, id, ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1.5">
         {label && (
-          <label htmlFor={id} className="text-sm font-medium text-[#1e293b]">
+          <label htmlFor={id} className="text-sm font-medium text-[#1d1d1f]">
             {label}
           </label>
         )}
@@ -19,10 +19,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={id}
           className={cn(
-            'w-full px-4 py-3 border border-gray-200 rounded-lg text-[#1e293b] placeholder:text-gray-400 bg-white',
-            'focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:border-transparent',
-            'transition-all duration-200 min-h-[44px]',
-            error && 'border-red-500 focus:ring-red-500',
+            'w-full px-4 py-3 border border-[#d2d2d7] rounded-xl text-[#1d1d1f] placeholder:text-[#86868b] bg-white text-[15px]',
+            'focus:outline-none focus:border-[#1d1d1f] focus:ring-0',
+            'transition-colors duration-200 min-h-[44px]',
+            error && 'border-red-500',
             className
           )}
           {...props}
@@ -43,9 +43,9 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, label, error, id, ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1.5">
         {label && (
-          <label htmlFor={id} className="text-sm font-medium text-[#1e293b]">
+          <label htmlFor={id} className="text-sm font-medium text-[#1d1d1f]">
             {label}
           </label>
         )}
@@ -53,10 +53,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={id}
           className={cn(
-            'w-full px-4 py-3 border border-gray-200 rounded-lg text-[#1e293b] placeholder:text-gray-400 bg-white resize-none',
-            'focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:border-transparent',
-            'transition-all duration-200',
-            error && 'border-red-500 focus:ring-red-500',
+            'w-full px-4 py-3 border border-[#d2d2d7] rounded-xl text-[#1d1d1f] placeholder:text-[#86868b] bg-white resize-none text-[15px]',
+            'focus:outline-none focus:border-[#1d1d1f] focus:ring-0',
+            'transition-colors duration-200',
+            error && 'border-red-500',
             className
           )}
           {...props}
@@ -77,19 +77,19 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 
 export function Select({ className, label, error, id, options, ...props }: SelectProps) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-[#1e293b]">
+        <label htmlFor={id} className="text-sm font-medium text-[#1d1d1f]">
           {label}
         </label>
       )}
       <select
         id={id}
         className={cn(
-          'w-full px-4 py-3 border border-gray-200 rounded-lg text-[#1e293b] bg-white',
-          'focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:border-transparent',
-          'transition-all duration-200 min-h-[44px] cursor-pointer',
-          error && 'border-red-500 focus:ring-red-500',
+          'w-full px-4 py-3 border border-[#d2d2d7] rounded-xl text-[#1d1d1f] bg-white text-[15px]',
+          'focus:outline-none focus:border-[#1d1d1f] focus:ring-0',
+          'transition-colors duration-200 min-h-[44px] cursor-pointer',
+          error && 'border-red-500',
           className
         )}
         {...props}

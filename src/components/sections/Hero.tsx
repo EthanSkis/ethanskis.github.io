@@ -1,181 +1,127 @@
-import { ArrowRight, Play, Zap, TrendingUp, Bot } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Button from '../ui/Button';
 import { Container } from '../layout/Container';
 
 export function Hero() {
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+  const scrollTo = (id: string) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
     <section
-      className="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden"
+      className="pt-32 pb-24 lg:pt-40 lg:pb-32 text-center bg-white"
       aria-label="Hero"
     >
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#f0f9ff] via-white to-[#f0fdf4] -z-10" />
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#0d9488]/5 to-transparent -z-10" />
+      <Container size="md">
+        {/* Eyebrow */}
+        <p className="text-[15px] font-medium text-[#6e6e73] mb-6 fade-in-up">
+          AI Automation for Coaches &amp; Consultants
+        </p>
 
-      {/* Decorative circles */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#0d9488]/5 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-[#1e3a5f]/5 rounded-full blur-3xl -z-10" />
+        {/* Headline */}
+        <h1 className="fade-in-up delay-100 text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#1d1d1f] leading-[1.05] mb-6">
+          Reclaim 10+ hours
+          <br />
+          <span className="text-[#6e6e73]">every single week.</span>
+        </h1>
 
-      <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8 items-center">
-          {/* Left: Text content (60%) */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-[#0d9488]/10 text-[#0d9488] px-4 py-2 rounded-full text-sm font-semibold">
-              <Zap className="w-4 h-4" />
-              AI-Powered Business Automation
+        {/* Subheadline */}
+        <p className="fade-in-up delay-200 text-xl text-[#6e6e73] leading-relaxed max-w-xl mx-auto mb-10">
+          We build custom AI automations for coaches and consultants—so lead follow-up,
+          client onboarding, and admin work happen without you.
+        </p>
+
+        {/* CTAs */}
+        <div className="fade-in-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
+          <Button size="lg" onClick={() => scrollTo('booking')} className="group min-w-[200px]">
+            Book your free audit
+            <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+          </Button>
+          <Button variant="secondary" size="lg" onClick={() => scrollTo('demo')} className="min-w-[200px]">
+            See how it works
+          </Button>
+        </div>
+
+        {/* Trust row */}
+        <div className="fade-in-up delay-400 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[13px] text-[#86868b]">
+          <span>Setup in 48 hours</span>
+          <span className="hidden sm:inline text-[#d2d2d7]">|</span>
+          <span>ROI in 30 days</span>
+          <span className="hidden sm:inline text-[#d2d2d7]">|</span>
+          <span>No coding required</span>
+          <span className="hidden sm:inline text-[#d2d2d7]">|</span>
+          <span>30-day money-back guarantee</span>
+        </div>
+      </Container>
+
+      {/* Dashboard visual */}
+      <div className="mt-16 fade-in-up delay-400">
+        <Container size="lg">
+          <div className="relative bg-[#f5f5f7] rounded-3xl p-8 border border-[#d2d2d7] overflow-hidden">
+            {/* Top bar */}
+            <div className="flex items-center gap-2 mb-6">
+              <span className="w-3 h-3 rounded-full bg-[#d2d2d7]" />
+              <span className="w-3 h-3 rounded-full bg-[#d2d2d7]" />
+              <span className="w-3 h-3 rounded-full bg-[#d2d2d7]" />
+              <span className="ml-4 text-[13px] text-[#86868b] font-medium">Automation Dashboard — Live</span>
+              <span className="ml-auto flex items-center gap-1.5 text-[12px] text-[#34c759] font-medium">
+                <span className="w-1.5 h-1.5 bg-[#34c759] rounded-full animate-pulse" />
+                Running
+              </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1e293b] leading-tight">
-              Reclaim{' '}
-              <span className="text-[#0d9488] relative">
-                10+ Hours
-                <svg
-                  className="absolute -bottom-2 left-0 w-full"
-                  viewBox="0 0 300 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M2 9.5C50 4 100 2 150 4.5C200 7 250 6 298 3"
-                    stroke="#f59e0b"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>{' '}
-              Every Week with AI-Powered Business Automation
-            </h1>
-
-            <p className="text-lg text-[#64748b] leading-relaxed max-w-xl">
-              We help coaches and consultants automate lead follow-up, client onboarding, and
-              repetitive admin tasks—so you can focus on what you do best.
-            </p>
-
-            {/* Trust badges */}
-            <div className="flex flex-wrap gap-4">
+            {/* Workflow steps */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               {[
-                { icon: '⚡', text: 'Setup in 48 hours' },
-                { icon: '💰', text: 'ROI in 30 days' },
-                { icon: '🤖', text: 'No coding required' },
-              ].map((badge) => (
+                { step: '01', label: 'Lead email received', sub: 'Gmail → triggered', done: true },
+                { step: '02', label: 'AI drafts response', sub: 'GPT-4 → 8 seconds', done: true },
+                { step: '03', label: 'Reply sent instantly', sub: 'Sent → 2:14 PM', done: true },
+                { step: '04', label: 'Booking link opened', sub: 'Calendly → click', done: true },
+                { step: '05', label: 'CRM updated', sub: 'HubSpot → synced', done: false, active: true },
+              ].map((item) => (
                 <div
-                  key={badge.text}
-                  className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm font-medium text-[#1e293b] shadow-sm"
+                  key={item.step}
+                  className={`rounded-xl p-4 border ${
+                    item.active
+                      ? 'bg-white border-[#1d1d1f] shadow-sm'
+                      : item.done
+                      ? 'bg-white border-[#d2d2d7]'
+                      : 'bg-[#f5f5f7] border-[#d2d2d7] opacity-50'
+                  }`}
                 >
-                  <span>{badge.icon}</span>
-                  <span>{badge.text}</span>
+                  <div className={`text-[11px] font-semibold mb-1 ${item.active ? 'text-[#1d1d1f]' : 'text-[#86868b]'}`}>
+                    Step {item.step}
+                  </div>
+                  <div className="text-[13px] font-medium text-[#1d1d1f] mb-1">{item.label}</div>
+                  <div className="text-[11px] text-[#86868b]">{item.sub}</div>
+                  {item.done && !item.active && (
+                    <div className="mt-2 text-[11px] font-medium text-[#34c759]">Complete</div>
+                  )}
+                  {item.active && (
+                    <div className="mt-2 text-[11px] font-medium text-[#1d1d1f] flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-[#1d1d1f] rounded-full animate-pulse" />
+                      In progress
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <Button
-                size="lg"
-                onClick={() => scrollToSection('cta')}
-                className="group"
-              >
-                Book Your Free Workflow Audit
-                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => scrollToSection('demo')}
-                className="group"
-              >
-                <Play className="mr-2 w-5 h-5 text-[#0d9488]" />
-                See How It Works
-              </Button>
-            </div>
-
-            {/* Social proof */}
-            <div className="flex items-center gap-4 pt-2">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="w-8 h-8 rounded-full border-2 border-white bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold"
-                    aria-hidden="true"
-                  >
-                    {String.fromCharCode(64 + i)}
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-[#64748b]">
-                <span className="font-semibold text-[#1e293b]">50+ coaches</span> already
-                automating their business
-              </p>
+            {/* Stats row */}
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              {[
+                { label: 'Time saved today', value: '3.5 hrs' },
+                { label: 'Leads responded to', value: '12' },
+                { label: 'Automations running', value: '5 active' },
+              ].map((stat) => (
+                <div key={stat.label} className="bg-white rounded-xl p-3 border border-[#d2d2d7] text-center">
+                  <div className="text-[17px] font-semibold text-[#1d1d1f]">{stat.value}</div>
+                  <div className="text-[11px] text-[#86868b] mt-0.5">{stat.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-
-          {/* Right: Visual (40%) */}
-          <div className="lg:col-span-2 relative">
-            <div className="relative">
-              {/* Main automation visual */}
-              <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-semibold text-[#1e293b]">Automation Dashboard</span>
-                  <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium bg-green-50 px-2.5 py-1 rounded-full">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                    Live
-                  </span>
-                </div>
-
-                {/* Automation flow */}
-                <div className="space-y-3">
-                  {[
-                    { icon: '📧', label: 'Lead Email Received', status: 'done', color: 'text-green-600 bg-green-50' },
-                    { icon: '🤖', label: 'AI Response Sent (2 min)', status: 'done', color: 'text-green-600 bg-green-50' },
-                    { icon: '📅', label: 'Call Booking Link Sent', status: 'done', color: 'text-green-600 bg-green-50' },
-                    { icon: '✅', label: 'Client Onboarding Started', status: 'active', color: 'text-[#0d9488] bg-teal-50' },
-                    { icon: '📊', label: 'CRM Updated Automatically', status: 'pending', color: 'text-[#64748b] bg-gray-50' },
-                  ].map((step, i) => (
-                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl ${step.color}`}>
-                      <span className="text-lg">{step.icon}</span>
-                      <span className="text-sm font-medium flex-1">{step.label}</span>
-                      {step.status === 'active' && (
-                        <span className="w-2 h-2 bg-[#0d9488] rounded-full animate-pulse" />
-                      )}
-                      {step.status === 'done' && (
-                        <span className="text-green-600">✓</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-xs text-[#64748b]">Time saved today</span>
-                  <span className="text-lg font-bold text-[#0d9488]">3.5 hours</span>
-                </div>
-              </div>
-
-              {/* Floating stat cards */}
-              <div className="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg p-3 border border-gray-100 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-[#f59e0b]" />
-                <div>
-                  <div className="text-xs text-[#64748b]">Booking rate</div>
-                  <div className="text-sm font-bold text-[#1e293b]">+40%</div>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-lg p-3 border border-gray-100 flex items-center gap-2">
-                <Bot className="w-5 h-5 text-[#0d9488]" />
-                <div>
-                  <div className="text-xs text-[#64748b]">Automations running</div>
-                  <div className="text-sm font-bold text-[#1e293b]">24/7</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Container>
+        </Container>
+      </div>
     </section>
   );
 }

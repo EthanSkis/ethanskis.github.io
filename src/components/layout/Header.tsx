@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Button from '../ui/Button';
 import { Container } from './Container';
@@ -8,87 +8,54 @@ const navLinks = [
   { label: 'Services', href: '#services' },
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Pricing', href: '#pricing' },
-  { label: 'Case Studies', href: '#testimonials' },
+  { label: 'Results', href: '#testimonials' },
   { label: 'FAQ', href: '#faq' },
 ];
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('');
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-
-      const sections = navLinks.map((link) => link.href.slice(1));
-      const current = sections.find((section) => {
-        const el = document.getElementById(section);
-        if (!el) return false;
-        const rect = el.getBoundingClientRect();
-        return rect.top <= 100 && rect.bottom >= 100;
-      });
-      setActiveSection(current || '');
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (href: string) => {
-    const id = href.slice(1);
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const scrollTo = (href: string) => {
+    if (href === '#') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' });
     setIsMobileMenuOpen(false);
   };
 
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-40 transition-all duration-300',
+        'fixed top-0 left-0 right-0 z-40 transition-all duration-500',
         isScrolled
-          ? 'bg-white/95 backdrop-blur-sm shadow-[0_1px_3px_rgba(0,0,0,0.1)]'
+          ? 'bg-white/80 backdrop-blur-2xl border-b border-[#d2d2d7]/60'
           : 'bg-transparent'
       )}
     >
       <Container>
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-14 lg:h-16">
           {/* Logo */}
           <a
             href="#"
-            className="flex items-center gap-2 font-bold text-xl text-[#1e3a5f] hover:opacity-80 transition-opacity"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            className="font-semibold text-[17px] tracking-tight text-[#1d1d1f]"
+            onClick={(e) => { e.preventDefault(); scrollTo('#'); }}
           >
-            <div className="w-8 h-8 bg-[#0d9488] rounded-lg flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <span>FlowState</span>
-            <span className="text-[#0d9488]">AI</span>
+            FlowState
           </a>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-6" aria-label="Main navigation">
+          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.href);
-                }}
-                className={cn(
-                  'text-sm font-medium transition-colors duration-200 hover:text-[#0d9488]',
-                  activeSection === link.href.slice(1)
-                    ? 'text-[#0d9488]'
-                    : isScrolled
-                    ? 'text-[#1e293b]'
-                    : 'text-[#1e293b]'
-                )}
+                onClick={(e) => { e.preventDefault(); scrollTo(link.href); }}
+                className="px-3 py-1.5 text-[13px] font-medium text-[#6e6e73] hover:text-[#1d1d1f] transition-colors duration-200 rounded-full hover:bg-[#f5f5f7]"
               >
                 {link.label}
               </a>
@@ -96,27 +63,29 @@ export function Header() {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center gap-3">
-            <a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('#contact'); }}>
-              <Button variant="outline" size="sm">Contact</Button>
-            </a>
-            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection('#cta'); }}>
-              <Button size="sm">Book Free Audit</Button>
-            </a>
+          <div className="hidden lg:flex items-center gap-2">
+            <button
+              onClick={() => scrollTo('#contact')}
+              className="text-[13px] font-medium text-[#6e6e73] hover:text-[#1d1d1f] transition-colors px-3 py-1.5"
+            >
+              Contact
+            </button>
+            <Button size="sm" onClick={() => scrollTo('#booking')}>
+              Book free audit
+            </Button>
           </div>
 
           {/* Mobile menu button */}
           <button
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0d9488] min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="lg:hidden p-2 rounded-full hover:bg-[#f5f5f7] transition-colors focus:outline-none min-w-[44px] min-h-[44px] flex items-center justify-center"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMobileMenuOpen}
           >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6 text-[#1e293b]" />
-            ) : (
-              <Menu className="w-6 h-6 text-[#1e293b]" />
-            )}
+            {isMobileMenuOpen
+              ? <X className="w-5 h-5 text-[#1d1d1f]" />
+              : <Menu className="w-5 h-5 text-[#1d1d1f]" />
+            }
           </button>
         </div>
       </Container>
@@ -124,36 +93,28 @@ export function Header() {
       {/* Mobile menu */}
       <div
         className={cn(
-          'lg:hidden bg-white border-t border-gray-100 overflow-hidden transition-all duration-300',
+          'lg:hidden bg-white/95 backdrop-blur-2xl border-t border-[#d2d2d7]/60 overflow-hidden transition-all duration-300',
           isMobileMenuOpen ? 'max-h-screen' : 'max-h-0'
         )}
       >
         <Container>
-          <nav className="py-4 flex flex-col gap-2" aria-label="Mobile navigation">
+          <nav className="py-4 flex flex-col" aria-label="Mobile navigation">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.href);
-                }}
-                className={cn(
-                  'px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-50 hover:text-[#0d9488] min-h-[44px] flex items-center',
-                  activeSection === link.href.slice(1)
-                    ? 'text-[#0d9488] bg-teal-50'
-                    : 'text-[#1e293b]'
-                )}
+                onClick={(e) => { e.preventDefault(); scrollTo(link.href); }}
+                className="py-3 text-[17px] font-medium text-[#1d1d1f] border-b border-[#f5f5f7] last:border-0 hover:text-[#6e6e73] transition-colors"
               >
                 {link.label}
               </a>
             ))}
-            <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
-              <Button variant="outline" className="w-full" onClick={() => scrollToSection('#contact')}>
-                Contact Us
+            <div className="pt-4 flex flex-col gap-3">
+              <Button variant="secondary" className="w-full" onClick={() => scrollTo('#contact')}>
+                Contact us
               </Button>
-              <Button className="w-full" onClick={() => scrollToSection('#cta')}>
-                Book Free Audit
+              <Button className="w-full" onClick={() => scrollTo('#booking')}>
+                Book free audit
               </Button>
             </div>
           </nav>

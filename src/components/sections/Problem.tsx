@@ -1,22 +1,22 @@
-import { Clock, UserX, TrendingDown } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Container } from '../layout/Container';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const painPoints = [
   {
-    icon: Clock,
-    title: 'Drowning in Admin Work',
-    description: 'Spending 15+ hours/week on admin instead of clients',
+    stat: '20 hrs',
+    context: 'per week',
+    description: 'The average coach spends 20 hours on admin, email, and follow-up instead of billable client work.',
   },
   {
-    icon: UserX,
-    title: 'Leads Going Cold',
-    description: 'Losing leads because follow-up takes too long',
+    stat: '48 hrs',
+    context: 'average delay',
+    description: 'Most leads hear back within 24–48 hours. By then, they\'ve already booked with a competitor who responded first.',
   },
   {
-    icon: TrendingDown,
-    title: 'Stuck at a Revenue Ceiling',
-    description: "Can't scale because you're maxed out on time",
+    stat: '$120K',
+    context: 'left on the table',
+    description: "At $300/hr, those 20 weekly admin hours represent $120K+ in potential annual revenue you're not capturing.",
   },
 ];
 
@@ -26,50 +26,46 @@ export function Problem() {
   return (
     <section
       id="problem"
-      className="py-20 lg:py-28 bg-[#f8fafc]"
+      className="py-24 lg:py-32 bg-[#f5f5f7]"
       ref={sectionRef as React.RefObject<HTMLElement>}
-      aria-label="Problem statement"
+      aria-label="Problem"
     >
       <Container>
-        <div className="text-center mb-12 fade-in-up">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1e293b] mb-4">
-            Are You the Bottleneck in{' '}
-            <span className="text-[#0d9488]">Your Own Business?</span>
+        <div className="max-w-3xl mx-auto text-center mb-16 fade-in-up">
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-[#1d1d1f] mb-5">
+            You're spending your best hours
+            <br />
+            on your worst work.
           </h2>
-          <p className="text-lg text-[#64748b] max-w-2xl mx-auto">
-            Most coaches and consultants reach a point where growth means hiring a team—or
-            burning out. There's a better way.
+          <p className="text-xl text-[#6e6e73] leading-relaxed">
+            Coaches and consultants didn't start their business to send follow-up emails and chase invoices. But that's where the time goes.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {painPoints.map((point, index) => {
-            const Icon = point.icon;
-            return (
-              <div
-                key={index}
-                className={`fade-in-up delay-${(index + 1) * 100} bg-white rounded-2xl p-6 border border-red-100 shadow-sm`}
-              >
-                <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-red-500" aria-hidden="true" />
-                </div>
-                <h3 className="font-bold text-[#1e293b] text-lg mb-2">{point.title}</h3>
-                <p className="text-[#64748b]">{point.description}</p>
+          {painPoints.map((point, index) => (
+            <div
+              key={index}
+              className={`fade-in-up delay-${(index + 1) * 100} bg-white rounded-2xl p-7 border border-[#d2d2d7]`}
+            >
+              <div className="mb-4">
+                <span className="text-5xl font-bold tracking-tight text-[#1d1d1f]">{point.stat}</span>
+                <span className="ml-2 text-[15px] text-[#6e6e73]">{point.context}</span>
               </div>
-            );
-          })}
+              <p className="text-[15px] text-[#6e6e73] leading-relaxed">{point.description}</p>
+            </div>
+          ))}
         </div>
 
-        {/* Stat callout */}
-        <div className="fade-in-up delay-400 bg-gradient-to-r from-[#1e3a5f] to-[#0d9488] rounded-2xl p-8 text-center text-white">
-          <p className="text-2xl sm:text-3xl font-bold mb-2">
-            The average coach wastes{' '}
-            <span className="text-[#f59e0b]">20 hours/week</span> on tasks
-            that could be automated
-          </p>
-          <p className="text-white/70 text-lg">
-            That's 1,040 hours per year—or 43 full days—lost to repetitive work.
-          </p>
+        {/* Micro-CTA */}
+        <div className="fade-in-up delay-400 text-center">
+          <button
+            onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+            className="inline-flex items-center gap-2 text-[15px] font-medium text-[#1d1d1f] hover:opacity-60 transition-opacity group"
+          >
+            See how we fix this
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+          </button>
         </div>
       </Container>
     </section>
