@@ -1,131 +1,78 @@
-import { Zap, Mail, Linkedin, Twitter } from 'lucide-react';
 import { Container } from './Container';
 
-const quickLinks = [
-  { label: 'Home', href: '#' },
-  { label: 'Services', href: '#services' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Case Studies', href: '#testimonials' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'Contact', href: '#contact' },
-];
+const links = {
+  Product: [
+    { label: 'Services', href: '#services' },
+    { label: 'How It Works', href: '#how-it-works' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'Results', href: '#testimonials' },
+  ],
+  Company: [
+    { label: 'FAQ', href: '#faq' },
+    { label: 'Contact', href: '#contact' },
+    { label: 'Privacy Policy', href: '#' },
+    { label: 'Terms of Service', href: '#' },
+  ],
+};
 
 export function Footer() {
-  const scrollToSection = (href: string) => {
-    if (href === '#') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    const id = href.slice(1);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  const scrollTo = (href: string) => {
+    if (href === '#') return;
+    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <footer className="bg-[#1e3a5f] text-white pt-16 pb-8">
+    <footer className="bg-[#f5f5f7] border-t border-[#d2d2d7]">
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-white/10">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <a
-              href="#"
-              className="flex items-center gap-2 font-bold text-xl mb-4 hover:opacity-80 transition-opacity w-fit"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            >
-              <div className="w-8 h-8 bg-[#0d9488] rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <span>FlowState</span>
-              <span className="text-[#0d9488]">AI</span>
-            </a>
-            <p className="text-white/70 leading-relaxed max-w-sm mb-6">
-              We help coaches, consultants, and course creators automate their business operations
-              so they can focus on what matters most—their clients.
+        <div className="py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="md:col-span-2">
+            <p className="font-semibold text-[17px] tracking-tight text-[#1d1d1f] mb-3">
+              FlowState
             </p>
-            <div className="flex items-center gap-3">
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-[#0d9488] transition-colors duration-200"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
+            <p className="text-[13px] text-[#6e6e73] leading-relaxed max-w-xs">
+              AI automation for coaches and consultants. Reclaim your time, serve more clients, and grow without burning out.
+            </p>
+            <p className="mt-4 text-[13px] text-[#6e6e73]">
+              <a href="mailto:hello@flowstateai.com" className="hover:text-[#1d1d1f] transition-colors">
+                hello@flowstateai.com
               </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-[#0d9488] transition-colors duration-200"
-                aria-label="Twitter/X"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="mailto:hello@flowstateai.com"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-[#0d9488] transition-colors duration-200"
-                aria-label="Email"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
+            </p>
+          </div>
+
+          {Object.entries(links).map(([group, items]) => (
+            <div key={group}>
+              <p className="text-[12px] font-semibold text-[#1d1d1f] uppercase tracking-wider mb-3">
+                {group}
+              </p>
+              <ul className="space-y-2">
+                {items.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                      className="text-[13px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold text-sm uppercase tracking-wider text-white/50 mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(link.href);
-                    }}
-                    className="text-white/70 hover:text-[#0d9488] transition-colors duration-200 text-sm"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="font-semibold text-sm uppercase tracking-wider text-white/50 mb-4">
-              Contact
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <a
-                  href="mailto:hello@flowstateai.com"
-                  className="text-white/70 hover:text-[#0d9488] transition-colors duration-200 text-sm flex items-center gap-2"
-                >
-                  <Mail className="w-4 h-4" />
-                  hello@flowstateai.com
-                </a>
-              </li>
-            </ul>
-          </div>
+          ))}
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/50 text-sm">
-            © {new Date().getFullYear()} FlowState AI. All rights reserved.
+        <div className="py-6 border-t border-[#d2d2d7] flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-[12px] text-[#86868b]">
+            Copyright © {new Date().getFullYear()} FlowState AI. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-white/50 hover:text-white/80 transition-colors text-sm">
-              Privacy Policy
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+              className="text-[12px] text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+              LinkedIn
             </a>
-            <a href="#" className="text-white/50 hover:text-white/80 transition-colors text-sm">
-              Terms of Service
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+              className="text-[12px] text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+              X (Twitter)
             </a>
           </div>
         </div>

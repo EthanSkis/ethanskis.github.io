@@ -9,8 +9,8 @@ export function Card({ className, hover = false, children, ...props }: CardProps
   return (
     <div
       className={cn(
-        'bg-white rounded-2xl p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]',
-        hover && 'transition-all duration-300 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.12),0_4px_6px_-2px_rgba(0,0,0,0.07)] hover:-translate-y-1',
+        'bg-white rounded-2xl border border-[#d2d2d7]',
+        hover && 'transition-all duration-300 hover:border-[#86868b] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]',
         className
       )}
       {...props}
@@ -30,7 +30,7 @@ export function CardHeader({ className, children, ...props }: HTMLAttributes<HTM
 
 export function CardTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h3 className={cn('text-xl font-bold text-[#1e293b]', className)} {...props}>
+    <h3 className={cn('text-xl font-semibold text-[#1d1d1f] tracking-tight', className)} {...props}>
       {children}
     </h3>
   );
@@ -38,7 +38,7 @@ export function CardTitle({ className, children, ...props }: HTMLAttributes<HTML
 
 export function CardContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('text-[#64748b] leading-relaxed', className)} {...props}>
+    <div className={cn('text-[#6e6e73] leading-relaxed', className)} {...props}>
       {children}
     </div>
   );

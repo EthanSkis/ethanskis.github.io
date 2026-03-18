@@ -1,4 +1,4 @@
-import { ArrowRight, Clock, Target, Star } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Button from '../ui/Button';
 import { Container } from '../layout/Container';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
@@ -6,71 +6,52 @@ import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 export function CTA() {
   const sectionRef = useScrollAnimation();
 
-  const scrollToContact = () => {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <section
       id="cta"
-      className="py-20 lg:py-28 bg-gradient-to-br from-[#1e3a5f] via-[#1e3a5f] to-[#0d9488] relative overflow-hidden"
+      className="py-24 lg:py-32 bg-[#1d1d1f]"
       ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Call to action"
     >
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" aria-hidden="true" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" aria-hidden="true" />
-
       <Container size="md">
-        <div className="relative text-center fade-in-up">
-          <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm">
-            <Star className="w-4 h-4 text-[#f59e0b] fill-[#f59e0b]" />
-            Free, No-Obligation Audit
+        <div className="text-center fade-in-up">
+          {/* Scarcity signal */}
+          <div className="inline-flex items-center gap-2 bg-white/10 text-white/70 text-[13px] font-medium px-4 py-2 rounded-full mb-8">
+            <span className="w-1.5 h-1.5 bg-[#34c759] rounded-full" aria-hidden="true" />
+            Only 5 new client audits available this month
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            Ready to Get Your{' '}
-            <span className="text-[#f59e0b]">Time Back?</span>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 leading-[1.05]">
+            Ready to get your
+            <br />
+            time back?
           </h2>
 
-          <p className="text-lg text-white/80 mb-8 max-w-xl mx-auto leading-relaxed">
-            Book your free 15-minute workflow audit. We'll identify exactly what you can automate
-            and how much time you'll save—with no obligation to buy anything.
+          <p className="text-xl text-white/60 leading-relaxed mb-10 max-w-lg mx-auto">
+            Book a free 15-minute workflow audit. We'll map exactly what you can automate and show you how much time you'll save.
           </p>
 
-          {/* Trust badges */}
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {[
-              { icon: Clock, text: '15 minutes' },
-              { icon: Target, text: 'Custom recommendations' },
-              { icon: Star, text: 'Completely free' },
-            ].map((badge) => {
-              const Icon = badge.icon;
-              return (
-                <div
-                  key={badge.text}
-                  className="flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
-                >
-                  <Icon className="w-4 h-4 text-[#f59e0b]" aria-hidden="true" />
-                  {badge.text}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
             <Button
               size="lg"
-              onClick={scrollToContact}
-              className="bg-[#f59e0b] hover:bg-[#d97706] text-white group min-w-[220px]"
+              className="bg-white text-[#1d1d1f] hover:bg-white/90 group min-w-[220px]"
+              onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Book Your Free Audit
-              <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+              Book your free audit
+              <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="text-white/70 hover:text-white hover:bg-white/10 min-w-[180px]"
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Send us a message
             </Button>
           </div>
 
-          <p className="text-white/50 text-sm mt-4">
-            No obligation. No sales pressure. Just actionable insights.
+          <p className="text-[13px] text-white/40">
+            No obligation. No sales pitch. Just a focused look at your workflow.
           </p>
         </div>
       </Container>

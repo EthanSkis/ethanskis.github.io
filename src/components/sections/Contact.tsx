@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle, Send } from 'lucide-react';
+import { Check } from 'lucide-react';
 import Button from '../ui/Button';
 import { Input, Textarea, Select } from '../ui/Input';
 import { Container } from '../layout/Container';
@@ -30,26 +30,17 @@ const businessTypes = [
 
 export function Contact() {
   const sectionRef = useScrollAnimation();
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    businessType: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState<FormData>({ name: '', email: '', businessType: '', message: '' });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-    if (!formData.businessType) newErrors.businessType = 'Please select your business type';
-    if (!formData.message.trim()) newErrors.message = 'Message is required';
+    if (!formData.name.trim()) newErrors.name = 'Required';
+    if (!formData.email.trim()) newErrors.email = 'Required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email';
+    if (!formData.businessType) newErrors.businessType = 'Required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,62 +48,62 @@ export function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
     setIsSubmitting(true);
-    // Simulate form submission — replace with Formspree or your endpoint
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((r) => setTimeout(r, 1200));
     setIsSubmitting(false);
     setIsSuccess(true);
   };
 
   const handleChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+    setFormData((p) => ({ ...p, [field]: value }));
+    if (errors[field]) setErrors((p) => ({ ...p, [field]: undefined }));
   };
 
   return (
     <section
       id="contact"
-      className="py-20 lg:py-28 bg-white"
+      className="py-24 lg:py-32 bg-white"
       ref={sectionRef as React.RefObject<HTMLElement>}
-      aria-label="Contact form"
+      aria-label="Contact"
     >
       <Container size="md">
         <div className="text-center mb-12 fade-in-up">
-          <div className="inline-flex items-center gap-2 bg-teal-50 text-[#0d9488] px-4 py-2 rounded-full text-sm font-semibold mb-4">
-            Get In Touch
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1e293b] mb-4">
-            Let's Talk About{' '}
-            <span className="text-[#0d9488]">Your Business</span>
+          <p className="text-[15px] font-medium text-[#6e6e73] mb-4">Get in touch</p>
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-[#1d1d1f] mb-4">
+            Not ready to book?
+            <br />
+            <span className="text-[#6e6e73]">Drop us a message.</span>
           </h2>
-          <p className="text-lg text-[#64748b] max-w-xl mx-auto">
-            Tell us a bit about your business and we'll reach out to schedule your free workflow
-            audit.
+          <p className="text-[17px] text-[#6e6e73]">
+            We respond within one business day.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 lg:p-8 fade-in-up delay-100">
+        <div className="bg-[#f5f5f7] rounded-2xl border border-[#d2d2d7] p-7 lg:p-10 fade-in-up delay-100">
           {isSuccess ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-green-600" aria-hidden="true" />
+            <div className="text-center py-10">
+              <div className="w-14 h-14 bg-[#1d1d1f] rounded-full flex items-center justify-center mx-auto mb-5">
+                <Check className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-[#1e293b] mb-2">Message Sent!</h3>
-              <p className="text-[#64748b]">
-                Thanks for reaching out. We'll get back to you within 24 hours to schedule your
-                free workflow audit.
+              <h3 className="text-2xl font-bold tracking-tight text-[#1d1d1f] mb-2">Message received.</h3>
+              <p className="text-[#6e6e73] text-[15px]">
+                We'll reach out within one business day. In the meantime, feel free to{' '}
+                <button
+                  className="text-[#1d1d1f] underline underline-offset-2"
+                  onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  book your free audit
+                </button>{' '}
+                directly.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate aria-label="Contact form">
+            <form onSubmit={handleSubmit} noValidate>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <Input
                   id="name"
-                  label="Full Name"
-                  placeholder="Sarah Johnson"
+                  label="Name"
+                  placeholder="Sarah Kim"
                   value={formData.name}
                   onChange={(e) => handleChange('name', e.target.value)}
                   error={errors.name}
@@ -120,7 +111,7 @@ export function Contact() {
                 />
                 <Input
                   id="email"
-                  label="Email Address"
+                  label="Email"
                   type="email"
                   placeholder="sarah@example.com"
                   value={formData.email}
@@ -129,46 +120,34 @@ export function Contact() {
                   autoComplete="email"
                 />
               </div>
-
               <div className="mb-4">
                 <Select
                   id="businessType"
-                  label="Business Type"
+                  label="Business type"
                   value={formData.businessType}
                   onChange={(e) => handleChange('businessType', e.target.value)}
                   error={errors.businessType}
                   options={businessTypes}
                 />
               </div>
-
               <div className="mb-6">
                 <Textarea
                   id="message"
-                  label="Tell us about your biggest time challenge"
-                  placeholder="I'm spending too much time on..."
+                  label="What's your biggest time challenge? (optional)"
+                  placeholder="I spend most of my time on..."
                   rows={4}
                   value={formData.message}
                   onChange={(e) => handleChange('message', e.target.value)}
-                  error={errors.message}
                 />
               </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full group"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Sending...
                   </span>
                 ) : (
-                  <span className="flex items-center gap-2">
-                    Send Message
-                    <Send className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </span>
+                  'Send message'
                 )}
               </Button>
             </form>

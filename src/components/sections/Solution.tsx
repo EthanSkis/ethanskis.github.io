@@ -1,32 +1,29 @@
-import { Mail, Users, Calendar, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import Button from '../ui/Button';
 import { Container } from '../layout/Container';
-import { Card, CardContent } from '../ui/Card';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const services = [
   {
-    icon: Mail,
+    number: '01',
     title: 'Lead Nurture Automation',
     description:
-      "Never let a lead go cold. Automated follow-up sequences that book appointments while you sleep.",
-    features: ['Instant lead response', 'Multi-touch sequences', 'Personalized outreach'],
-    color: 'bg-blue-50 text-blue-600',
+      'Every lead gets a personalized reply within minutes—not hours. Automated sequences handle follow-up, qualification, and booking so no opportunity goes cold.',
+    features: ['Instant AI-powered response', 'Multi-touch follow-up sequences', 'Automatic Calendly booking'],
   },
   {
-    icon: Users,
+    number: '02',
     title: 'Client Onboarding System',
     description:
-      'New clients get white-glove treatment automatically. Welcome sequences, document collection, and task creation—all hands-off.',
-    features: ['Automated welcome flow', 'Document collection', 'Task & project setup'],
-    color: 'bg-teal-50 text-[#0d9488]',
+      'New clients receive a seamless, professional onboarding experience without you lifting a finger. Welcome emails, document collection, and project setup run on autopilot.',
+    features: ['Welcome email sequence', 'Automated document collection', 'CRM + project tool sync'],
   },
   {
-    icon: Calendar,
+    number: '03',
     title: 'Admin Task Automation',
     description:
-      'Calendar management, email triage, content distribution. Reclaim 10+ hours every week.',
-    features: ['Calendar management', 'Email triage & routing', 'Content distribution'],
-    color: 'bg-amber-50 text-[#f59e0b]',
+      'Calendar scheduling, email triage, invoice follow-up, content distribution—the repetitive work that steals your mornings, eliminated.',
+    features: ['Smart email routing', 'Invoice & payment tracking', 'Social content distribution'],
   },
 ];
 
@@ -36,58 +33,59 @@ export function Solution() {
   return (
     <section
       id="services"
-      className="py-20 lg:py-28 bg-white"
+      className="py-24 lg:py-32 bg-white"
       ref={sectionRef as React.RefObject<HTMLElement>}
-      aria-label="Our services"
+      aria-label="Services"
     >
       <Container>
-        <div className="text-center mb-12 fade-in-up">
-          <div className="inline-flex items-center gap-2 bg-teal-50 text-[#0d9488] px-4 py-2 rounded-full text-sm font-semibold mb-4">
-            The Solution
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1e293b] mb-4">
-            Your AI-Powered{' '}
-            <span className="text-[#0d9488]">Business Operating System</span>
+        <div className="max-w-2xl mx-auto text-center mb-16 fade-in-up">
+          <p className="text-[15px] font-medium text-[#6e6e73] mb-4">What we build</p>
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-[#1d1d1f] mb-5">
+            Your business, running itself.
           </h2>
-          <p className="text-lg text-[#64748b] max-w-2xl mx-auto">
-            We build custom automation workflows that run 24/7—so you don't have to
+          <p className="text-xl text-[#6e6e73] leading-relaxed">
+            Three core systems that eliminate the work between you and your clients.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {services.map((service, index) => {
-            const Icon = service.icon;
-            return (
-              <Card
-                key={index}
-                hover
-                className={`fade-in-up delay-${(index + 1) * 100} flex flex-col`}
-              >
-                <div className={`w-14 h-14 ${service.color} rounded-2xl flex items-center justify-center mb-5`}>
-                  <Icon className="w-7 h-7" aria-hidden="true" />
-                </div>
-                <h3 className="text-xl font-bold text-[#1e293b] mb-3">{service.title}</h3>
-                <CardContent className="flex-1 mb-4">{service.description}</CardContent>
-                <ul className="space-y-2 mb-5">
+        <div className="space-y-4 mb-12">
+          {services.map((service, index) => (
+            <div
+              key={index}
+              className={`fade-in-up delay-${(index + 1) * 100} bg-[#f5f5f7] rounded-2xl p-7 border border-[#d2d2d7] grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 items-start hover:border-[#86868b] transition-colors duration-300`}
+            >
+              <div className="lg:col-span-2">
+                <span className="text-[13px] font-semibold text-[#86868b] mb-2 block">{service.number}</span>
+                <h3 className="text-2xl font-bold tracking-tight text-[#1d1d1f] mb-3">{service.title}</h3>
+                <p className="text-[15px] text-[#6e6e73] leading-relaxed">{service.description}</p>
+              </div>
+              <div className="lg:col-span-3">
+                <ul className="space-y-3">
                   {service.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-[#64748b]">
-                      <span className="w-1.5 h-1.5 bg-[#0d9488] rounded-full flex-shrink-0" />
+                    <li key={feature} className="flex items-center gap-3 text-[15px] text-[#1d1d1f]">
+                      <span className="w-5 h-5 rounded-full bg-[#1d1d1f] flex items-center justify-center flex-shrink-0">
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </span>
                       {feature}
                     </li>
                   ))}
                 </ul>
-                <button
-                  className="flex items-center gap-1 text-[#0d9488] font-semibold text-sm hover:gap-2 transition-all duration-200 group mt-auto w-fit"
-                  onClick={() => {
-                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  Learn more
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </button>
-              </Card>
-            );
-          })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Section CTA */}
+        <div className="fade-in-up delay-400 text-center">
+          <Button
+            onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+            className="group"
+          >
+            See how we build it
+            <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+          </Button>
         </div>
       </Container>
     </section>

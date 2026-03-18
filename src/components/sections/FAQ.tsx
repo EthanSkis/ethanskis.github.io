@@ -6,37 +6,37 @@ const faqs = [
   {
     question: 'How long does setup take?',
     answer:
-      'Most automations are built and deployed within 48-72 hours. We start with a discovery call to map your workflow, then our team gets to work immediately.',
+      'Most automations are built and live within 48–72 hours. We start with a 15-minute discovery call, then our team builds and tests everything before deployment.',
   },
   {
-    question: 'Do I need technical skills?',
+    question: 'Do I need any technical skills?',
     answer:
-      "Not at all. We handle everything from setup to testing to deployment. You just use the system. If anything ever needs adjusting, we're one message away.",
+      'None at all. We handle the entire build, integration, and deployment. You just use the finished system. If anything ever needs tweaking, we handle that too.',
   },
   {
-    question: 'What tools do you work with?',
+    question: 'What tools do you integrate with?',
     answer:
-      'We integrate with 500+ apps including Gmail, Outlook, Calendly, HubSpot, Salesforce, Shopify, Stripe, Slack, Notion, and many more. If you use a tool, we can likely connect it.',
+      'We connect with 500+ apps—Gmail, Outlook, Calendly, HubSpot, Salesforce, Stripe, Slack, Notion, Airtable, and many more. If you use it, we can likely automate it.',
   },
   {
-    question: 'What if I need changes later?',
+    question: 'What if I need changes after launch?',
     answer:
-      'Monthly plans include optimization and adjustments at no extra charge. Your business evolves, and your automations should too. We do monthly check-ins to review and improve everything.',
+      'Every monthly plan includes adjustments and optimization at no extra charge. We do monthly check-ins to review performance and expand your automations as your business grows.',
   },
   {
     question: 'Is my data secure?',
     answer:
-      'Absolutely. We use enterprise-grade security protocols, encrypted connections, and never store your data longer than necessary. We follow industry best practices and comply with GDPR and CCPA.',
+      'Yes. We use encrypted connections and enterprise-grade security throughout. We never store your data longer than required, and we comply fully with GDPR and CCPA.',
   },
   {
-    question: "What's the ROI?",
+    question: "What's the typical ROI?",
     answer:
-      'Most clients see ROI within 30 days through time savings and increased client capacity. If you save 10 hours/week at your effective hourly rate, the math speaks for itself—plus the revenue from serving more clients.',
+      'Most clients break even within 30 days. At a conservative $150/hr, saving just 10 hours per week equals $6,000/month in reclaimed time—on top of the additional revenue from serving more clients.',
   },
   {
     question: "What if it doesn't work for my business?",
     answer:
-      "We offer a 30-day money-back guarantee. If we don't save you at least 5 hours per week within the first 30 days, we'll refund your setup fee in full. No questions asked.",
+      "We offer a 30-day money-back guarantee. If we don't save you at least 5 hours per week in the first month, you receive a full refund of your setup fee. No questions, no hassle.",
   },
 ];
 
@@ -46,25 +46,19 @@ export function FAQ() {
   return (
     <section
       id="faq"
-      className="py-20 lg:py-28 bg-[#f8fafc]"
+      className="py-24 lg:py-32 bg-[#f5f5f7]"
       ref={sectionRef as React.RefObject<HTMLElement>}
       aria-label="Frequently asked questions"
     >
       <Container size="md">
-        <div className="text-center mb-12 fade-in-up">
-          <div className="inline-flex items-center gap-2 bg-[#1e3a5f]/10 text-[#1e3a5f] px-4 py-2 rounded-full text-sm font-semibold mb-4">
-            Got Questions?
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1e293b] mb-4">
-            Common{' '}
-            <span className="text-[#0d9488]">Questions</span>
+        <div className="text-center mb-14 fade-in-up">
+          <p className="text-[15px] font-medium text-[#6e6e73] mb-4">FAQ</p>
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-[#1d1d1f]">
+            Common questions.
           </h2>
-          <p className="text-lg text-[#64748b] max-w-2xl mx-auto">
-            Everything you need to know before getting started.
-          </p>
         </div>
 
-        <div className="fade-in-up delay-100">
+        <div className="bg-white rounded-2xl border border-[#d2d2d7] px-7 fade-in-up delay-100">
           <Accordion items={faqs} />
         </div>
       </Container>
