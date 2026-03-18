@@ -1,14 +1,20 @@
 import { useEffect } from 'react';
 
 interface CalendlyEmbedProps {
-  url?: string;
+  // Custom colors — all hex without the leading #
+  bgColor?: string;
+  textColor?: string;
+  primaryColor?: string;
 }
 
-// Replace the url prop with your actual Calendly scheduling link,
-// e.g. "https://calendly.com/your-name/workflow-audit"
-export function CalendlyEmbed({ url = 'https://calendly.com/flowstateai/workflow-audit' }: CalendlyEmbedProps) {
+export function CalendlyEmbed({
+  bgColor = 'ffffff',
+  textColor = '1d1d1f',
+  primaryColor = '1d1d1f',
+}: CalendlyEmbedProps) {
+  const url = `https://calendly.com/ethangardner298/30min?background_color=${bgColor}&text_color=${textColor}&primary_color=${primaryColor}&hide_gdpr_banner=1`;
+
   useEffect(() => {
-    // Load Calendly widget script once
     if (document.querySelector('script[src*="calendly"]')) return;
     const script = document.createElement('script');
     script.src = 'https://assets.calendly.com/assets/external/widget.js';
