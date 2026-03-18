@@ -1,317 +1,75 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Live Earnings</title>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-:root{
-  --bg0:#07070a;
-  --bg1:#0d0d13;
-  --gold:#d6b35a;
-  --gold2:#f3de9a;
-  --text:#f2f2f6;
-  --muted:#b9b9c6;
-  --shadow:0 30px 80px rgba(0,0,0,.55);
-}
+    <!-- SEO Meta Tags -->
+    <title>FlowState AI | AI Automation Agency for Coaches & Consultants</title>
+    <meta name="description" content="FlowState AI helps coaches, consultants, and course creators automate lead follow-up, client onboarding, and admin tasks. Reclaim 10+ hours every week with custom AI-powered automation." />
+    <meta name="keywords" content="AI automation, business automation, coach automation, consultant automation, lead nurture, client onboarding, Make.com, Zapier" />
+    <link rel="canonical" href="https://ethanskis.github.io/" />
 
-*{box-sizing:border-box}
-html,body{height:100%}
+    <!-- Open Graph -->
+    <meta property="og:title" content="FlowState AI | AI Automation Agency for Coaches & Consultants" />
+    <meta property="og:description" content="Reclaim 10+ hours every week with AI-powered business automation. Setup in 48 hours, ROI in 30 days." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ethanskis.github.io/" />
+    <meta property="og:image" content="https://ethanskis.github.io/og-image.png" />
 
-body{
-  margin:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:
-    radial-gradient(1000px 600px at 20% 10%, rgba(214,179,90,.12), transparent 55%),
-    radial-gradient(900px 700px at 80% 90%, rgba(214,179,90,.08), transparent 60%),
-    linear-gradient(180deg,var(--bg0),var(--bg1));
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-}
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FlowState AI | AI Automation for Coaches" />
+    <meta name="twitter:description" content="Reclaim 10+ hours every week with AI-powered business automation." />
 
-.container{
-  width:min(900px,100%);
-  padding:42px 36px;
-  border-radius:22px;
-  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
-  border:1px solid rgba(214,179,90,.25);
-  box-shadow:var(--shadow);
-  text-align:center;
-}
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-.title{
-  text-transform:uppercase;
-  letter-spacing:3px;
-  font-size:14px;
-  color:var(--gold2);
-  margin-bottom:18px;
-}
+    <!-- Google Analytics 4 placeholder -->
+    <!-- Replace G-XXXXXXXXXX with your actual GA4 measurement ID -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
 
-.toggle{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin-bottom:18px;
-}
-
-.toggle button{
-  padding:10px 18px;
-  border-radius:999px;
-  border:1px solid rgba(214,179,90,.35);
-  background:rgba(214,179,90,.12);
-  color:var(--text);
-  cursor:pointer;
-  font-weight:600;
-}
-
-.toggle button.inactive{
-  background:rgba(255,255,255,.06);
-  border-color:rgba(255,255,255,.15);
-  color:var(--muted);
-}
-
-.display{
-  font-variant-numeric:tabular-nums;
-  font-size:clamp(54px,8vw,92px);
-  padding:22px 26px;
-  border-radius:20px;
-  background:rgba(15,15,24,.55);
-  border:1px solid rgba(214,179,90,.3);
-  box-shadow:0 0 0 6px rgba(214,179,90,.06);
-  margin-bottom:24px;
-}
-
-.money-frac{
-  font-size:.25em;
-  opacity:.85;
-  margin-left:2px;
-}
-
-.stats{
-  display:flex;
-  justify-content:center;
-  gap:14px;
-  flex-wrap:wrap;
-}
-
-.stat{
-  padding:10px 14px;
-  border-radius:999px;
-  background:rgba(15,15,24,.5);
-  border:1px solid rgba(214,179,90,.2);
-  font-size:14px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.stat input{
-  width:90px;
-  border-radius:10px;
-  border:1px solid rgba(214,179,90,.35);
-  background:rgba(214,179,90,.12);
-  color:var(--text);
-  padding:6px 8px;
-  font-weight:600;
-}
-
-.controls{
-  margin-top:24px;
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.controls button,
-.controls input{
-  padding:10px 16px;
-  border-radius:12px;
-  border:1px solid rgba(214,179,90,.35);
-  background:rgba(214,179,90,.12);
-  color:var(--text);
-  cursor:pointer;
-  font-weight:600;
-}
-
-.controls button.secondary{
-  background:rgba(255,255,255,.06);
-  border-color:rgba(255,255,255,.15);
-}
-
-.controls input{
-  background:rgba(15,15,24,.55);
-}
-
-.note{
-  margin-top:10px;
-  font-size:12px;
-  color:rgba(185,185,198,.75);
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-  <div class="title">Live Earnings</div>
-
-  <div class="toggle">
-    <button data-view="total">Total</button>
-    <button data-view="wage" class="inactive">Wage</button>
-    <button data-view="tips" class="inactive">Tips</button>
-  </div>
-
-  <div class="display" id="bigDisplay">$0.000</div>
-
-  <div class="stats">
-    <div class="stat">
-      Wage $
-      <input type="number" id="wageInput" step="0.25" value="14.00">
-      /hr
-    </div>
-    <div class="stat">
-      Tips $
-      <input type="number" id="tipsInput" step="0.25" value="2.75">
-      /hr
-    </div>
-  </div>
-
-  <div class="controls">
-    <button id="start">Start now</button>
-    <button id="pause" class="secondary">Pause</button>
-    <button id="reset" class="secondary">Reset</button>
-    <input type="time" id="startTime" step="1">
-    <button id="setTime" class="secondary">Set start time</button>
-  </div>
-
-  <div class="note">Updates internally every 0.1¢</div>
-</div>
-
-<script>
-const PRECISION = 0.001;
-
-let wageRate = 14;
-let tipRate = 2.75;
-
-let startTime = null;
-let paused = true;
-let pausedAt = 0;
-let pausedTotal = 0;
-let view = "total";
-
-const bigDisplay = document.getElementById("bigDisplay");
-const wageInput = document.getElementById("wageInput");
-const tipsInput = document.getElementById("tipsInput");
-
-function quantize(v){
-  return Math.round(v / PRECISION) * PRECISION;
-}
-
-function formatMoney(v){
-  const s = v.toFixed(3);
-  const [whole, frac] = s.split(".");
-  return `$${whole}.${frac.slice(0,2)}<span class="money-frac">${frac[2]}</span>`;
-}
-
-function elapsed(now){
-  return Math.max(0, now - startTime - pausedTotal);
-}
-
-function render(){
-  if (!startTime) return;
-
-  const now = paused ? pausedAt : Date.now();
-  const ms = elapsed(now);
-
-  const wagePerMs = wageRate / 3600000;
-  const tipsPerMs = tipRate / 3600000;
-
-  const wage = quantize(ms * wagePerMs);
-  const tips = quantize(ms * tipsPerMs);
-  const total = quantize(wage + tips);
-
-  let value = total;
-  if (view === "wage") value = wage;
-  if (view === "tips") value = tips;
-
-  bigDisplay.innerHTML = formatMoney(value);
-}
-
-let loop;
-function startLoop(){
-  clearInterval(loop);
-  loop = setInterval(render, 16);
-}
-
-document.getElementById("start").onclick = () => {
-  startTime = Date.now();
-  pausedTotal = 0;
-  paused = false;
-  startLoop();
-};
-
-document.getElementById("pause").onclick = e => {
-  if (!startTime) return;
-  paused = !paused;
-
-  if (paused){
-    pausedAt = Date.now();
-    e.target.textContent = "Resume";
-  } else {
-    pausedTotal += Date.now() - pausedAt;
-    e.target.textContent = "Pause";
-  }
-};
-
-document.getElementById("reset").onclick = () => {
-  clearInterval(loop);
-  startTime = null;
-  paused = true;
-  pausedTotal = 0;
-  bigDisplay.innerHTML = "$0.000";
-};
-
-document.getElementById("setTime").onclick = () => {
-  const t = document.getElementById("startTime").value;
-  if (!t) return;
-
-  const [h,m,s="0"] = t.split(":");
-  const now = new Date();
-  const start = new Date(now);
-  start.setHours(+h,+m,+s,0);
-  if (start > now) start.setDate(start.getDate()-1);
-
-  startTime = start.getTime();
-  pausedTotal = 0;
-  paused = false;
-  document.getElementById("pause").textContent = "Pause";
-  startLoop();
-};
-
-wageInput.oninput = () => {
-  wageRate = Math.max(0, parseFloat(wageInput.value) || 0);
-  render();
-};
-
-tipsInput.oninput = () => {
-  tipRate = Math.max(0, parseFloat(tipsInput.value) || 0);
-  render();
-};
-
-document.querySelectorAll(".toggle button").forEach(btn => {
-  btn.onclick = () => {
-    view = btn.dataset.view;
-    document.querySelectorAll(".toggle button").forEach(b =>
-      b.classList.toggle("inactive", b !== btn)
-    );
-    render();
-  };
-});
-</script>
-
-</body>
+    <!-- Schema.org LocalBusiness structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "FlowState AI",
+      "description": "AI automation agency helping coaches, consultants, and course creators automate their business operations.",
+      "url": "https://ethanskis.github.io/",
+      "email": "hello@flowstateai.com",
+      "serviceType": "Business Automation",
+      "areaServed": "Worldwide",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Starter Automation Package",
+          "price": "1497",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "name": "Growth Automation Package",
+          "price": "2997",
+          "priceCurrency": "USD"
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
