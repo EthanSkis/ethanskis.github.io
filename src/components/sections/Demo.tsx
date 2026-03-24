@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Play, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Container } from '../layout/Container';
+
+const VIDEO_URL = ''; // Paste your Loom or YouTube embed URL here
 
 const highlights = [
   'Watch a lead go from email to booked call in under 3 minutes—automatically',
@@ -9,8 +10,6 @@ const highlights = [
 ];
 
 export function Demo() {
-  const [isPlaying, setIsPlaying] = useState(false);
-
   return (
     <section
       id="demo"
@@ -31,17 +30,19 @@ export function Demo() {
           {/* Video */}
           <div className="lg:col-span-3">
             <div
-              className="relative bg-[#1d1d1f] rounded-2xl overflow-hidden cursor-pointer group border border-[#3a3a3c]"
+              className="relative bg-[#1d1d1f] rounded-2xl overflow-hidden border border-[#3a3a3c]"
               style={{ aspectRatio: '16/9' }}
-              onClick={() => setIsPlaying(true)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && setIsPlaying(true)}
-              aria-label="Play demo video"
             >
-              {!isPlaying ? (
+              {VIDEO_URL ? (
+                <iframe
+                  src={VIDEO_URL}
+                  className="absolute inset-0 w-full h-full"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                  title="Demo video"
+                />
+              ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-5">
-                  {/* Fake workflow preview */}
                   <div className="flex flex-col items-center gap-2 opacity-40">
                     {['Lead received', 'AI responds (8s)', 'Meeting booked', 'CRM updated'].map((s, i) => (
                       <div key={i} className="flex items-center gap-2">
@@ -50,16 +51,7 @@ export function Demo() {
                       </div>
                     ))}
                   </div>
-                  <div className="w-14 h-14 rounded-full bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-200">
-                    <Play className="w-6 h-6 text-white ml-1" aria-hidden="true" />
-                  </div>
-                  <p className="text-[13px] text-white/40">3-minute walkthrough</p>
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-white/60 text-[14px] text-center px-8">
-                    Replace with your Loom or YouTube embed
-                  </p>
+                  <p className="text-[13px] text-white/40">3-minute walkthrough — coming soon</p>
                 </div>
               )}
             </div>

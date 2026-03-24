@@ -33,6 +33,7 @@ export function Contact() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -48,9 +49,15 @@ export function Contact() {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    await sendContactNotification(formData);
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    setSubmitError(null);
+    try {
+      await sendContactNotification(formData);
+      setIsSuccess(true);
+    } catch {
+      setSubmitError('Something went wrong. Please try again or email us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (field: keyof FormData, value: string) => {
@@ -138,6 +145,9 @@ export function Contact() {
                   onChange={(e) => handleChange('message', e.target.value)}
                 />
               </div>
+              {submitError && (
+                <p className="mb-4 text-sm text-red-500">{submitError}</p>
+              )}
               <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
