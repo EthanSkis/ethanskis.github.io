@@ -1,75 +1,301 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Ethan Ski</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <!-- SEO Meta Tags -->
-    <title>FlowState AI | AI Automation Agency for Coaches & Consultants</title>
-    <meta name="description" content="FlowState AI helps coaches, consultants, and course creators automate lead follow-up, client onboarding, and admin tasks. Reclaim 10+ hours every week with custom AI-powered automation." />
-    <meta name="keywords" content="AI automation, business automation, coach automation, consultant automation, lead nurture, client onboarding, Make.com, Zapier" />
-    <link rel="canonical" href="https://ethanskis.github.io/" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="FlowState AI | AI Automation Agency for Coaches & Consultants" />
-    <meta property="og:description" content="Reclaim 10+ hours every week with AI-powered business automation. Setup in 48 hours, ROI in 30 days." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ethanskis.github.io/" />
-    <meta property="og:image" content="https://ethanskis.github.io/og-image.png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="FlowState AI | AI Automation for Coaches" />
-    <meta name="twitter:description" content="Reclaim 10+ hours every week with AI-powered business automation." />
-
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-    <!-- Google Analytics 4 placeholder -->
-    <!-- Replace G-XXXXXXXXXX with your actual GA4 measurement ID -->
-    <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX');
-    </script>
-    -->
-
-    <!-- Schema.org LocalBusiness structured data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ProfessionalService",
-      "name": "FlowState AI",
-      "description": "AI automation agency helping coaches, consultants, and course creators automate their business operations.",
-      "url": "https://ethanskis.github.io/",
-      "email": "hello@flowstateai.com",
-      "serviceType": "Business Automation",
-      "areaServed": "Worldwide",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Starter Automation Package",
-          "price": "1497",
-          "priceCurrency": "USD"
-        },
-        {
-          "@type": "Offer",
-          "name": "Growth Automation Package",
-          "price": "2997",
-          "priceCurrency": "USD"
-        }
-      ]
+    body {
+      background: #0a0a0f;
+      color: #e8e8f0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow: hidden;
+      height: 100dvh;
+      width: 100dvw;
     }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      display: block;
+    }
+
+    .content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100dvh;
+      text-align: center;
+      padding: 2rem;
+      pointer-events: none;
+    }
+
+    .name {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #a78bfa 50%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .tagline {
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      color: rgba(232, 232, 240, 0.5);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+      margin: 2rem auto;
+    }
+
+    .links {
+      display: flex;
+      gap: 1.5rem;
+      pointer-events: all;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .links a {
+      color: rgba(232, 232, 240, 0.6);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      padding: 0.4rem 0;
+    }
+
+    .links a:hover {
+      color: #a78bfa;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      color: rgba(232, 232, 240, 0.2);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      z-index: 10;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div class="content">
+    <h1 class="name">Ethan Ski</h1>
+    <p class="tagline">Developer &amp; Builder</p>
+    <div class="divider"></div>
+    <nav class="links">
+      <a href="https://github.com/EthanSkis" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+
+  <p class="hint">Move &amp; click to interact</p>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let W, H, dpr, particles, mouse, repelRadius, repelForce;
+
+    function init() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width  = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width  = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.scale(dpr, dpr);
+
+      const count = Math.min(Math.floor((W * H) / 8000), 180);
+      repelRadius = Math.min(W, H) * 0.18;
+      repelForce  = 0.06;
+
+      particles = Array.from({ length: count }, () => makeParticle());
+    }
+
+    function makeParticle(x, y) {
+      return {
+        x: x ?? Math.random() * W,
+        y: y ?? Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 1.8 + 0.6,
+        alpha: Math.random() * 0.5 + 0.2,
+        hue: Math.random() * 60 + 230, // blue-purple range
+      };
+    }
+
+    mouse = { x: W / 2, y: H / 2, active: false, clicking: false };
+
+    function onMove(x, y) {
+      mouse.x = x;
+      mouse.y = y;
+      mouse.active = true;
+    }
+
+    window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+    window.addEventListener('mouseleave', () => { mouse.active = false; });
+    window.addEventListener('mousedown', () => { mouse.clicking = true; });
+    window.addEventListener('mouseup', () => { mouse.clicking = false; });
+
+    window.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const t = e.touches[0];
+      onMove(t.clientX, t.clientY);
+    }, { passive: false });
+
+    window.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      onMove(t.clientX, t.clientY);
+      mouse.clicking = true;
+      // Spawn burst of particles on tap
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const speed = Math.random() * 2 + 1;
+        const p = makeParticle(t.clientX, t.clientY);
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        particles.push(p);
+      }
+      // Keep particle count in check
+      while (particles.length > 250) particles.shift();
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => { mouse.clicking = false; mouse.active = false; });
+
+    window.addEventListener('click', e => {
+      for (let i = 0; i < 10; i++) {
+        const angle = (i / 10) * Math.PI * 2;
+        const speed = Math.random() * 3 + 1;
+        const p = makeParticle(e.clientX, e.clientY);
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        particles.push(p);
+      }
+      while (particles.length > 250) particles.shift();
+    });
+
+    window.addEventListener('resize', init);
+
+    const LINE_DIST = 110;
+    const LINE_DIST_SQ = LINE_DIST * LINE_DIST;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      const mx = mouse.x, my = mouse.y;
+      const active = mouse.active;
+      const clicking = mouse.clicking;
+      const rr = repelRadius * (clicking ? 1.6 : 1);
+      const rrSq = rr * rr;
+
+      // Update particles
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        if (active) {
+          const dx = p.x - mx;
+          const dy = p.y - my;
+          const dSq = dx * dx + dy * dy;
+
+          if (dSq < rrSq && dSq > 0.01) {
+            const d = Math.sqrt(dSq);
+            const strength = (1 - d / rr) * repelForce * (clicking ? 2.5 : 1);
+            p.vx += (dx / d) * strength;
+            p.vy += (dy / d) * strength;
+          }
+        }
+
+        // Damping
+        p.vx *= 0.98;
+        p.vy *= 0.98;
+
+        // Speed cap
+        const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        if (spd > 4) { p.vx = (p.vx / spd) * 4; p.vy = (p.vy / spd) * 4; }
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Wrap edges
+        if (p.x < 0) p.x += W;
+        else if (p.x > W) p.x -= W;
+        if (p.y < 0) p.y += H;
+        else if (p.y > H) p.y -= H;
+      }
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        const a = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dSq = dx * dx + dy * dy;
+          if (dSq < LINE_DIST_SQ) {
+            const t = 1 - dSq / LINE_DIST_SQ;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `hsla(${(a.hue + b.hue) / 2}, 70%, 70%, ${t * 0.25})`;
+            ctx.lineWidth = t * 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw cursor connection lines
+      if (active) {
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const dx = p.x - mx, dy = p.y - my;
+          const dSq = dx * dx + dy * dy;
+          if (dSq < LINE_DIST_SQ * 2) {
+            const t = 1 - dSq / (LINE_DIST_SQ * 2);
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mx, my);
+            ctx.strokeStyle = `hsla(${p.hue}, 80%, 75%, ${t * 0.4})`;
+            ctx.lineWidth = t;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw particles
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 75%, ${p.alpha})`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    init();
+    draw();
+  </script>
+</body>
 </html>
