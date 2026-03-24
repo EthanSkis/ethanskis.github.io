@@ -32,5 +32,6 @@ export async function sendContactNotification(data: ContactPayload): Promise<voi
   if (!res.ok) {
     const err = await res.text();
     console.error('Telegram notification failed:', err);
+    throw new Error('Notification failed');
   }
 }
