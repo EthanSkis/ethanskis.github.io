@@ -339,11 +339,23 @@
       .cursor-glow { display: none; }
       .inquire-btn { cursor: auto; }
       .modal-close { cursor: auto; }
-      .modal-submit { cursor: auto; }
-      .modal { padding: 28px 20px 24px; max-height: 85dvh; overflow-y: auto; }
+      .modal-submit { cursor: auto; padding: 10px; }
       .modal-overlay { align-items: flex-end; padding: 0; }
-      .modal { border-bottom-left-radius: 0; border-bottom-right-radius: 0; width: 100%; max-width: 100%; }
-      .form-row { grid-template-columns: 1fr; }
+      .modal {
+        padding: 22px 16px 20px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        width: 100%;
+        max-width: 100%;
+        overflow-y: visible;
+      }
+      .modal h2 { font-size: 17px; margin-bottom: 3px; }
+      .modal > div > p { font-size: 12px; margin-bottom: 14px; }
+      .field { margin-bottom: 8px; gap: 4px; }
+      .field label { font-size: 10px; }
+      .field input, .field textarea, .field select { padding: 8px 10px; font-size: 13px; }
+      .field textarea { height: 58px; }
+      .form-row { gap: 8px; }
     }
   </style>
 </head>
