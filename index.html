@@ -118,6 +118,8 @@
       <span>McCall, Idaho</span>
       <span class="sep">/</span>
       <span class="time"></span>
+      <span class="sep weather-sep">/</span>
+      <span class="weather"></span>
     </div>
   </div>
 
@@ -131,18 +133,47 @@
     });
     document.addEventListener('mouseleave', () => glow.classList.remove('visible'));
 
-    // Local time
+    // Local time (Mountain Time)
     const timeEl = document.querySelector('.time');
     function tick() {
       const now = new Date();
-      const h = now.getHours();
-      const m = String(now.getMinutes()).padStart(2, '0');
+      const mt = new Date(now.toLocaleString('en-US', { timeZone: 'America/Boise' }));
+      const h = mt.getHours();
+      const m = String(mt.getMinutes()).padStart(2, '0');
       const period = h >= 12 ? 'PM' : 'AM';
       const h12 = h % 12 || 12;
       timeEl.textContent = h12 + ':' + m + ' ' + period;
     }
     tick();
     setInterval(tick, 1000);
+
+    // Weather (Open-Meteo, McCall ID coordinates)
+    const weatherEl = document.querySelector('.weather');
+    const weatherSep = document.querySelector('.weather-sep');
+    weatherSep.style.display = 'none';
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=44.7332&longitude=-116.0988&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FBoise')
+      .then(r => r.json())
+      .then(data => {
+        const temp = Math.round(data.current.temperature_2m);
+        const code = data.current.weather_code;
+        const condition = weatherCondition(code);
+        weatherEl.textContent = condition + ' · ' + temp + '°F';
+        weatherSep.style.display = '';
+      })
+      .catch(() => {});
+
+    function weatherCondition(code) {
+      if (code === 0) return 'Clear';
+      if (code <= 3) return 'Cloudy';
+      if (code <= 49) return 'Fog';
+      if (code <= 59) return 'Drizzle';
+      if (code <= 69) return 'Rain';
+      if (code <= 79) return 'Snow';
+      if (code <= 82) return 'Showers';
+      if (code <= 86) return 'Snow';
+      if (code <= 99) return 'Thunderstorm';
+      return '';
+    }
   </script>
 
 </body>
