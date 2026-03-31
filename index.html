@@ -63,48 +63,63 @@
       opacity: 1;
     }
 
-    /* ── Name ── */
-    h1 {
+    /* ── Center content ── */
+    .center {
       position: relative;
       z-index: 2;
-      font-size: 80px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      line-height: 1.05;
       text-align: center;
       padding: 0 24px;
     }
 
-    /* ── Local time ── */
-    .time {
-      position: fixed;
-      bottom: 28px;
-      right: 32px;
-      font-size: 12px;
+    h1 {
+      font-size: 80px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.05;
+    }
+
+    /* ── Subtitle row ── */
+    .subtitle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 15px;
       font-weight: 400;
       letter-spacing: 0.01em;
-      color: rgba(245, 245, 247, 0.3);
-      z-index: 2;
+      color: rgba(245, 245, 247, 0.35);
       font-variant-numeric: tabular-nums;
+    }
+
+    .subtitle .sep {
+      color: rgba(245, 245, 247, 0.15);
     }
 
     @media (max-width: 1068px) {
       h1 { font-size: 64px; }
+      .subtitle { font-size: 14px; margin-top: 12px; }
     }
 
     @media (max-width: 735px) {
       h1 { font-size: 44px; }
+      .subtitle { font-size: 12px; margin-top: 10px; }
       body { cursor: auto; }
       .cursor-glow { display: none; }
-      .time { bottom: 20px; right: 20px; }
     }
   </style>
 </head>
 <body>
 
   <div class="cursor-glow"></div>
-  <h1>Ethan Gardner</h1>
-  <div class="time"></div>
+  <div class="center">
+    <h1>Ethan Gardner</h1>
+    <div class="subtitle">
+      <span>McCall, Idaho</span>
+      <span class="sep">/</span>
+      <span class="time"></span>
+    </div>
+  </div>
 
   <script>
     // Cursor glow
