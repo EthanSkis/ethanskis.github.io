@@ -30,6 +30,10 @@
       cursor: none;
     }
 
+    body.modal-open {
+      cursor: auto;
+    }
+
     /* ── Ambient gradient ── */
     body::before {
       content: '';
@@ -601,12 +605,14 @@
 
     function openModal() {
       overlay.classList.add('open');
+      document.body.classList.add('modal-open');
       document.body.style.overflow = 'hidden';
       setTimeout(() => closeBtn.focus(), 50);
     }
 
     function closeModal() {
       overlay.classList.remove('open');
+      document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
     }
 
