@@ -148,12 +148,200 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    /* ── Modal overlay ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      background: rgba(20, 20, 22, 0.85);
+      border: 1px solid rgba(245, 245, 247, 0.1);
+      border-radius: 20px;
+      padding: 36px 32px 32px;
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(245, 245, 247, 0.5);
+      font-size: 16px;
+      line-height: 1;
+      cursor: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: rgba(245, 245, 247, 0.9);
+    }
+
+    .modal h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+
+    .modal p {
+      font-size: 13px;
+      color: rgba(245, 245, 247, 0.4);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(245, 245, 247, 0.4);
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(245, 245, 247, 0.1);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #f5f5f7;
+      outline: none;
+      transition: border-color 0.15s ease, background 0.15s ease;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: rgba(245, 245, 247, 0.2);
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: rgba(245, 245, 247, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .field textarea {
+      resize: none;
+      height: 88px;
+      line-height: 1.5;
+    }
+
+    .field select option {
+      background: #1a1a1e;
+      color: #f5f5f7;
+    }
+
+    .modal-submit {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px;
+      border: none;
+      border-radius: 980px;
+      background: #f5f5f7;
+      color: #000;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+      cursor: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .modal-submit:hover {
+      opacity: 0.88;
+    }
+
+    .modal-submit:active {
+      transform: scale(0.98);
+    }
+
+    .modal-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 16px 0 8px;
+      gap: 10px;
+    }
+
+    .modal-success .check {
+      font-size: 36px;
+    }
+
+    .modal-success h3 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-success p {
+      font-size: 13px;
+      color: rgba(245, 245, 247, 0.4);
+      margin: 0;
+    }
+
     @media (max-width: 735px) {
       h1 { font-size: 44px; }
       .subtitle { font-size: 12px; margin-top: 10px; }
       body { cursor: auto; }
       .cursor-glow { display: none; }
       .inquire-btn { cursor: auto; }
+      .modal-close { cursor: auto; }
+      .modal-submit { cursor: auto; }
+      .modal { padding: 28px 20px 24px; }
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -169,7 +357,67 @@
       <span class="sep weather-sep">/</span>
       <span class="weather"></span>
     </div>
-    <a class="inquire-btn" href="#">Inquire for pricing and availability</a>
+    <a class="inquire-btn" href="#" id="inquire-btn">Inquire for pricing and availability</a>
+  </div>
+
+  <!-- Inquiry modal -->
+  <div class="modal-overlay" id="modal-overlay" aria-modal="true" role="dialog" aria-labelledby="modal-title">
+    <div class="modal">
+      <button class="modal-close" id="modal-close" aria-label="Close">&#x2715;</button>
+
+      <div id="modal-form-content">
+        <h2 id="modal-title">Get in touch</h2>
+        <p>Fill out the form below and I'll get back to you as soon as possible.</p>
+
+        <form id="inquiry-form" novalidate>
+          <div class="form-row">
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input id="f-name" name="name" type="text" placeholder="Jane Smith" required />
+            </div>
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" placeholder="jane@example.com" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="f-phone">Phone</label>
+              <input id="f-phone" name="phone" type="tel" placeholder="(208) 555-0100" />
+            </div>
+            <div class="field">
+              <label for="f-type">Type</label>
+              <select id="f-type" name="type">
+                <option value="">Select...</option>
+                <option>Ski instruction</option>
+                <option>Photography</option>
+                <option>Consulting</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-dates">Dates / timeframe</label>
+            <input id="f-dates" name="dates" type="text" placeholder="e.g. Jan 10–14, 2026" />
+          </div>
+
+          <div class="field">
+            <label for="f-message">Message</label>
+            <textarea id="f-message" name="message" placeholder="Tell me a bit about what you're looking for…"></textarea>
+          </div>
+
+          <button type="submit" class="modal-submit">Send inquiry</button>
+        </form>
+      </div>
+
+      <div class="modal-success" id="modal-success">
+        <div class="check">&#10003;</div>
+        <h3>Message sent</h3>
+        <p>Thanks — I'll be in touch soon.</p>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -191,6 +439,56 @@
     document.addEventListener('mouseleave', () => {
       glow.classList.remove('visible');
       heading.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    // ── Modal ──
+    const overlay = document.getElementById('modal-overlay');
+    const openBtn = document.getElementById('inquire-btn');
+    const closeBtn = document.getElementById('modal-close');
+    const form = document.getElementById('inquiry-form');
+    const formContent = document.getElementById('modal-form-content');
+    const successMsg = document.getElementById('modal-success');
+
+    function openModal() {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => closeBtn.focus(), 50);
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    openBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Build mailto with form data
+      const data = Object.fromEntries(new FormData(form));
+      const body = [
+        'Name: ' + (data.name || ''),
+        'Phone: ' + (data.phone || ''),
+        'Type: ' + (data.type || ''),
+        'Dates: ' + (data.dates || ''),
+        '',
+        data.message || ''
+      ].join('\n');
+      const mailto = 'mailto:?subject=' + encodeURIComponent('Inquiry from ' + (data.name || 'website')) + '&body=' + encodeURIComponent(body);
+      window.location.href = mailto;
+
+      // Show success state
+      formContent.style.display = 'none';
+      successMsg.style.display = 'flex';
+      setTimeout(closeModal, 2200);
+      setTimeout(() => {
+        formContent.style.display = '';
+        successMsg.style.display = 'none';
+        form.reset();
+      }, 2800);
     });
 
     // ── Time-of-day ambiance colors ──
