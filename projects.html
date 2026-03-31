@@ -1,1 +1,984 @@
-<p>hi testing</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects</title>
+  <style>
+    :root {
+      --amb1: 80, 140, 255; --amb1a: 0.28;
+      --amb2: 170, 120, 255; --amb2a: 0.22;
+      --amb3: 255, 120, 180; --amb3a: 0.18;
+      --glow: 160, 140, 255; --glowa: 0.18;
+
+      --bg: #000000;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-strong: rgba(255, 255, 255, 0.1);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f5f5f7;
+      --muted: rgba(245, 245, 247, 0.58);
+      --soft: rgba(245, 245, 247, 0.28);
+      --accent: #9bb6ff;
+      --accent-2: #c09bff;
+      --success: #76ffd0;
+      --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --max: 1300px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -30%;
+      background:
+        radial-gradient(ellipse at 25% 50%, rgba(var(--amb1), var(--amb1a)) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 20%, rgba(var(--amb2), var(--amb2a)) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 85%, rgba(var(--amb3), var(--amb3a)) 0%, transparent 55%);
+      animation: drift 18s ease-in-out infinite alternate;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+      opacity: 0.16;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes drift {
+      0%   { transform: scale(1) translate(0, 0) rotate(0deg); }
+      25%  { transform: scale(1.12) translate(-4%, 5%) rotate(1deg); }
+      50%  { transform: scale(0.94) translate(5%, -3%) rotate(-1deg); }
+      75%  { transform: scale(1.08) translate(-2%, -4%) rotate(0.5deg); }
+      100% { transform: scale(1.03) translate(3%, 2%) rotate(-0.5deg); }
+    }
+
+    .cursor-glow {
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--glow), var(--glowa)) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 3;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s ease;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+
+    .cursor-glow.visible { opacity: 1; }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      width: min(calc(100% - 40px), var(--max));
+      margin: 0 auto;
+      padding: 28px 0 80px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 14px;
+      position: sticky;
+      top: 18px;
+      z-index: 10;
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      background: rgba(10, 10, 14, 0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.28);
+      width: fit-content;
+      margin: 0 auto 36px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 6px;
+    }
+
+    .brand-mark {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(var(--amb1), 1), rgba(var(--amb2), 1), rgba(var(--amb3), 1));
+      box-shadow: 0 0 24px rgba(var(--glow), 0.6);
+    }
+
+    .brand span {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(245, 245, 247, 0.72);
+    }
+
+    .nav {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav a,
+    .button {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: 180ms ease;
+    }
+
+    .nav a:hover,
+    .button:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .glass {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid var(--border);
+      backdrop-filter: blur(28px) saturate(150%);
+      -webkit-backdrop-filter: blur(28px) saturate(150%);
+      box-shadow: var(--shadow);
+    }
+
+    .glass::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent 26%, transparent 68%, rgba(255,255,255,0.08));
+      pointer-events: none;
+    }
+
+    .hero-card {
+      border-radius: 34px;
+      padding: 34px;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(245,245,247,0.72);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 30px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(var(--amb1), 0.2), rgba(var(--amb1), 1));
+    }
+
+    h1 {
+      font-size: clamp(52px, 7vw, 88px);
+      line-height: 0.96;
+      letter-spacing: -0.045em;
+      font-weight: 700;
+      max-width: 9ch;
+    }
+
+    .hero-copy {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 56ch;
+      margin-top: 20px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, rgba(var(--amb1), 0.28), rgba(var(--amb2), 0.22));
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset, 0 10px 30px rgba(80, 140, 255, 0.18);
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .meta-item {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .meta-label {
+      color: rgba(245,245,247,0.44);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .status-card {
+      border-radius: 34px;
+      padding: 26px;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: space-between;
+    }
+
+    .status-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .status-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .status-pill {
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--success);
+      background: rgba(118, 255, 208, 0.1);
+      border: 1px solid rgba(118, 255, 208, 0.16);
+      white-space: nowrap;
+    }
+
+    .signal {
+      position: relative;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: radial-gradient(circle at top, rgba(var(--amb1), 0.2), rgba(255,255,255,0.02) 55%), rgba(255,255,255,0.03);
+      padding: 24px;
+      min-height: 210px;
+      overflow: hidden;
+    }
+
+    .signal-grid {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 22px 22px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+      opacity: 0.22;
+    }
+
+    .signal-line {
+      position: absolute;
+      inset: auto 16px 24px 16px;
+      height: 90px;
+    }
+
+    .signal-line svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 0 14px rgba(150, 170, 255, 0.4));
+    }
+
+    .signal-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 20ch;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-card {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .mini-value {
+      font-size: 15px;
+      color: rgba(245,245,247,0.82);
+      white-space: nowrap;
+    }
+
+    .section {
+      margin-top: 22px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 0 4px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 58ch;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .project {
+      position: relative;
+      min-height: 360px;
+      border-radius: 30px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms ease, background 200ms ease;
+    }
+
+    .project:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255,255,255,0.18);
+      background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    }
+
+    .project.large { grid-column: span 7; }
+    .project.medium { grid-column: span 5; }
+    .project.half { grid-column: span 6; min-height: 320px; }
+
+    .project-noise,
+    .project-orbit,
+    .project-blur {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .project-blur {
+      inset: auto -10% -20% auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--amb1), 0.25), transparent 68%);
+      filter: blur(12px);
+      opacity: 0.9;
+    }
+
+    .project-orbit {
+      inset: 16px 16px auto auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+      opacity: 0.8;
+    }
+
+    .project-orbit::before,
+    .project-orbit::after {
+      content: '';
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+
+    .project-orbit::after { inset: 30px; }
+
+    .project-head {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      font-size: 12px;
+      color: rgba(245,245,247,0.74);
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .project h3 {
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      max-width: 10ch;
+    }
+
+    .project p {
+      margin-top: 14px;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 52ch;
+    }
+
+    .project-footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .project-stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .project-stat {
+      min-width: 86px;
+    }
+
+    .project-stat .label {
+      font-size: 11px;
+      color: rgba(245,245,247,0.42);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+
+    .project-stat .value {
+      font-size: 16px;
+      color: rgba(245,245,247,0.88);
+      letter-spacing: -0.02em;
+    }
+
+    .link-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 11px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 180ms ease;
+      white-space: nowrap;
+    }
+
+    .link-chip:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.09);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .timeline-card {
+      border-radius: 24px;
+      padding: 22px;
+    }
+
+    .timeline-step {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 18px;
+      color: rgba(245,245,247,0.82);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .timeline-card h3 {
+      font-size: 20px;
+      letter-spacing: -0.025em;
+      margin-bottom: 10px;
+    }
+
+    .timeline-card p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .cta {
+      margin-top: 22px;
+      border-radius: 34px;
+      padding: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .cta h2 {
+      font-size: clamp(34px, 4vw, 54px);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      max-width: 9ch;
+    }
+
+    .cta p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 56ch;
+      margin-top: 12px;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: rgba(245,245,247,0.34);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      margin-top: 22px;
+    }
+
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-reveal].visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1100px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-card, .status-card { min-height: auto; }
+      .project.large, .project.medium, .project.half { grid-column: span 12; }
+      .timeline { grid-template-columns: 1fr; }
+      .cta { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 760px) {
+      body { cursor: auto; }
+      .cursor-glow { display: none; }
+      .page { width: min(calc(100% - 24px), var(--max)); padding-top: 14px; }
+      .topbar { width: 100%; border-radius: 24px; justify-content: space-between; }
+      .nav { display: none; }
+      .hero-card, .status-card, .project, .timeline-card, .cta { padding: 22px; border-radius: 26px; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .section-head { flex-direction: column; align-items: flex-start; }
+      .project-footer { flex-direction: column; align-items: flex-start; }
+      .status-top { flex-direction: column; }
+      .cta h2 { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <main class="page">
+    <header class="topbar glass" data-reveal>
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <span>Projects</span>
+      </div>
+      <nav class="nav" aria-label="Section navigation">
+        <a href="#featured">Featured</a>
+        <a href="#builds">Builds</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <article class="hero-card glass" data-reveal>
+        <div>
+          <div class="eyebrow">Personal Projects</div>
+          <h1>Building clean systems with future-forward design.</h1>
+          <p class="hero-copy">
+            A high-tech showcase for products, experiments, interfaces, and tools. Designed to feel cinematic, sharp, and premium — like a lab for ideas that are already half a step into the future.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#featured">Explore projects</a>
+            <a class="button" href="#contact">Get in touch</a>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="meta-label">Focus</div>
+            <div class="meta-value">AI · UI · Systems</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Status</div>
+            <div class="meta-value">Shipping fast</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Style</div>
+            <div class="meta-value">Minimal + high tech</div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="status-card glass" data-reveal>
+        <div class="status-top">
+          <div>
+            <div class="status-title">Current signal</div>
+            <p class="hero-copy" style="font-size:14px; margin-top:8px; max-width:30ch;">
+              Tracking what is live, in progress, and moving toward launch.
+            </p>
+          </div>
+          <div class="status-pill">Live systems nominal</div>
+        </div>
+
+        <div class="signal">
+          <div class="signal-grid"></div>
+          <p class="signal-copy">Realtime focus across product design, automation, and polished user experiences.</p>
+          <div class="signal-line" aria-hidden="true">
+            <svg viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 78C28 78 34 22 57 22C81 22 81 80 109 80C136 80 138 36 165 36C194 36 196 58 221 58C249 58 258 18 288 18C317 18 321 68 351 68C372 68 383 47 400 47" stroke="url(#grad)" stroke-width="2.5" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="grad" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="rgba(80,140,255,1)"/>
+                  <stop offset="0.5" stop-color="rgba(170,120,255,1)"/>
+                  <stop offset="1" stop-color="rgba(255,120,180,1)"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="mini-card">
+            <div>
+              <strong>Now building</strong>
+              <span>Private operating system for ideas</span>
+            </div>
+            <div class="mini-value">03 active</div>
+          </div>
+          <div class="mini-card">
+            <div>
+              <strong>Latest milestone</strong>
+              <span>Motion-heavy portfolio layer shipped</span>
+            </div>
+            <div class="mini-value">v2.4</div>
+          </div>
+          <div class="mini-card">
+            <div>
+              <strong>Next push</strong>
+              <span>Realtime dashboard and launch visuals</span>
+            </div>
+            <div class="mini-value">Queued</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="featured">
+      <div class="section-head" data-reveal>
+        <div>
+          <h2>Featured builds</h2>
+        </div>
+        <p>
+          Each card is built to feel more like a product panel than a basic portfolio item. Replace the titles, descriptions, and links with your real projects.
+        </p>
+      </div>
+
+      <div class="projects-grid" id="builds">
+        <article class="project glass large" data-reveal>
+          <div class="project-blur"></div>
+          <div class="project-orbit"></div>
+          <div>
+            <div class="tag-row">
+              <span class="tag">Artificial Intelligence</span>
+              <span class="tag">Automation</span>
+              <span class="tag">Flagship</span>
+            </div>
+            <div class="project-head">
+              <div>
+                <h3>FlowState AI</h3>
+                <p>
+                  A system designed to automate intake, scheduling, follow-up, and client communication for high-ticket service businesses. Built around clarity, speed, and a premium client experience.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="project-footer">
+            <div class="project-stats">
+              <div class="project-stat">
+                <div class="label">Layer</div>
+                <div class="value">Full stack</div>
+              </div>
+              <div class="project-stat">
+                <div class="label">Mode</div>
+                <div class="value">Private beta</div>
+              </div>
+              <div class="project-stat">
+                <div class="label">Impact</div>
+                <div class="value">Time saved</div>
+              </div>
+            </div>
+            <a class="link-chip" href="#">View concept <span>↗</span></a>
+          </div>
+        </article>
+
+        <article class="project glass medium" data-reveal>
+          <div class="project-blur" style="background: radial-gradient(circle, rgba(var(--amb2), 0.23), transparent 68%);"></div>
+          <div class="project-orbit"></div>
+          <div>
+            <div class="tag-row">
+              <span class="tag">Mapping</span>
+              <span class="tag">Realtime</span>
+            </div>
+            <h3>Camera Grid</h3>
+            <p>
+              A sleek global camera interface focused on speed, visual clarity, and dense data navigation. Designed for responsive map interactions and high-frequency use.
+            </p>
+          </div>
+          <div class="project-footer">
+            <div class="project-stats">
+              <div class="project-stat">
+                <div class="label">Engine</div>
+                <div class="value">Leaflet</div>
+              </div>
+              <div class="project-stat">
+                <div class="label">State</div>
+                <div class="value">Iterating</div>
+              </div>
+            </div>
+            <a class="link-chip" href="#">Open build <span>↗</span></a>
+          </div>
+        </article>
+
+        <article class="project glass half" data-reveal>
+          <div class="project-blur" style="background: radial-gradient(circle, rgba(var(--amb3), 0.23), transparent 68%);"></div>
+          <div>
+            <div class="tag-row">
+              <span class="tag">iOS</span>
+              <span class="tag">Design System</span>
+            </div>
+            <h3>Glass UI Lab</h3>
+            <p>
+              A library of premium interface concepts inspired by modern Apple-style motion, layering, and restraint. Built as a sandbox for elegant interaction design.
+            </p>
+          </div>
+          <div class="project-footer">
+            <div class="project-stats">
+              <div class="project-stat">
+                <div class="label">Focus</div>
+                <div class="value">SwiftUI</div>
+              </div>
+              <div class="project-stat">
+                <div class="label">Stage</div>
+                <div class="value">Exploration</div>
+              </div>
+            </div>
+            <a class="link-chip" href="#">See details <span>↗</span></a>
+          </div>
+        </article>
+
+        <article class="project glass half" data-reveal>
+          <div class="project-blur"></div>
+          <div>
+            <div class="tag-row">
+              <span class="tag">Systems</span>
+              <span class="tag">Internal Tools</span>
+            </div>
+            <h3>Operator Console</h3>
+            <p>
+              A compact command center for managing personal workflows, tracking launches, and keeping product priorities in one clean place.
+            </p>
+          </div>
+          <div class="project-footer">
+            <div class="project-stats">
+              <div class="project-stat">
+                <div class="label">Role</div>
+                <div class="value">Dashboard</div>
+              </div>
+              <div class="project-stat">
+                <div class="label">Output</div>
+                <div class="value">Daily use</div>
+              </div>
+            </div>
+            <a class="link-chip" href="#">Launch panel <span>↗</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="roadmap">
+      <div class="section-head" data-reveal>
+        <div>
+          <h2>How I build</h2>
+        </div>
+        <p>
+          A simple framework for moving from concept to polished product without losing the visual quality that makes the work feel premium.
+        </p>
+      </div>
+
+      <div class="timeline">
+        <article class="timeline-card glass" data-reveal>
+          <div class="timeline-step">01</div>
+          <h3>Define the signal</h3>
+          <p>Start with the core leverage point: the workflow, pain point, or behavior that actually matters. Strip out everything else.</p>
+        </article>
+        <article class="timeline-card glass" data-reveal>
+          <div class="timeline-step">02</div>
+          <h3>Design the surface</h3>
+          <p>Build an interface that feels clear, calm, and fast. Good design is not decoration — it is how complexity becomes usable.</p>
+        </article>
+        <article class="timeline-card glass" data-reveal>
+          <div class="timeline-step">03</div>
+          <h3>Ship and refine</h3>
+          <p>Launch early, observe what breaks, then iterate. The goal is momentum with polish, not perfection with delay.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="cta glass" id="contact" data-reveal>
+      <div>
+        <div class="eyebrow">Let’s build</div>
+        <h2>Have an idea worth turning into a product?</h2>
+        <p>
+          This section can become your contact block, founder note, or collaboration invite. Add your real email, social links, or a form embed here.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="mailto:hello@example.com">Start a conversation</a>
+        <a class="button" href="#featured">Back to projects</a>
+      </div>
+    </section>
+
+    <p class="footer-note" data-reveal>Engineered for a dark, cinematic, high-tech feel.</p>
+  </main>
+
+  <script>
+    const glow = document.getElementById('cursorGlow');
+
+    window.addEventListener('pointermove', (e) => {
+      glow.style.left = `${e.clientX}px`;
+      glow.style.top = `${e.clientY}px`;
+      glow.classList.add('visible');
+    });
+
+    window.addEventListener('pointerleave', () => glow.classList.remove('visible'));
+
+    const revealItems = document.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealItems.forEach((item, index) => {
+      item.style.transitionDelay = `${index * 60}ms`;
+      observer.observe(item);
+    });
+  </script>
+</body>
+</html>
