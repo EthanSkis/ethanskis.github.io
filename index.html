@@ -467,20 +467,6 @@
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      // Build mailto with form data
-      const data = Object.fromEntries(new FormData(form));
-      const body = [
-        'Name: ' + (data.name || ''),
-        'Phone: ' + (data.phone || ''),
-        'Type: ' + (data.type || ''),
-        'Dates: ' + (data.dates || ''),
-        '',
-        data.message || ''
-      ].join('\n');
-      const mailto = 'mailto:?subject=' + encodeURIComponent('Inquiry from ' + (data.name || 'website')) + '&body=' + encodeURIComponent(body);
-      window.location.href = mailto;
-
-      // Show success state
       formContent.style.display = 'none';
       successMsg.style.display = 'flex';
       setTimeout(closeModal, 2200);
