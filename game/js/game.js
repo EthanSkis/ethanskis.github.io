@@ -4,10 +4,10 @@ class Game {
     constructor() {
         // Three.js setup
         this.canvas = document.getElementById('game-canvas');
-        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: !isMobile });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
+        this.renderer.shadowMap.enabled = !isMobile; // Disable shadows on mobile for performance
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
         this.scene = new THREE.Scene();
@@ -113,8 +113,13 @@ class Game {
 
         audioManager.init();
 
-        // Lock pointer
-        this.canvas.requestPointerLock();
+        // Lock pointer (desktop) or go fullscreen (mobile)
+        if (touchControls.active) {
+            touchControls.show();
+            this._requestFullscreen();
+        } else {
+            this.canvas.requestPointerLock();
+        }
     }
 
     _cleanup() {
@@ -202,7 +207,9 @@ class Game {
                 entry.entity.respawn(spawn);
                 if (entry.entity === this.player) {
                     this.hud.hideRespawnScreen();
-                    this.canvas.requestPointerLock();
+                    if (!touchControls.active) {
+                        this.canvas.requestPointerLock();
+                    }
                 }
                 this.respawnQueue.splice(i, 1);
             }
@@ -236,7 +243,7 @@ class Game {
 
     _handlePlayerShooting(time) {
         if (!this.player.isAlive) return;
-        if (!document.pointerLockElement) return;
+        if (!document.pointerLockElement && !touchControls.active) return;
 
         const weapon = this.player.weapon;
 
@@ -390,7 +397,8 @@ class Game {
 
     _endMatch() {
         this.isRunning = false;
-        document.exitPointerLock();
+        if (document.pointerLockElement) document.exitPointerLock();
+        if (touchControls.active) touchControls.hide();
 
         const allEntities = this._getAllEntities();
         const sorted = [...allEntities].sort((a, b) => b.score - a.score);
@@ -404,7 +412,22 @@ class Game {
             this.hud.hideRespawnScreen();
             document.getElementById('menu-screen').style.display = 'flex';
             this._cleanup();
+            // Exit fullscreen
+            const eFS = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+            if (eFS && document.fullscreenElement) eFS.call(document).catch(() => {});
         }, 5000);
+    }
+
+    _requestFullscreen() {
+        const el = document.documentElement;
+        const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (rfs) {
+            rfs.call(el).catch(() => {});
+        }
+        // Lock orientation to landscape if possible
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {});
+        }
     }
 
     render() {

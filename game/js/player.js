@@ -113,6 +113,36 @@ class Player {
     update(dt, colliders, time) {
         if (!this.isAlive) return;
 
+        // --- Touch input integration ---
+        if (touchControls.active) {
+            const look = touchControls.consumeLookDelta();
+            this.mouseDelta.x += look.x;
+            this.mouseDelta.y += look.y;
+
+            this.mouseDown = touchControls.fireDown;
+
+            if (touchControls.jumpPressed) {
+                this.keys['Space'] = true;
+                touchControls.jumpPressed = false;
+            } else {
+                this.keys['Space'] = false;
+            }
+
+            this.keys['KeyC'] = touchControls.crouchDown;
+
+            if (touchControls.reloadPressed) {
+                this.reload();
+                touchControls.reloadPressed = false;
+            }
+
+            if (touchControls.weaponCyclePressed) {
+                this.cycleWeapon(1);
+                touchControls.weaponCyclePressed = false;
+            }
+
+            this.keys['Tab'] = touchControls.scoreboardDown;
+        }
+
         // Mouse look
         const sensitivity = GAME_CONSTANTS.MOUSE_SENSITIVITY;
         this.rotation.yaw -= this.mouseDelta.x * sensitivity;
@@ -157,6 +187,16 @@ class Player {
         if (this.keys['KeyS']) moveDir.sub(forward);
         if (this.keys['KeyA']) moveDir.sub(right);
         if (this.keys['KeyD']) moveDir.add(right);
+
+        // Touch joystick movement
+        if (touchControls.active) {
+            const tx = touchControls.moveX;
+            const ty = touchControls.moveY;
+            if (Math.abs(tx) > 0.1 || Math.abs(ty) > 0.1) {
+                moveDir.add(forward.clone().multiplyScalar(ty));
+                moveDir.add(right.clone().multiplyScalar(tx));
+            }
+        }
 
         if (moveDir.lengthSq() > 0) {
             moveDir.normalize();
