@@ -72,6 +72,7 @@
       opacity: 0;
       transform: translateY(16px);
       animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+      perspective: 800px;
     }
 
     @keyframes fadeUp {
@@ -86,6 +87,28 @@
       font-weight: 700;
       letter-spacing: -0.01em;
       line-height: 1.05;
+      transition: transform 0.15s ease-out;
+      will-change: transform;
+    }
+
+    /* ── Typing cursor ── */
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 0.85em;
+      background: #f5f5f7;
+      margin-left: 4px;
+      vertical-align: baseline;
+      animation: blink 0.7s step-end infinite;
+      opacity: 0.7;
+    }
+
+    .cursor.hidden {
+      display: none;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
     }
 
     /* ── Subtitle row ── */
@@ -123,7 +146,7 @@
 
   <div class="cursor-glow"></div>
   <div class="center">
-    <h1>Ethan Gardner</h1>
+    <h1>Ethan Gardner<span class="cursor"></span></h1>
     <div class="subtitle">
       <span>McCall, Idaho</span>
       <span class="sep">/</span>
@@ -134,14 +157,29 @@
   </div>
 
   <script>
-    // Cursor glow
+    // Typing cursor — blink for 2s then disappear
+    const typingCursor = document.querySelector('.cursor');
+    setTimeout(() => typingCursor.classList.add('hidden'), 2000);
+
+    // Cursor glow + parallax tilt
     const glow = document.querySelector('.cursor-glow');
+    const heading = document.querySelector('h1');
     document.addEventListener('mousemove', (e) => {
       glow.style.left = e.clientX + 'px';
       glow.style.top = e.clientY + 'px';
       if (!glow.classList.contains('visible')) glow.classList.add('visible');
+
+      // Parallax tilt
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const rotateY = ((e.clientX - cx) / cx) * 4;
+      const rotateX = ((cy - e.clientY) / cy) * 3;
+      heading.style.transform = 'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
     });
-    document.addEventListener('mouseleave', () => glow.classList.remove('visible'));
+    document.addEventListener('mouseleave', () => {
+      glow.classList.remove('visible');
+      heading.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
 
     // Local time (Mountain Time)
     const timeEl = document.querySelector('.time');
