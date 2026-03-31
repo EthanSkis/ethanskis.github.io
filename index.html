@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ethan Gardner</title>
   <style>
+    :root {
+      --amb1: 80, 140, 255; --amb1a: 0.28;
+      --amb2: 170, 120, 255; --amb2a: 0.22;
+      --amb3: 255, 120, 180; --amb3a: 0.18;
+      --glow: 160, 140, 255; --glowa: 0.18;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -28,9 +35,9 @@
       position: fixed;
       inset: -30%;
       background:
-        radial-gradient(ellipse at 25% 50%, rgba(80, 140, 255, 0.28) 0%, transparent 55%),
-        radial-gradient(ellipse at 75% 20%, rgba(170, 120, 255, 0.22) 0%, transparent 55%),
-        radial-gradient(ellipse at 50% 85%, rgba(255, 120, 180, 0.18) 0%, transparent 55%);
+        radial-gradient(ellipse at 25% 50%, rgba(var(--amb1), var(--amb1a)) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 20%, rgba(var(--amb2), var(--amb2a)) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 85%, rgba(var(--amb3), var(--amb3a)) 0%, transparent 55%);
       animation: drift 18s ease-in-out infinite alternate;
       z-index: 0;
       pointer-events: none;
@@ -50,7 +57,7 @@
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(160, 140, 255, 0.18) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(var(--glow), var(--glowa)) 0%, transparent 70%);
       pointer-events: none;
       z-index: 1;
       transform: translate(-50%, -50%);
@@ -158,6 +165,62 @@
       heading.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
 
+    // ── Time-of-day ambiance colors ──
+    const AMBIANCE = [
+      { hour: 2.0,  g1:[20,30,80,0.25],   g2:[60,30,100,0.20],  g3:[30,20,60,0.15],   glow:[40,30,100,0.15] },
+      { hour: 5.5,  g1:[80,60,120,0.26],   g2:[180,100,80,0.22], g3:[120,80,140,0.18],  glow:[140,100,160,0.16] },
+      { hour: 7.5,  g1:[100,160,255,0.28], g2:[200,160,80,0.20], g3:[255,160,120,0.16], glow:[160,180,255,0.18] },
+      { hour: 12.0, g1:[100,180,255,0.24], g2:[180,200,255,0.18],g3:[160,220,255,0.14], glow:[140,180,255,0.16] },
+      { hour: 15.0, g1:[80,140,255,0.28],  g2:[170,120,255,0.22],g3:[255,120,180,0.18], glow:[160,140,255,0.18] },
+      { hour: 18.0, g1:[255,140,60,0.30],  g2:[255,80,100,0.24], g3:[200,100,40,0.20],  glow:[255,160,80,0.18] },
+      { hour: 20.0, g1:[120,60,160,0.28],  g2:[200,60,100,0.22], g3:[60,40,120,0.18],   glow:[140,80,180,0.17] },
+      { hour: 22.5, g1:[30,50,120,0.26],   g2:[80,40,140,0.22],  g3:[40,30,80,0.16],    glow:[60,50,140,0.16] },
+    ];
+
+    function lerpColor(a, b, t) {
+      return [
+        Math.round(a[0] + (b[0] - a[0]) * t),
+        Math.round(a[1] + (b[1] - a[1]) * t),
+        Math.round(a[2] + (b[2] - a[2]) * t),
+        +(a[3] + (b[3] - a[3]) * t).toFixed(3)
+      ];
+    }
+
+    function getTimeColors(h) {
+      const kf = AMBIANCE, len = kf.length;
+      let i = 0;
+      while (i < len && kf[i].hour <= h) i++;
+      const after = kf[i % len], before = kf[(i - 1 + len) % len];
+      let span = after.hour - before.hour;
+      if (span <= 0) span += 24;
+      let elapsed = h - before.hour;
+      if (elapsed < 0) elapsed += 24;
+      const t = elapsed / span;
+      return {
+        g1: lerpColor(before.g1, after.g1, t),
+        g2: lerpColor(before.g2, after.g2, t),
+        g3: lerpColor(before.g3, after.g3, t),
+        glow: lerpColor(before.glow, after.glow, t),
+      };
+    }
+
+    let lastAmbianceMin = -1;
+    function updateAmbiance(mt) {
+      const min = mt.getHours() * 60 + mt.getMinutes();
+      if (min === lastAmbianceMin) return;
+      lastAmbianceMin = min;
+      const c = getTimeColors(mt.getHours() + mt.getMinutes() / 60);
+      const s = document.documentElement.style;
+      s.setProperty('--amb1', c.g1[0]+','+c.g1[1]+','+c.g1[2]);
+      s.setProperty('--amb1a', c.g1[3]);
+      s.setProperty('--amb2', c.g2[0]+','+c.g2[1]+','+c.g2[2]);
+      s.setProperty('--amb2a', c.g2[3]);
+      s.setProperty('--amb3', c.g3[0]+','+c.g3[1]+','+c.g3[2]);
+      s.setProperty('--amb3a', c.g3[3]);
+      s.setProperty('--glow', c.glow[0]+','+c.glow[1]+','+c.glow[2]);
+      s.setProperty('--glowa', c.glow[3]);
+    }
+
     // Local time (Mountain Time)
     const timeEl = document.querySelector('.time');
     function tick() {
@@ -168,6 +231,7 @@
       const period = h >= 12 ? 'PM' : 'AM';
       const h12 = h % 12 || 12;
       timeEl.textContent = h12 + ':' + m + ' ' + period;
+      updateAmbiance(mt);
     }
     tick();
     setInterval(tick, 1000);
