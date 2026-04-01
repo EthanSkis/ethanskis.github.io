@@ -580,6 +580,9 @@
   </div>
 
   <script>
+    const TELEGRAM_TOKEN = '__TELEGRAM_BOT_TOKEN__';
+    const TELEGRAM_CHAT  = '__TELEGRAM_CHAT_ID__';
+
     // Cursor glow + parallax tilt
     const glow = document.querySelector('.cursor-glow');
     const heading = document.querySelector('h1');
@@ -626,8 +629,37 @@
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      const data = {
+        name:    document.getElementById('f-name').value.trim(),
+        email:   document.getElementById('f-email').value.trim(),
+        phone:   document.getElementById('f-phone').value.trim(),
+        type:    document.getElementById('f-type').value.trim(),
+        dates:   document.getElementById('f-dates').value.trim(),
+        message: document.getElementById('f-message').value.trim(),
+      };
+
+      const lines = [
+        '📩 *New Inquiry*',
+        '',
+        `*Name:* ${data.name}`,
+        `*Email:* ${data.email}`,
+        data.phone   ? `*Phone:* ${data.phone}`      : null,
+        data.type    ? `*Type:* ${data.type}`        : null,
+        data.dates   ? `*Dates:* ${data.dates}`      : null,
+        data.message ? `*Message:*\n${data.message}` : null,
+      ].filter(Boolean).join('\n');
+
+      if (TELEGRAM_TOKEN !== '__TELEGRAM_BOT_TOKEN__') {
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT, text: lines, parse_mode: 'Markdown' }),
+        }).catch(() => {});
+      }
+
       formContent.style.display = 'none';
       successMsg.style.display = 'flex';
       setTimeout(closeModal, 2200);
