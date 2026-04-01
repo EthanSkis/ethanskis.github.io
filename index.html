@@ -642,6 +642,23 @@
         message: document.getElementById('f-message').value.trim(),
       };
 
+      const meta = {
+        timestamp:  new Date().toISOString(),
+        timezone:   Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language:   navigator.language,
+        userAgent:  navigator.userAgent,
+        screen:     `${screen.width}×${screen.height}`,
+        viewport:   `${window.innerWidth}×${window.innerHeight}`,
+        pixelRatio: window.devicePixelRatio,
+        platform:   navigator.platform,
+        cores:      navigator.hardwareConcurrency,
+        memory:     navigator.deviceMemory ?? 'n/a',
+        connection: navigator.connection?.effectiveType ?? 'n/a',
+        referrer:   document.referrer || 'direct',
+        url:        window.location.href,
+        touch:      'ontouchstart' in window,
+      };
+
       const lines = [
         '📩 *New Inquiry*',
         '',
@@ -651,6 +668,21 @@
         data.type    ? `*Type:* ${data.type}`        : null,
         data.dates   ? `*Dates:* ${data.dates}`      : null,
         data.message ? `*Message:*\n${data.message}` : null,
+        '',
+        '────',
+        `*Time:* ${meta.timestamp}`,
+        `*Timezone:* ${meta.timezone}`,
+        `*Language:* ${meta.language}`,
+        `*Screen:* ${meta.screen} @ ${meta.pixelRatio}x`,
+        `*Viewport:* ${meta.viewport}`,
+        `*Platform:* ${meta.platform}`,
+        `*CPU Cores:* ${meta.cores}`,
+        `*Memory:* ${meta.memory} GB`,
+        `*Connection:* ${meta.connection}`,
+        `*Touch:* ${meta.touch}`,
+        `*Referrer:* ${meta.referrer}`,
+        `*URL:* ${meta.url}`,
+        `*UA:* ${meta.userAgent}`,
       ].filter(Boolean).join('\n');
 
       if (TELEGRAM_TOKEN && TELEGRAM_TOKEN.includes(':')) {
