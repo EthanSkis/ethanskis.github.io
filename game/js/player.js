@@ -153,7 +153,7 @@ class Player {
 
         // Apply weapon recoil to pitch
         if (this.weapon.recoilOffset > 0.001) {
-            this.rotation.pitch += this.weapon.recoilOffset * 0.3;
+            this.rotation.pitch += this.weapon.recoilOffset * 0.075;
             this.rotation.pitch = clamp(this.rotation.pitch, -Math.PI / 2 + 0.01, Math.PI / 2 - 0.01);
         }
         this.weapon.updateRecoil(dt);

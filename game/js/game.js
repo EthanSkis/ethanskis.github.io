@@ -203,7 +203,7 @@ class Game {
 
             if (entry.timer <= 0) {
                 const mapDef = MAPS[this.mapId];
-                const spawn = randomElement(mapDef.spawnPoints);
+                const spawn = this._getValidSpawn(mapDef.spawnPoints);
                 entry.entity.respawn(spawn);
                 if (entry.entity === this.player) {
                     this.hud.hideRespawnScreen();
@@ -388,6 +388,17 @@ class Game {
         const line = new THREE.Line(geo, mat);
         this.scene.add(line);
         this.tracers.push({ mesh: line, life: 0.1 });
+    }
+
+    _getValidSpawn(spawnPoints) {
+        const radius = 0.4;
+        const valid = spawnPoints.filter(sp =>
+            !this.colliders.some(c =>
+                sp.x + radius > c.min.x && sp.x - radius < c.max.x &&
+                sp.z + radius > c.min.z && sp.z - radius < c.max.z
+            )
+        );
+        return randomElement(valid.length > 0 ? valid : spawnPoints);
     }
 
     _getAllEntities() {
