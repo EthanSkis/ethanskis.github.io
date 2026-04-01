@@ -660,30 +660,32 @@
         touch:      'ontouchstart' in window,
       };
 
+      const esc = s => String(s).replace(/[_*[\]`]/g, '\\$&');
+
       const lines = [
         '📩 *New Inquiry*',
         '',
-        `*Name:* ${data.name}`,
-        `*Email:* ${data.email}`,
-        data.phone   ? `*Phone:* ${data.phone}`      : null,
-        data.type    ? `*Type:* ${data.type}`        : null,
-        data.dates   ? `*Dates:* ${data.dates}`      : null,
-        data.message ? `*Message:*\n${data.message}` : null,
+        `*Name:* ${esc(data.name)}`,
+        `*Email:* ${esc(data.email)}`,
+        data.phone   ? `*Phone:* ${esc(data.phone)}`      : null,
+        data.type    ? `*Type:* ${esc(data.type)}`        : null,
+        data.dates   ? `*Dates:* ${esc(data.dates)}`      : null,
+        data.message ? `*Message:*\n${esc(data.message)}` : null,
         '',
         '────',
         `*Time:* ${meta.timestamp}`,
-        `*Timezone:* ${meta.timezone}`,
+        `*Timezone:* ${esc(meta.timezone)}`,
         `*Language:* ${meta.language}`,
         `*Screen:* ${meta.screen} @ ${meta.pixelRatio}x`,
         `*Viewport:* ${meta.viewport}`,
-        `*Platform:* ${meta.platform}`,
+        `*Platform:* ${esc(meta.platform)}`,
         `*CPU Cores:* ${meta.cores}`,
         `*Memory:* ${meta.memory} GB`,
         `*Connection:* ${meta.connection}`,
         `*Touch:* ${meta.touch}`,
-        `*Referrer:* ${meta.referrer}`,
-        `*URL:* ${meta.url}`,
-        `*UA:* ${meta.userAgent}`,
+        `*Referrer:* ${esc(meta.referrer)}`,
+        `*URL:* ${esc(meta.url)}`,
+        `*UA:* ${esc(meta.userAgent)}`,
       ].filter(Boolean).join('\n');
 
       if (TELEGRAM_TOKEN && TELEGRAM_TOKEN.includes(':')) {
