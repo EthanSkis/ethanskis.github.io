@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ethgrd</title>
@@ -580,8 +581,8 @@
   </div>
 
   <script>
-    const TELEGRAM_TOKEN = '';
-    const TELEGRAM_CHAT  = '';
+    const TELEGRAM_TOKEN = '8716351903:AAF04yPJJswWn7PY2AbNZKX1_gD5JruB8fQ';
+    const TELEGRAM_CHAT  = '7626254420';
 
     // Cursor glow + parallax tilt
     const glow = document.querySelector('.cursor-glow');
@@ -652,7 +653,7 @@
         data.message ? `*Message:*\n${data.message}` : null,
       ].filter(Boolean).join('\n');
 
-      if (TELEGRAM_TOKEN !== '') {
+      if (TELEGRAM_TOKEN !== '8716351903:AAF04yPJJswWn7PY2AbNZKX1_gD5JruB8fQ') {
         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
