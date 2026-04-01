@@ -653,7 +653,7 @@
         data.message ? `*Message:*\n${data.message}` : null,
       ].filter(Boolean).join('\n');
 
-      if (TELEGRAM_TOKEN !== '__TELEGRAM_BOT_TOKEN__') {
+      if (TELEGRAM_TOKEN && TELEGRAM_TOKEN.includes(':')) {
         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
