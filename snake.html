@@ -49,12 +49,57 @@
     gap: 20px;
   }
 
+  .header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
   h1 {
     font-size: 2.2rem;
     font-weight: 700;
     letter-spacing: -0.5px;
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 0 2px 20px rgba(120, 80, 255, 0.3);
+  }
+
+  .ai-toggle {
+    position: absolute;
+    right: 0;
+    width: 44px; height: 44px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+
+  .ai-toggle:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .ai-toggle.active {
+    background: rgba(120, 80, 255, 0.25);
+    border-color: rgba(120, 80, 255, 0.5);
+    color: rgba(200, 170, 255, 0.95);
+    box-shadow: 0 4px 20px rgba(120, 80, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .ai-toggle svg {
+    width: 22px; height: 22px;
+    fill: currentColor;
   }
 
   .glass {
@@ -214,7 +259,12 @@
 <body>
 
 <div class="container">
-  <h1>Snake</h1>
+  <div class="header">
+    <h1>Snake</h1>
+    <button class="ai-toggle" id="aiToggle" title="AI Autopilot">
+      <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1.07A7.001 7.001 0 0 1 7.07 19H6a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h-1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2zM9.5 16a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+    </button>
+  </div>
 
   <div class="scoreboard glass">
     <div class="score-item">
@@ -261,17 +311,129 @@
   const overlayTitle = document.getElementById('overlayTitle');
   const overlaySub = document.getElementById('overlaySub');
   const playBtn = document.getElementById('playBtn');
+  const aiToggle = document.getElementById('aiToggle');
 
   const GRID = 20;
+  const TOTAL = GRID * GRID;
   const CELL = canvas.width / GRID;
   const BASE_INTERVAL = 130;
   const MIN_INTERVAL = 60;
+  const AI_INTERVAL = 35;
 
   let snake, dir, nextDir, food, score, best, running, lastTime, interval, growPending;
+  let aiActive = false;
 
   best = parseInt(localStorage.getItem('snakeBest') || '0', 10);
   bestEl.textContent = best;
 
+  // --- Hamiltonian cycle ---
+  // Build a cycle that visits every cell on the GRID x GRID board exactly once.
+  // Pattern: down column 0, then zigzag columns 1..GRID-1 (rows 1..GRID-1),
+  // then back along row 0 to close the loop.
+  const cycleOrder = new Array(GRID * GRID); // cycleOrder[y * GRID + x] = step index
+  let step = 0;
+
+  // Column 0: top to bottom
+  for (let y = 0; y < GRID; y++) cycleOrder[y * GRID + 0] = step++;
+  // Columns 1..GRID-1 zigzag between rows 1..GRID-1
+  for (let x = 1; x < GRID; x++) {
+    if (x % 2 === 1) {
+      // up: row GRID-1 to row 1
+      for (let y = GRID - 1; y >= 1; y--) cycleOrder[y * GRID + x] = step++;
+    } else {
+      // down: row 1 to row GRID-1
+      for (let y = 1; y < GRID; y++) cycleOrder[y * GRID + x] = step++;
+    }
+  }
+  // Row 0: right-to-left from column GRID-1 back to column 1
+  for (let x = GRID - 1; x >= 1; x--) cycleOrder[0 * GRID + x] = step++;
+
+  // Precompute the next cell in the cycle for each cell
+  const cycleNext = new Array(TOTAL); // cycleNext[y * GRID + x] = {x, y}
+  // Build inverse: stepToCell[step] = flat index
+  const stepToCell = new Array(TOTAL);
+  for (let i = 0; i < TOTAL; i++) stepToCell[cycleOrder[i]] = i;
+  for (let s = 0; s < TOTAL; s++) {
+    const nextS = (s + 1) % TOTAL;
+    const flatNext = stepToCell[nextS];
+    cycleNext[stepToCell[s]] = { x: flatNext % GRID, y: Math.floor(flatNext / GRID) };
+  }
+
+  function cellIndex(x, y) { return y * GRID + x; }
+  function cyclePos(x, y) { return cycleOrder[cellIndex(x, y)]; }
+
+  // Distance forward in cycle from a to b
+  function cycleDist(a, b) { return (b - a + TOTAL) % TOTAL; }
+
+  // --- AI logic ---
+  function aiChooseDirection() {
+    const head = snake[0];
+    const tail = snake[snake.length - 1];
+    const headPos = cyclePos(head.x, head.y);
+    const foodPos = cyclePos(food.x, food.y);
+    const tailPos = cyclePos(tail.x, tail.y);
+
+    // Build set of occupied cells for fast lookup
+    const occupied = new Set();
+    for (const s of snake) occupied.add(cellIndex(s.x, s.y));
+
+    const directions = [
+      { x: 0, y: -1 },
+      { x: 0, y: 1 },
+      { x: -1, y: 0 },
+      { x: 1, y: 0 },
+    ];
+
+    // Filter to safe moves (in bounds, not hitting body)
+    const safeMoves = [];
+    for (const d of directions) {
+      const nx = head.x + d.x;
+      const ny = head.y + d.y;
+      if (nx < 0 || nx >= GRID || ny < 0 || ny >= GRID) continue;
+      if (occupied.has(cellIndex(nx, ny))) continue;
+      safeMoves.push({ d, nx, ny });
+    }
+
+    if (safeMoves.length === 0) {
+      // No safe move — just follow cycle (will die, but nothing we can do)
+      const cn = cycleNext[cellIndex(head.x, head.y)];
+      return { x: cn.x - head.x, y: cn.y - head.y };
+    }
+
+    // For each safe move, check if it "cuts" ahead in the cycle toward food
+    // while staying behind the tail. A move to (nx,ny) is valid if:
+    //   cycleDist(headPos, movePos) <= cycleDist(headPos, tailPos)
+    // i.e. we don't overtake our tail in cycle order.
+    // Among valid moves, pick the one closest to food in cycle distance.
+
+    let bestMove = null;
+    let bestDist = Infinity;
+
+    for (const { d, nx, ny } of safeMoves) {
+      const movePos = cyclePos(nx, ny);
+      const distToTail = cycleDist(headPos, tailPos);
+      const distToMove = cycleDist(headPos, movePos);
+
+      // The move must not overtake the tail in cycle order
+      if (distToMove <= distToTail) {
+        const distToFood = cycleDist(movePos, foodPos);
+        if (distToFood < bestDist) {
+          bestDist = distToFood;
+          bestMove = d;
+        }
+      }
+    }
+
+    // Fallback: follow the Hamiltonian cycle exactly
+    if (!bestMove) {
+      const cn = cycleNext[cellIndex(head.x, head.y)];
+      bestMove = { x: cn.x - head.x, y: cn.y - head.y };
+    }
+
+    return bestMove;
+  }
+
+  // --- Game logic ---
   function init() {
     const mid = Math.floor(GRID / 2);
     snake = [{ x: mid, y: mid }, { x: mid - 1, y: mid }, { x: mid - 2, y: mid }];
@@ -279,7 +441,7 @@
     nextDir = { x: 1, y: 0 };
     score = 0;
     growPending = 0;
-    interval = BASE_INTERVAL;
+    interval = aiActive ? AI_INTERVAL : BASE_INTERVAL;
     scoreEl.textContent = '0';
     placeFood();
   }
@@ -291,10 +453,29 @@
         if (!snake.some(s => s.x === x && s.y === y)) free.push({ x, y });
       }
     }
+    if (free.length === 0) return win();
     food = free[Math.floor(Math.random() * free.length)];
   }
 
+  function win() {
+    running = false;
+    if (score > best) {
+      best = score;
+      localStorage.setItem('snakeBest', best);
+      bestEl.textContent = best;
+    }
+    overlayTitle.textContent = 'You Win!';
+    overlaySub.textContent = `Perfect score: ${score}`;
+    playBtn.textContent = 'Play Again';
+    overlay.classList.remove('hidden');
+  }
+
   function update() {
+    if (aiActive && running) {
+      const aiDir = aiChooseDirection();
+      nextDir = aiDir;
+    }
+
     dir = { ...nextDir };
     const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
@@ -307,8 +488,9 @@
       score++;
       scoreEl.textContent = score;
       growPending++;
-      interval = Math.max(MIN_INTERVAL, BASE_INTERVAL - score * 3);
+      if (!aiActive) interval = Math.max(MIN_INTERVAL, BASE_INTERVAL - score * 3);
       placeFood();
+      if (!running) return; // win() was called
     }
 
     if (growPending > 0) growPending--;
@@ -333,31 +515,44 @@
     }
 
     // Food glow
-    const fx = food.x * CELL + CELL / 2;
-    const fy = food.y * CELL + CELL / 2;
-    const glow = ctx.createRadialGradient(fx, fy, 2, fx, fy, CELL * 1.8);
-    glow.addColorStop(0, 'rgba(255,100,130,0.25)');
-    glow.addColorStop(1, 'transparent');
-    ctx.fillStyle = glow;
-    ctx.fillRect(food.x * CELL - CELL, food.y * CELL - CELL, CELL * 3, CELL * 3);
+    if (food) {
+      const fx = food.x * CELL + CELL / 2;
+      const fy = food.y * CELL + CELL / 2;
+      const glow = ctx.createRadialGradient(fx, fy, 2, fx, fy, CELL * 1.8);
+      glow.addColorStop(0, 'rgba(255,100,130,0.25)');
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.fillRect(food.x * CELL - CELL, food.y * CELL - CELL, CELL * 3, CELL * 3);
 
-    // Food
-    ctx.fillStyle = 'rgba(255,100,130,0.9)';
-    ctx.shadowColor = 'rgba(255,100,130,0.6)';
-    ctx.shadowBlur = 10;
-    roundRect(food.x * CELL + 2, food.y * CELL + 2, CELL - 4, CELL - 4, 5);
-    ctx.shadowBlur = 0;
+      // Food
+      ctx.fillStyle = 'rgba(255,100,130,0.9)';
+      ctx.shadowColor = 'rgba(255,100,130,0.6)';
+      ctx.shadowBlur = 10;
+      roundRect(food.x * CELL + 2, food.y * CELL + 2, CELL - 4, CELL - 4, 5);
+      ctx.shadowBlur = 0;
+    }
 
     // Snake
+    const snakeR = aiActive ? 130 : 130;
+    const snakeG = aiActive ? 180 : 220;
+    const snakeB = aiActive ? 255 : 255;
+    const bodyR = aiActive ? 110 : 100;
+    const bodyG = aiActive ? 140 : 200;
+    const bodyB = aiActive ? 255 : 240;
+
     snake.forEach((seg, i) => {
       const t = i / snake.length;
       const alpha = 1 - t * 0.5;
       if (i === 0) {
-        ctx.fillStyle = `rgba(130,220,255,${alpha})`;
-        ctx.shadowColor = 'rgba(130,220,255,0.5)';
+        ctx.fillStyle = aiActive
+          ? `rgba(160,120,255,${alpha})`
+          : `rgba(${snakeR},${snakeG},${snakeB},${alpha})`;
+        ctx.shadowColor = aiActive ? 'rgba(160,120,255,0.6)' : 'rgba(130,220,255,0.5)';
         ctx.shadowBlur = 12;
       } else {
-        ctx.fillStyle = `rgba(100,200,240,${alpha * 0.85})`;
+        ctx.fillStyle = aiActive
+          ? `rgba(130,100,240,${alpha * 0.85})`
+          : `rgba(${bodyR},${bodyG},${bodyB},${alpha * 0.85})`;
         ctx.shadowBlur = 0;
       }
       roundRect(seg.x * CELL + 1.5, seg.y * CELL + 1.5, CELL - 3, CELL - 3, 5);
@@ -388,6 +583,8 @@
 
   function gameOver() {
     running = false;
+    aiActive = false;
+    aiToggle.classList.remove('active');
     if (score > best) {
       best = score;
       localStorage.setItem('snakeBest', best);
@@ -419,10 +616,24 @@
   }
 
   function setDirection(x, y) {
+    if (aiActive) return; // ignore manual input during AI
     if (dir.x + x !== 0 || dir.y + y !== 0) {
       nextDir = { x, y };
     }
   }
+
+  // AI toggle
+  aiToggle.addEventListener('click', () => {
+    aiActive = !aiActive;
+    aiToggle.classList.toggle('active', aiActive);
+    if (aiActive) {
+      interval = AI_INTERVAL;
+      // If game not running, auto-start
+      if (!running) startGame();
+    } else {
+      interval = Math.max(MIN_INTERVAL, BASE_INTERVAL - score * 3);
+    }
+  });
 
   // Keyboard
   document.addEventListener('keydown', e => {
