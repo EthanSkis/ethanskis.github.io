@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Editor</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    background: #000;
+    color: #f5f5f7;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(80, 140, 255, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(170, 120, 255, 0.15) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255, 120, 180, 0.08) 0%, transparent 55%);
+    animation: bgFloat 18s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @keyframes bgFloat {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33%       { transform: translate(1.5%, -1.5%) rotate(0.8deg); }
+    66%       { transform: translate(-1%, 1%) rotate(-0.4deg); }
+  }
+
+  .cursor-glow {
+    position: fixed;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(140, 120, 255, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    transition: opacity 0.3s ease;
+  }
+
+  /* ── Top bar ─────────────────────────────────────────── */
+  .topbar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: rgba(245, 245, 247, 0.6);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(245, 245, 247, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: rgba(245, 245, 247, 0.85);
+    white-space: nowrap;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 3px;
+  }
+
+  .tab {
+    padding: 5px 14px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: rgba(245, 245, 247, 0.45);
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .tab:hover { color: rgba(245, 245, 247, 0.75); }
+  .tab.active {
+    background: rgba(255, 255, 255, 0.13);
+    color: rgba(245, 245, 247, 0.95);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  .spacer { flex: 1; }
+
+  .actions { display: flex; align-items: center; gap: 8px; }
+
+  .auto-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: rgba(245, 245, 247, 0.5);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .toggle {
+    position: relative;
+    width: 32px; height: 18px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: background 0.2s ease;
+    cursor: pointer;
+  }
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(245, 245, 247, 0.5);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .toggle input:checked + .toggle-track { background: rgba(120, 100, 255, 0.55); border-color: rgba(140, 120, 255, 0.4); }
+  .toggle input:checked + .toggle-track::after { transform: translateX(14px); background: #fff; }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(245, 245, 247, 0.8);
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .btn:hover {
+    background: rgba(255, 255, 255, 0.13);
+    color: rgba(245, 245, 247, 1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .btn-run {
+    background: rgba(100, 80, 220, 0.3);
+    border-color: rgba(140, 120, 255, 0.35);
+    color: rgba(200, 190, 255, 0.95);
+  }
+  .btn-run:hover {
+    background: rgba(100, 80, 220, 0.45);
+    border-color: rgba(160, 145, 255, 0.5);
+    color: #fff;
+  }
+
+  /* ── Main split area ─────────────────────────────────── */
+  .split {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Editor pane ─────────────────────────────────────── */
+  .editor-pane {
+    width: 50%;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .editor-wrap {
+    display: none;
+    flex: 1;
+    overflow: hidden;
+  }
+  .editor-wrap.active { display: flex; flex-direction: column; }
+
+  /* Make CodeMirror fill its container */
+  .editor-wrap .CodeMirror {
+    flex: 1;
+    height: 100%;
+    font-size: 13.5px;
+    line-height: 1.6;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, 'Courier New', monospace;
+    background: rgba(10, 10, 18, 0.7) !important;
+  }
+  .editor-wrap .CodeMirror-scroll { height: 100%; }
+  .editor-wrap .CodeMirror-gutters { background: rgba(10, 10, 18, 0.6) !important; border-right: 1px solid rgba(255,255,255,0.06) !important; }
+
+  /* ── Divider ─────────────────────────────────────────── */
+  .divider {
+    width: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: col-resize;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+    z-index: 5;
+  }
+  .divider:hover, .divider.dragging { background: rgba(140, 120, 255, 0.3); border-color: rgba(140, 120, 255, 0.3); }
+
+  /* ── Preview pane ────────────────────────────────────── */
+  .preview-pane {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #preview {
+    flex: 1;
+    border: none;
+    background: #fff;
+  }
+
+  /* ── Console ─────────────────────────────────────────── */
+  .console {
+    flex-shrink: 0;
+    max-height: 140px;
+    min-height: 28px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(8, 8, 15, 0.85);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .console-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(245, 245, 247, 0.35);
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .console-header:hover { color: rgba(245, 245, 247, 0.55); }
+
+  .console-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 12px;
+  }
+  .console-output:empty::before {
+    content: 'No output yet.';
+    display: block;
+    padding: 4px 10px;
+    color: rgba(245, 245, 247, 0.2);
+    font-style: italic;
+  }
+
+  .console-entry {
+    padding: 2px 10px;
+    line-height: 1.5;
+    word-break: break-all;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .console-entry.log   { color: rgba(245, 245, 247, 0.7); }
+  .console-entry.info  { color: rgba(100, 180, 255, 0.85); }
+  .console-entry.warn  { color: rgba(255, 195, 70, 0.85); background: rgba(255, 195, 70, 0.06); }
+  .console-entry.error { color: rgba(255, 100, 100, 0.9); background: rgba(255, 60, 60, 0.08); }
+
+  /* ── Mobile ──────────────────────────────────────────── */
+  @media (max-width: 735px) {
+    .split { flex-direction: column; }
+
+    .editor-pane {
+      width: 100% !important;
+      height: 45%;
+      min-width: unset;
+      flex-shrink: 0;
+    }
+
+    .divider {
+      width: 100%;
+      height: 5px;
+      cursor: row-resize;
+      border-left: none;
+      border-right: none;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .preview-pane {
+      flex: 1;
+      min-width: unset;
+    }
+
+    .title { display: none; }
+    .auto-label span { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .topbar { gap: 8px; padding: 8px 10px; }
+    .btn { padding: 5px 10px; }
+    .tab { padding: 5px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- Top bar -->
+<div class="topbar">
+  <a href="/" class="back-btn">&#8592; Home</a>
+  <span class="title">HTML Editor</span>
+
+  <div class="tabs">
+    <button class="tab active" data-lang="html">HTML</button>
+    <button class="tab" data-lang="css">CSS</button>
+    <button class="tab" data-lang="js">JS</button>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="actions">
+    <label class="auto-label">
+      <div class="toggle">
+        <input type="checkbox" id="autoRun" checked>
+        <div class="toggle-track"></div>
+      </div>
+      <span>Auto-run</span>
+    </label>
+    <button class="btn btn-run" id="runBtn">&#9654; Run</button>
+    <button class="btn" id="dlBtn">&#8595; Export</button>
+  </div>
+</div>
+
+<!-- Main split pane -->
+<div class="split" id="split">
+
+  <!-- Editor pane -->
+  <div class="editor-pane" id="editorPane">
+    <div class="editor-wrap active" id="wrap-html">
+      <textarea id="cm-html"></textarea>
+    </div>
+    <div class="editor-wrap" id="wrap-css">
+      <textarea id="cm-css"></textarea>
+    </div>
+    <div class="editor-wrap" id="wrap-js">
+      <textarea id="cm-js"></textarea>
+    </div>
+  </div>
+
+  <!-- Drag divider -->
+  <div class="divider" id="divider"></div>
+
+  <!-- Preview pane -->
+  <div class="preview-pane" id="previewPane">
+    <iframe id="preview" sandbox="allow-scripts allow-modals"></iframe>
+    <div class="console" id="consolePanel">
+      <div class="console-header" id="consoleToggle">
+        Console
+        <span id="consoleCount"></span>
+      </div>
+      <div class="console-output" id="consoleOutput"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CodeMirror -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+
+<script>
+(function () {
+  // ── Starter code ────────────────────────────────────────
+  const STARTER_HTML = `<h1>Hello, World!</h1>
+<p>Edit the <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JS</strong> tabs — the preview updates live.</p>
+<button onclick="greet()">Click me</button>`;
+
+  const STARTER_CSS = `body {
+  font-family: system-ui, sans-serif;
+  background: #0d0d1a;
+  color: #f0eeff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 18px;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  color: #a78bfa;
+  letter-spacing: -0.5px;
+}
+
+p { color: rgba(240, 238, 255, 0.65); max-width: 360px; text-align: center; }
+
+button {
+  padding: 10px 28px;
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+button:hover { opacity: 0.85; transform: translateY(-1px); }
+button:active { transform: translateY(0); }`;
+
+  const STARTER_JS = `function greet() {
+  const names = ['World', 'Developer', 'Creator', 'Builder'];
+  const name = names[Math.floor(Math.random() * names.length)];
+  document.querySelector('h1').textContent = \`Hello, \${name}!\`;
+  console.log('Greeted:', name);
+}`;
+
+  // ── CodeMirror instances ─────────────────────────────────
+  const cmOpts = (mode, value) => ({
+    mode,
+    theme: 'dracula',
+    lineNumbers: true,
+    tabSize: 2,
+    indentWithTabs: false,
+    lineWrapping: false,
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    value,
+  });
+
+  const editors = {
+    html: CodeMirror.fromTextArea(document.getElementById('cm-html'), cmOpts('htmlmixed', STARTER_HTML)),
+    css:  CodeMirror.fromTextArea(document.getElementById('cm-css'),  cmOpts('css', STARTER_CSS)),
+    js:   CodeMirror.fromTextArea(document.getElementById('cm-js'),   cmOpts('javascript', STARTER_JS)),
+  };
+
+  // ── Tab switching ────────────────────────────────────────
+  let activeTab = 'html';
+
+  function setActiveTab(lang) {
+    activeTab = lang;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.lang === lang));
+    ['html', 'css', 'js'].forEach(l => {
+      document.getElementById('wrap-' + l).classList.toggle('active', l === lang);
+    });
+    editors[lang].refresh();
+  }
+
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => setActiveTab(btn.dataset.lang));
+  });
+
+  // ── Compile / preview ────────────────────────────────────
+  const preview = document.getElementById('preview');
+
+  function buildDoc() {
+    const html = editors.html.getValue();
+    const css  = editors.css.getValue();
+    const js   = editors.js.getValue();
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${css}</style>
+</head>
+<body>
+${html}
+<script>
+(function(){
+  var _oe = window.onerror;
+  window.onerror = function(msg, src, line, col, err) {
+    parent.postMessage({_cm:'error', msg: String(msg), line: line, col: col}, '*');
+    return true;
+  };
+  ['log','warn','error','info'].forEach(function(m){
+    var orig = console[m].bind(console);
+    console[m] = function(){
+      var args = Array.prototype.slice.call(arguments);
+      parent.postMessage({_cm: m, msg: args.map(function(a){ return typeof a === 'object' ? JSON.stringify(a) : String(a); }).join(' ')}, '*');
+      orig.apply(console, args);
+    };
+  });
+})();
+<\/script>
+<script>
+${js}
+<\/script>
+</body>
+</html>`;
+  }
+
+  function compile() {
+    clearConsole();
+    preview.srcdoc = buildDoc();
+  }
+
+  // ── Auto-run debounce ────────────────────────────────────
+  let debounceTimer = null;
+  const autoRunToggle = document.getElementById('autoRun');
+
+  function scheduleRun() {
+    if (!autoRunToggle.checked) return;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(compile, 500);
+  }
+
+  Object.values(editors).forEach(ed => ed.on('change', scheduleRun));
+
+  document.getElementById('runBtn').addEventListener('click', compile);
+
+  // ── Console ──────────────────────────────────────────────
+  const consoleOutput = document.getElementById('consoleOutput');
+  const consoleCount  = document.getElementById('consoleCount');
+  let errorCount = 0;
+
+  function clearConsole() {
+    consoleOutput.innerHTML = '';
+    errorCount = 0;
+    consoleCount.textContent = '';
+  }
+
+  window.addEventListener('message', function (e) {
+    if (!e.data || !e.data._cm) return;
+    const { _cm, msg, line, col } = e.data;
+    const entry = document.createElement('div');
+    entry.className = 'console-entry ' + _cm;
+    let text = msg;
+    if (_cm === 'error' && line !== undefined) text += `  (line ${line})`;
+    entry.textContent = text;
+    consoleOutput.appendChild(entry);
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    if (_cm === 'error' || _cm === 'warn') {
+      errorCount++;
+      consoleCount.textContent = ` (${errorCount})`;
+    }
+  });
+
+  // Toggle console height
+  let consoleExpanded = true;
+  document.getElementById('consoleToggle').addEventListener('click', function () {
+    consoleExpanded = !consoleExpanded;
+    consoleOutput.style.display = consoleExpanded ? '' : 'none';
+  });
+
+  // ── Download ─────────────────────────────────────────────
+  document.getElementById('dlBtn').addEventListener('click', function () {
+    const blob = new Blob([buildDoc()], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'index.html';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  });
+
+  // ── Draggable split pane ─────────────────────────────────
+  const divider    = document.getElementById('divider');
+  const editorPane = document.getElementById('editorPane');
+  const previewPane = document.getElementById('previewPane');
+  const splitEl    = document.getElementById('split');
+  let dragging = false;
+  const isMobile = () => window.innerWidth <= 735;
+
+  divider.addEventListener('mousedown', function (e) {
+    e.preventDefault();
+    dragging = true;
+    divider.classList.add('dragging');
+    // Disable iframe pointer events during drag
+    preview.style.pointerEvents = 'none';
+  });
+
+  window.addEventListener('mousemove', function (e) {
+    if (!dragging) return;
+    const rect = splitEl.getBoundingClientRect();
+    if (isMobile()) {
+      const pct = Math.min(Math.max(((e.clientY - rect.top) / rect.height) * 100, 15), 80);
+      editorPane.style.height = pct + '%';
+    } else {
+      const pct = Math.min(Math.max(((e.clientX - rect.left) / rect.width) * 100, 15), 80);
+      editorPane.style.width = pct + '%';
+    }
+    Object.values(editors).forEach(ed => ed.refresh());
+  });
+
+  window.addEventListener('mouseup', function () {
+    if (!dragging) return;
+    dragging = false;
+    divider.classList.remove('dragging');
+    preview.style.pointerEvents = '';
+  });
+
+  // Touch drag support
+  divider.addEventListener('touchstart', function (e) {
+    dragging = true;
+    divider.classList.add('dragging');
+    preview.style.pointerEvents = 'none';
+  }, { passive: true });
+
+  window.addEventListener('touchmove', function (e) {
+    if (!dragging) return;
+    const touch = e.touches[0];
+    const rect = splitEl.getBoundingClientRect();
+    if (isMobile()) {
+      const pct = Math.min(Math.max(((touch.clientY - rect.top) / rect.height) * 100, 15), 80);
+      editorPane.style.height = pct + '%';
+    } else {
+      const pct = Math.min(Math.max(((touch.clientX - rect.left) / rect.width) * 100, 15), 80);
+      editorPane.style.width = pct + '%';
+    }
+    Object.values(editors).forEach(ed => ed.refresh());
+  }, { passive: true });
+
+  window.addEventListener('touchend', function () {
+    dragging = false;
+    divider.classList.remove('dragging');
+    preview.style.pointerEvents = '';
+  });
+
+  // ── Cursor glow ──────────────────────────────────────────
+  const glow = document.getElementById('cursorGlow');
+  document.addEventListener('mousemove', function (e) {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top  = e.clientY + 'px';
+  });
+
+  // ── Initial compile ──────────────────────────────────────
+  compile();
+
+})();
+</script>
+</body>
+</html>
