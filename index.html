@@ -45,9 +45,9 @@
       display:flex;align-items:center;justify-content:center;gap:6px;
       margin-top:14px;
       font-family:var(--mono);font-size:11px;letter-spacing:0.06em;
-      color:var(--muted);
+      color:var(--muted2);
     }
-    .subtitle .sep{color:var(--border2)}
+    .subtitle .sep{color:rgba(255,255,255,0.18)}
     /* ── Inquiry button ── */
     .inquire-btn{
       display:inline-block;margin-top:24px;
@@ -112,15 +112,16 @@
     .dropdown-wrapper{position:relative;width:100%}
     .dropdown-select{appearance:none;-webkit-appearance:none;padding-right:28px}
     .dropdown-trigger{
-      background:var(--surface2) !important;
-      border:1px solid var(--border) !important;
-      border-radius:6px !important;padding:8px 10px !important;
-      font-size:13px !important;color:var(--muted) !important;
+      background:var(--surface2);border:1px solid var(--border);
+      border-radius:6px;padding:8px 10px;
+      font-size:13px;font-family:var(--sans);color:var(--muted);
       cursor:pointer;position:relative;display:flex;
       align-items:center;justify-content:space-between;
       transition:border-color 0.15s,background 0.15s;
+      /* match input height exactly */
+      min-height:calc(1em * 1.5 + 16px);
     }
-    .dropdown-trigger:hover{border-color:var(--border2) !important;background:var(--surface) !important}
+    .dropdown-trigger:hover{border-color:var(--border2)}
     .dropdown-menu{
       position:absolute;top:100%;left:0;right:0;margin-top:4px;
       background:var(--surface2);border:1px solid var(--border2);
@@ -166,12 +167,11 @@
 
     }
     .modal-submit{
-      width:100%;margin-top:6px;padding:10px;
+      width:100%;margin-top:8px;padding:12px;
       border:1px solid var(--border2);border-radius:6px;
       background:var(--surface2);color:var(--text);
-      font-family:var(--mono);font-size:11px;font-weight:500;
-      letter-spacing:0.08em;cursor:pointer;
-      transition:background 0.15s,transform 0.1s;
+      font-family:var(--sans);font-size:14px;font-weight:500;
+      cursor:pointer;transition:background 0.15s,transform 0.1s;
     }
     .modal-submit:hover{background:rgba(255,255,255,0.07)}
     .modal-submit:active{transform:scale(0.98)}
@@ -200,7 +200,9 @@
       .field{margin-bottom:8px}
       .form-row{gap:8px}
       .field input,.field textarea,.field select{font-size:16px}
+      .dropdown-trigger{font-size:16px !important;padding:9px 10px !important}
       .field textarea{height:60px}
+      .modal-submit{font-size:16px;padding:13px}
     }
     @media(max-width:480px){h1{font-size:2rem}}
   </style>
@@ -256,7 +258,7 @@
                   <option>Consulting</option>
                   <option>Other</option>
                 </select>
-                <div class="dropdown-trigger" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(245, 245, 247, 0.1); border-radius: 10px; padding: 10px 12px; font-size: 14px; color: rgba(245, 245, 247, 0.5); cursor: pointer; position: relative; display: flex; align-items: center; justify-content: space-between;">
+                <div class="dropdown-trigger">
                   <span class="dropdown-label">Select...</span>
                   <span style="font-size: 10px; margin-left: 8px;">▼</span>
                 </div>
@@ -502,7 +504,10 @@
         weatherEl.textContent = condition + ' · ' + temp + '°F';
         weatherSep.style.display = '';
       })
-      .catch(() => {});
+      .catch(() => {
+        weatherEl.textContent = 'McCall, ID';
+        weatherSep.style.display = '';
+      });
 
     function weatherCondition(code) {
       if (code === 0) return 'Clear';
@@ -539,7 +544,7 @@
 
           // Update trigger label
           label.textContent = text;
-          label.style.color = value ? 'rgba(245, 245, 247, 0.9)' : 'rgba(245, 245, 247, 0.5)';
+          label.style.color = value ? 'var(--text)' : 'var(--muted)';
 
           // Update select value
           select.value = value;
