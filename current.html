@@ -26,13 +26,13 @@
 }
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
-header{position:sticky;top:0;z-index:100;background:rgba(12,13,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:52px}
+header{position:sticky;top:0;z-index:100;background:rgba(12,13,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;min-height:52px;gap:16px}
 .wm{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.15em;color:var(--text);display:flex;align-items:center;gap:10px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .hdr-r{display:flex;align-items:center;gap:20px}
 .hdr-time{font-family:var(--mono);font-size:12px;color:var(--muted)}
-.pill{font-family:var(--mono);font-size:11px;background:var(--red-dim);border:1px solid rgba(226,75,74,.3);color:var(--red);padding:4px 10px;border-radius:20px;letter-spacing:.04em}
+.pill{font-family:var(--mono);font-size:11px;background:var(--red-dim);border:1px solid rgba(226,75,74,.3);color:var(--red);padding:4px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
 .alert{background:var(--red-dim);border-bottom:1px solid rgba(226,75,74,.2);padding:9px 2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--red);font-family:var(--mono)}
 .alert strong{font-weight:500}
 .page{padding:2rem;max-width:1400px;margin:0 auto}
@@ -123,8 +123,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   /* header — hide clock, shrink pill */
   header{padding:0 1rem;height:48px}
   .hdr-time{display:none}
-  .pill{font-size:9px;padding:3px 8px;letter-spacing:0;
-        max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pill{font-size:9px;padding:3px 8px;letter-spacing:0}
 
   /* alert */
   .alert{padding:8px 1rem;font-size:11px}
