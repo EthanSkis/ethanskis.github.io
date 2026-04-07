@@ -4,49 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Snake</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&display=swap');
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0c0d0f;
+    --surface: #111214;
+    --surface2: #17191c;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e6e1;
+    --muted: #6b6a66;
+    --muted2: #9a9894;
+    --red: #e24b4a;
+    --red-dim: rgba(226,75,74,0.12);
+    --blue: #4a9eff;
+    --blue-dim: rgba(74,158,255,0.10);
+    --green: #3dba7f;
+    --green-dim: rgba(61,186,127,0.10);
+    --purple: #9b8cf7;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Geist', system-ui, sans-serif;
+  }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--sans);
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #533483 100%);
-    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
     user-select: none;
     -webkit-user-select: none;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    top: -50%; left: -50%;
-    width: 200%; height: 200%;
-    background:
-      radial-gradient(circle at 20% 20%, rgba(120, 80, 255, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(255, 100, 150, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(80, 200, 255, 0.08) 0%, transparent 60%);
-    animation: bgFloat 20s ease-in-out infinite;
-    z-index: 0;
-  }
-
-  @keyframes bgFloat {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(2%, -2%) rotate(1deg); }
-    66% { transform: translate(-1%, 1%) rotate(-0.5deg); }
-  }
-
   .container {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: 480px;
   }
 
   .header {
@@ -58,66 +61,55 @@
   }
 
   h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 2px 20px rgba(120, 80, 255, 0.3);
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    font-style: italic;
   }
 
   .ai-toggle {
     position: absolute;
     right: 0;
-    width: 44px; height: 44px;
-    border: none;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 1.25rem;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
   }
 
   .ai-toggle:hover {
-    background: rgba(255, 255, 255, 0.14);
-    color: rgba(255, 255, 255, 0.7);
+    background: var(--surface2);
+    color: var(--muted2);
   }
 
   .ai-toggle.active {
-    background: rgba(120, 80, 255, 0.25);
-    border-color: rgba(120, 80, 255, 0.5);
-    color: rgba(200, 170, 255, 0.95);
-    box-shadow: 0 4px 20px rgba(120, 80, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    background: rgba(155,140,247,0.15);
+    border-color: rgba(155,140,247,0.4);
+    color: var(--purple);
   }
 
   .ai-toggle svg {
-    width: 22px; height: 22px;
+    width: 18px; height: 18px;
     fill: currentColor;
-  }
-
-  .glass {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 24px;
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .scoreboard {
     display: flex;
-    gap: 32px;
-    padding: 16px 36px;
-    align-items: center;
+    gap: 0;
+    align-items: stretch;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
   }
 
   .score-item {
@@ -125,45 +117,51 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    padding: 12px 24px;
+    flex: 1;
+  }
+
+  .score-item + .score-item {
+    border-left: 1px solid var(--border);
   }
 
   .score-label {
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.12em;
+    color: var(--muted);
   }
 
   .score-value {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--text);
     font-variant-numeric: tabular-nums;
   }
 
-  .divider {
-    width: 1px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.1);
-  }
-
   .game-wrapper {
-    padding: 16px;
+    padding: 12px;
     position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: fit-content;
   }
 
   canvas {
     display: block;
-    border-radius: 16px;
-    background: rgba(0, 0, 0, 0.25);
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    background: var(--bg);
   }
 
   .controls {
     display: none;
     gap: 8px;
-    padding: 12px 16px;
+    padding: 4px 0;
+    width: 100%;
   }
 
   .ctrl-row {
@@ -174,14 +172,11 @@
 
   .ctrl-btn {
     width: 56px; height: 56px;
-    border: none;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.4rem;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--muted2);
+    font-size: 1.2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -191,7 +186,7 @@
   }
 
   .ctrl-btn:active {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--surface2);
     transform: scale(0.92);
   }
 
@@ -204,16 +199,14 @@
   /* Overlay */
   .overlay {
     position: absolute;
-    inset: 16px;
-    border-radius: 16px;
+    inset: 12px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    gap: 12px;
+    background: rgba(12,13,15,0.85);
     z-index: 10;
     transition: opacity 0.3s;
   }
@@ -224,35 +217,36 @@
   }
 
   .overlay-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    font-style: italic;
+    color: var(--text);
   }
 
   .overlay-sub {
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
     text-align: center;
     line-height: 1.5;
+    letter-spacing: 0.04em;
   }
 
   .btn {
-    padding: 12px 36px;
-    border: none;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-    font-weight: 600;
+    padding: 8px 28px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    letter-spacing: 0.3px;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.06em;
   }
 
-  .btn:hover { background: rgba(255, 255, 255, 0.22); }
+  .btn:hover { background: rgba(255,255,255,0.08); }
   .btn:active { transform: scale(0.96); }
 </style>
 </head>
@@ -266,19 +260,18 @@
     </button>
   </div>
 
-  <div class="scoreboard glass">
+  <div class="scoreboard">
     <div class="score-item">
       <span class="score-label">Score</span>
       <span class="score-value" id="score">0</span>
     </div>
-    <div class="divider"></div>
     <div class="score-item">
       <span class="score-label">Best</span>
       <span class="score-value" id="best">0</span>
     </div>
   </div>
 
-  <div class="game-wrapper glass">
+  <div class="game-wrapper">
     <canvas id="game" width="400" height="400"></canvas>
     <div class="overlay" id="overlay">
       <div class="overlay-title" id="overlayTitle">Snake</div>
@@ -287,7 +280,7 @@
     </div>
   </div>
 
-  <div class="controls glass" id="controls">
+  <div class="controls" id="controls">
     <div class="ctrl-row">
       <div class="ctrl-spacer"></div>
       <button class="ctrl-btn" data-dir="up">&#9650;</button>
@@ -501,7 +494,7 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Grid lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
     ctx.lineWidth = 0.5;
     for (let i = 1; i < GRID; i++) {
       ctx.beginPath();
@@ -519,50 +512,37 @@
       const fx = food.x * CELL + CELL / 2;
       const fy = food.y * CELL + CELL / 2;
       const glow = ctx.createRadialGradient(fx, fy, 2, fx, fy, CELL * 1.8);
-      glow.addColorStop(0, 'rgba(255,100,130,0.25)');
+      glow.addColorStop(0, 'rgba(226,75,74,0.2)');
       glow.addColorStop(1, 'transparent');
       ctx.fillStyle = glow;
       ctx.fillRect(food.x * CELL - CELL, food.y * CELL - CELL, CELL * 3, CELL * 3);
 
       // Food
-      ctx.fillStyle = 'rgba(255,100,130,0.9)';
-      ctx.shadowColor = 'rgba(255,100,130,0.6)';
-      ctx.shadowBlur = 10;
+      ctx.fillStyle = 'rgba(226,75,74,0.9)';
+      ctx.shadowColor = 'rgba(226,75,74,0.5)';
+      ctx.shadowBlur = 8;
       roundRect(food.x * CELL + 2, food.y * CELL + 2, CELL - 4, CELL - 4, 5);
       ctx.shadowBlur = 0;
     }
 
     // Snake
-    const snakeR = aiActive ? 130 : 130;
-    const snakeG = aiActive ? 180 : 220;
-    const snakeB = aiActive ? 255 : 255;
-    const bodyR = aiActive ? 110 : 100;
-    const bodyG = aiActive ? 140 : 200;
-    const bodyB = aiActive ? 255 : 240;
-
     snake.forEach((seg, i) => {
       const t = i / snake.length;
       const alpha = 1 - t * 0.5;
       if (i === 0) {
         ctx.fillStyle = aiActive
-          ? `rgba(160,120,255,${alpha})`
-          : `rgba(${snakeR},${snakeG},${snakeB},${alpha})`;
-        ctx.shadowColor = aiActive ? 'rgba(160,120,255,0.6)' : 'rgba(130,220,255,0.5)';
-        ctx.shadowBlur = 12;
+          ? `rgba(155,140,247,${alpha})`
+          : `rgba(74,158,255,${alpha})`;
+        ctx.shadowColor = aiActive ? 'rgba(155,140,247,0.5)' : 'rgba(74,158,255,0.4)';
+        ctx.shadowBlur = 10;
       } else {
         ctx.fillStyle = aiActive
-          ? `rgba(130,100,240,${alpha * 0.85})`
-          : `rgba(${bodyR},${bodyG},${bodyB},${alpha * 0.85})`;
+          ? `rgba(130,115,220,${alpha * 0.85})`
+          : `rgba(61,130,220,${alpha * 0.85})`;
         ctx.shadowBlur = 0;
       }
       roundRect(seg.x * CELL + 1.5, seg.y * CELL + 1.5, CELL - 3, CELL - 3, 5);
       ctx.shadowBlur = 0;
-
-      // Gloss on head
-      if (i === 0) {
-        ctx.fillStyle = 'rgba(255,255,255,0.2)';
-        roundRect(seg.x * CELL + 3, seg.y * CELL + 3, CELL - 6, (CELL - 6) / 2, 3);
-      }
     });
   }
 
