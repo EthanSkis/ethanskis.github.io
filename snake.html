@@ -31,7 +31,8 @@
 
   body {
     font-family: var(--sans);
-    min-height: 100vh;
+    height: 100svh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,8 +47,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 2rem 1rem;
+    gap: 12px;
+    padding: 1rem;
     width: 100%;
     max-width: 480px;
   }
@@ -62,7 +63,7 @@
 
   h1 {
     font-family: var(--serif);
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 400;
     letter-spacing: -0.02em;
     color: var(--text);
@@ -72,7 +73,7 @@
   .ai-toggle {
     position: absolute;
     right: 0;
-    width: 36px; height: 36px;
+    width: 34px; height: 34px;
     border-radius: 8px;
     background: var(--surface);
     border: 1px solid var(--border2);
@@ -97,7 +98,7 @@
   }
 
   .ai-toggle svg {
-    width: 18px; height: 18px;
+    width: 16px; height: 16px;
     fill: currentColor;
   }
 
@@ -116,8 +117,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: 12px 24px;
+    gap: 1px;
+    padding: 8px 24px;
     flex: 1;
   }
 
@@ -136,47 +137,52 @@
 
   .score-value {
     font-family: var(--serif);
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     line-height: 1;
     color: var(--text);
     font-variant-numeric: tabular-nums;
   }
 
   .game-wrapper {
-    padding: 12px;
+    /* 56px = 2×container-padding(16) + 2×wrapper-padding(12) + 2×border(1) */
+    --canvas-size: min(calc(100vw - 58px), calc(100svh - 280px), 400px);
+    padding: 10px;
     position: relative;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    width: fit-content;
+    width: calc(var(--canvas-size) + 22px); /* canvas + 2×padding + 2×border */
+    flex-shrink: 0;
   }
 
   canvas {
     display: block;
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--bg);
+    width: var(--canvas-size);
+    height: var(--canvas-size);
   }
 
   .controls {
     display: none;
-    gap: 8px;
-    padding: 4px 0;
+    gap: 6px;
+    padding: 2px 0;
     width: 100%;
   }
 
   .ctrl-row {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .ctrl-btn {
-    width: 56px; height: 56px;
+    width: 52px; height: 52px;
     border-radius: 8px;
     background: var(--surface);
     border: 1px solid var(--border2);
     color: var(--muted2);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -190,7 +196,7 @@
     transform: scale(0.92);
   }
 
-  .ctrl-spacer { width: 56px; height: 56px; }
+  .ctrl-spacer { width: 52px; height: 52px; }
 
   @media (pointer: coarse) {
     .controls { display: grid; }
@@ -199,14 +205,14 @@
   /* Overlay */
   .overlay {
     position: absolute;
-    inset: 12px;
-    border-radius: 8px;
+    inset: 10px;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    background: rgba(12,13,15,0.85);
+    gap: 10px;
+    background: rgba(12,13,15,0.88);
     z-index: 10;
     transition: opacity 0.3s;
   }
@@ -218,14 +224,14 @@
 
   .overlay-title {
     font-family: var(--serif);
-    font-size: 1.75rem;
+    font-size: 1.6rem;
     font-style: italic;
     color: var(--text);
   }
 
   .overlay-sub {
     font-family: var(--mono);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--muted);
     text-align: center;
     line-height: 1.5;
@@ -233,13 +239,13 @@
   }
 
   .btn {
-    padding: 8px 28px;
+    padding: 7px 24px;
     border-radius: 6px;
     background: var(--surface2);
     border: 1px solid var(--border2);
     color: var(--text);
     font-family: var(--mono);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.15s, transform 0.1s;
@@ -248,6 +254,17 @@
 
   .btn:hover { background: rgba(255,255,255,0.08); }
   .btn:active { transform: scale(0.96); }
+
+  /* Extra tight on very short screens */
+  @media (max-height: 600px) {
+    .container { gap: 8px; padding: 0.5rem 1rem; }
+    h1 { font-size: 1.3rem; }
+    .score-item { padding: 6px 16px; }
+    .score-value { font-size: 1.2rem; }
+    .ctrl-btn, .ctrl-spacer { width: 44px; height: 44px; }
+    .controls { gap: 4px; }
+    .ctrl-row { gap: 4px; }
+  }
 </style>
 </head>
 <body>
