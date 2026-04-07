@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pg-title">SITWATCH</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0d0f;--surface:#111214;--surface2:#17191c;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e8e6e1;--muted:#6b6a66;--muted2:#9a9894;
+  --red:#e24b4a;--red-dim:rgba(226,75,74,0.12);
+  --amber:#ef9f27;--amber-dim:rgba(239,159,39,0.12);
+  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.10);
+  --green:#3dba7f;--green-dim:rgba(61,186,127,0.10);
+  --purple:#9b8cf7;
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'Geist',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+header{position:sticky;top:0;z-index:100;background:rgba(12,13,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:52px}
+.wm{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.15em;color:var(--text);display:flex;align-items:center;gap:10px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-r{display:flex;align-items:center;gap:20px}
+.hdr-time{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.pill{font-family:var(--mono);font-size:11px;background:var(--red-dim);border:1px solid rgba(226,75,74,.3);color:var(--red);padding:4px 10px;border-radius:20px;letter-spacing:.04em}
+.alert{background:var(--red-dim);border-bottom:1px solid rgba(226,75,74,.2);padding:9px 2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--red);font-family:var(--mono)}
+.alert strong{font-weight:500}
+.page{padding:2rem;max-width:1400px;margin:0 auto}
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:2rem}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0}
+.mc.red::before{background:var(--red)}.mc.amber::before{background:var(--amber)}
+.mc.blue::before{background:var(--blue)}.mc.green::before{background:var(--green)}
+.mc.neutral::before{background:var(--muted)}
+.ml{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.mv{font-family:var(--serif);font-size:26px;line-height:1;color:var(--text);margin-bottom:4px}
+.ms{font-size:11px;color:var(--muted2)}.ms.up{color:var(--green)}.ms.dn{color:var(--red)}
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-bottom:2rem}
+.lc,.rc{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.ct{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+.story{padding:12px 0;border-bottom:1px solid var(--border)}
+.story:last-child{border-bottom:none;padding-bottom:0}
+.story:first-child{padding-top:0}
+.sh{display:flex;align-items:flex-start;gap:9px;margin-bottom:5px}
+.td{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.d-crit{background:var(--red);box-shadow:0 0 6px rgba(226,75,74,.5)}
+.d-high{background:var(--amber)}.d-mod{background:var(--blue)}.d-low{background:var(--green)}
+.stitle{font-size:13px;font-weight:500;color:var(--text);line-height:1.35}
+.sbody{font-size:12px;color:var(--muted2);line-height:1.55;padding-left:16px;margin-top:3px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;padding-left:16px}
+.tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
+.t-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(226,75,74,.2)}
+.t-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(239,159,39,.2)}
+.t-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
+.t-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(61,186,127,.2)}
+.t-gray{background:rgba(255,255,255,.05);color:var(--muted2);border:1px solid var(--border)}
+#map-wrap{width:100%;height:360px;border-radius:8px;overflow:hidden;position:relative}
+.map-leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+.mli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted2)}
+.ld{width:7px;height:7px;border-radius:50%}
+.mr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.mr:last-child{border-bottom:none}
+.mn{font-size:12px;color:var(--text);flex:1;padding-right:10px;line-height:1.3}
+.mright{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.bbg{width:52px;height:3px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.bb{height:3px;border-radius:3px}
+.mp{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);min-width:30px;text-align:right}
+.md{font-family:var(--mono);font-size:10px;min-width:32px;text-align:right}
+.wi{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted2)}
+.wi:last-child{border-bottom:none;padding-bottom:0}
+.wi:first-child{padding-top:0}
+.wic{font-family:var(--mono);font-size:11px;flex-shrink:0;margin-top:1px;font-weight:500}
+.wi strong{color:var(--text);font-weight:500}
+.ch{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.cv{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--red);text-align:right}
+.cvs{font-size:10px;color:var(--muted);text-align:right;margin-top:1px}
+.cl{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.cli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted2)}
+.cll{width:20px;height:2px;border-radius:2px}.clv{width:2px;height:12px;border-radius:1px}
+#gc-wrap{position:relative;width:100%;height:260px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.stat{background:var(--surface2);border-radius:8px;padding:10px 12px}
+.sl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.sv{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text)}
+.ss{font-size:10px;color:var(--muted);margin-top:1px}
+.hero{padding:2rem 0 1.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+.hdate{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;margin-bottom:6px}
+.hhed{font-family:var(--serif);font-size:42px;line-height:1.05;color:var(--text);letter-spacing:-.02em}
+.hhed em{color:var(--red);font-style:italic}
+.hdek{font-size:13px;color:var(--muted2);margin-top:8px;max-width:520px;line-height:1.5}
+.hcd{font-family:var(--mono);font-size:12px;color:var(--amber);background:var(--amber-dim);border:1px solid rgba(239,159,39,.25);border-radius:8px;padding:10px 16px;line-height:1.6;text-align:right}
+.hcd strong{font-size:22px;display:block;color:var(--red)}
+.tleg{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.tli{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 8px;color:var(--muted2)}
+
+/* ── TABLET (≤900px) ── */
+@media(max-width:900px){
+  .main-grid{grid-template-columns:1fr}
+  .rc{flex-direction:row;flex-wrap:wrap}
+  .rc>.card{flex:1;min-width:280px}
+  .metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hhed{font-size:34px}
+}
+
+/* ── MOBILE (≤600px) ── */
+@media(max-width:600px){
+  /* header — hide clock, shrink pill */
+  header{padding:0 1rem;height:48px}
+  .hdr-time{display:none}
+  .pill{font-size:9px;padding:3px 8px;letter-spacing:0;
+        max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* alert */
+  .alert{padding:8px 1rem;font-size:11px}
+
+  /* page padding */
+  .page{padding:1rem}
+
+  /* hero — stack, shrink */
+  .hero{flex-direction:column;align-items:flex-start;padding:1.25rem 0 1rem}
+  .hdate{font-size:10px;letter-spacing:.06em}
+  .hhed{font-size:26px;line-height:1.1}
+  .hdek{font-size:12px;max-width:100%}
+  /* countdown full width on mobile */
+  .hcd{width:100%;text-align:left;padding:10px 14px}
+  .hcd strong{font-size:18px}
+
+  /* metrics — horizontal scroll row */
+  .metrics{
+    grid-template-columns:repeat(5,140px);
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:6px;
+    margin-bottom:1.25rem;
+    gap:8px;
+  }
+  /* hide scrollbar but keep scroll */
+  .metrics::-webkit-scrollbar{display:none}
+  .mc{padding:12px 14px}
+  .mv{font-size:22px}
+
+  /* main grid — single column */
+  .main-grid{grid-template-columns:1fr;gap:12px}
+  .rc{flex-direction:column}
+  .rc>.card{min-width:0}
+
+  /* card padding */
+  .card{padding:14px 16px}
+
+  /* map — shorter on mobile */
+  #map-wrap{height:220px}
+
+  /* gas chart — hide annotation labels (too cramped), shorter */
+  #gc-wrap{height:200px}
+
+  /* gas chart annotations hidden via CSS — Chart.js still renders
+     the lines but labels overflow; we clip the canvas overflow */
+  #gc-wrap canvas{overflow:hidden}
+
+  /* gas stat cards — 2 columns */
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+  /* section label */
+  .sec-label{font-size:9px}
+
+  /* story body slightly smaller */
+  .sbody{font-size:11px}
+
+  /* polymarket bar narrower */
+  .bbg{width:36px}
+
+  /* footer — stack */
+  footer{flex-direction:column;align-items:flex-start;padding:12px 1rem;gap:10px}
+}
+
+/* ── VERY SMALL (≤380px) ── */
+@media(max-width:380px){
+  .hhed{font-size:22px}
+  .pill{max-width:130px}
+  .metrics{grid-template-columns:repeat(5,120px)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wm"><div class="dot"></div>SITWATCH</div>
+  <div class="hdr-r">
+    <span class="hdr-time" id="live-time"></span>
+    <span class="pill" id="hdr-pill"></span>
+  </div>
+</header>
+
+<div class="alert"><div class="dot"></div><div id="alert-text"></div></div>
+
+<div class="page">
+  <div class="hero">
+    <div>
+      <div class="hdate" id="hero-date"></div>
+      <div class="hhed" id="hero-hed"></div>
+      <div class="hdek" id="hero-dek"></div>
+    </div>
+    <div class="hcd" id="hero-countdown-wrap">
+      <span id="countdown-label"></span><br>
+      <strong id="countdown">--:--:--</strong>
+      <span id="countdown-sub"></span>
+    </div>
+  </div>
+
+  <div class="sec-label">Market pulse</div>
+  <div class="metrics" id="metrics-row"></div>
+
+  <div class="main-grid">
+    <div class="lc">
+      <div class="card">
+        <div class="ct" id="stories-title"></div>
+        <div class="tleg">
+          <div class="tli"><div class="td d-crit"></div>critical</div>
+          <div class="tli"><div class="td d-high"></div>high</div>
+          <div class="tli"><div class="td d-mod"></div>moderate</div>
+          <div class="tli"><div class="td d-low"></div>watch</div>
+        </div>
+        <div id="stories-list"></div>
+      </div>
+      <div class="card">
+        <div class="ct" id="map-title"></div>
+        <div id="map-wrap"></div>
+        <div class="map-leg" id="map-legend"></div>
+      </div>
+    </div>
+    <div class="rc">
+      <div class="card">
+        <div class="ct" id="poly-title"></div>
+        <div id="poly-list"></div>
+      </div>
+      <div class="card">
+        <div class="ct">Watch list</div>
+        <div id="watch-list"></div>
+      </div>
+      <div class="card">
+        <div class="ct">Threat level by theater</div>
+        <div id="threat-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Gas price history</div>
+  <div class="card" style="margin-bottom:2rem">
+    <div class="ch">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--text)" id="gas-title"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px" id="gas-sub"></div>
+      </div>
+      <div><div class="cv" id="gas-val"></div><div class="cvs" id="gas-val-sub"></div></div>
+    </div>
+    <div class="cl">
+      <div class="cli"><div class="cll" style="background:var(--blue)"></div>pre-event</div>
+      <div class="cli"><div class="cll" style="background:var(--red)"></div>disruption period</div>
+      <div class="cli"><div class="clv" style="background:var(--red)"></div>conflict event</div>
+      <div class="cli"><div class="clv" style="background:var(--amber)"></div>diplomatic</div>
+      <div class="cli"><div class="clv" style="background:var(--green)"></div>supply response</div>
+    </div>
+    <div id="gc-wrap"><canvas id="gasChart"></canvas></div>
+    <div class="stats" id="gas-stats"></div>
+  </div>
+</div>
+
+<footer>
+  <div style="font-family:var(--mono);letter-spacing:.08em" id="footer-text"></div>
+  <div class="chips" id="footer-chips"></div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DATA — EDIT ONLY THIS BLOCK TO UPDATE THE ENTIRE DASHBOARD
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+const DATA = {
+
+  // ── META ──────────────────────────────────────────────────
+  date: "Apr 6, 2026",
+  title: "SITWATCH — Apr 6, 2026",
+  footerText: "SITWATCH · built from your inbox · Apr 6, 2026",
+
+  // ── HEADER ────────────────────────────────────────────────
+  // pill text in top-right header
+  headerPill: "HORMUZ DEADLINE: TUE APR 7 · 8PM ET",
+
+  // ── ALERT ─────────────────────────────────────────────────
+  alert: "<strong>BREAKING:</strong> Iran formally rejects 45-day ceasefire — insists on permanent end to all regional conflicts. Trump repeats infrastructure strike threat at White House presser.",
+
+  // ── HERO ──────────────────────────────────────────────────
+  heroDate: "MONDAY, APRIL 6, 2026 · WEEK 6 OF OPERATION EPIC FURY",
+  heroHed: "The Strait<br>holds. <em>For now.</em>",
+  heroDek: "US-Iran conflict enters its 6th week with oil at $112, gas at a 4-year high, and Trump's infrastructure strike deadline expiring in under 28 hours. Ceasefire talks collapse as Iran rejects proposal.",
+
+  // ── COUNTDOWN ─────────────────────────────────────────────
+  // set to null to hide the countdown block entirely
+  countdown: {
+    label: "HORMUZ DEADLINE",
+    sub: "remaining",
+    // ISO datetime string — the target moment
+    target: "2026-04-07T20:00:00-04:00"
+  },
+
+  // ── METRICS (up to 5) ─────────────────────────────────────
+  // color: red | amber | blue | green | neutral
+  // subClass: up | dn | "" (empty = muted2)
+  metrics: [
+    { color:"red",    label:"WTI Crude",  value:"$112",    sub:"+0.7% today · +90% since Feb 28", subClass:"up" },
+    { color:"red",    label:"Brent",      value:"$109",    sub:"+0.6% · peaked $126 in March",    subClass:"up" },
+    { color:"amber",  label:"US Gas Avg", value:"$4.11",   sub:"4-yr high · up from $2.98 pre-war", subClass:"dn" },
+    { color:"blue",   label:"S&P 500",    value:"+0.4%",   sub:"VIX 24+ · Fear & Greed: 13",      subClass:"" },
+    { color:"neutral",label:"DXY",        value:"100.03",  sub:"flat · no dollar flight yet",      subClass:"" },
+  ],
+
+  // ── STORIES (up to 6) ─────────────────────────────────────
+  // dot: d-crit | d-high | d-mod | d-low
+  // tags: array of { text, cls } where cls is t-red | t-amber | t-blue | t-green | t-gray
+  storiesTitle: "Top Stories — Apr 6, 2026",
+  stories: [
+    {
+      dot: "d-crit",
+      title: "Iran rejects 45-day ceasefire — Hormuz deadline stands · Tue 8pm ET",
+      body: "Egypt, Pakistan &amp; Turkey submitted a 2-phase plan. Iran rejected it, demanding a permanent end to all regional conflicts. Trump called it \"not good enough, but a significant step.\" Hormuz transits at ~5% of pre-war volume. Iran charging up to $2M per vessel for passage.",
+      tags: [{ text:"war", cls:"t-red" },{ text:"oil shock", cls:"t-amber" },{ text:"diplomacy", cls:"t-blue" }]
+    },
+    {
+      dot: "d-crit",
+      title: "Trump: \"Power Plant Day and Bridge Day\" — threatens full infrastructure strikes",
+      body: "At the Easter Egg Roll, Trump confirmed 8pm Tuesday deadline is final. \"I don't know if it's winding down or ramping up — it depends what they do.\" Also threatened to seize Iranian oil. European Council president warned targeting civilian infrastructure is illegal.",
+      tags: [{ text:"escalation", cls:"t-red" },{ text:"infrastructure", cls:"t-amber" }]
+    },
+    {
+      dot: "d-high",
+      title: "GCC under fire — Iranian drones hit Kuwait power &amp; desalination plants",
+      body: "Iranian drones struck Kuwaiti government ministries and two power/desalination facilities. UAE and Kuwait air defenses remain active. Iran's naval commander — cited as directly responsible for Hormuz closure — killed by Israel.",
+      tags: [{ text:"Gulf", cls:"t-red" },{ text:"energy infra", cls:"t-amber" }]
+    },
+    {
+      dot: "d-high",
+      title: "US Air Force colonel rescued from deep inside Iran by SOF",
+      body: "The F-15E weapons systems officer was extracted from \"deep inside the mountains of Iran\" after a fierce firefight. An A-10 Warthog providing cover went down near Hormuz; pilot ejected safely and recovered in Kuwait. First confirmed US materiel losses on Iranian soil.",
+      tags: [{ text:"military", cls:"t-gray" },{ text:"SOF", cls:"t-gray" }]
+    },
+    {
+      dot: "d-high",
+      title: "Fuel surcharges spreading — Goldman warns S&P could fall to 5,400",
+      body: "Amazon, UPS, FedEx, USPS, United Airlines, and JetBlue all adding fuel surcharges. Goldman Sachs warns S&P could drop 22% from Jan peak if disruption persists. Fertilizer shortages emerging as secondary crisis. Gas avg topped $4.11, highest in four years.",
+      tags: [{ text:"inflation", cls:"t-amber" },{ text:"recession risk", cls:"t-red" }]
+    },
+    {
+      dot: "d-mod",
+      title: "China amphibious drills continue — opportunistic timing assessed",
+      body: "Shuiqiao-class LPU barges at Hepu Dasha Beach, Nantong. OSINT assesses rehearsal activity exploiting US focus on Iran. Houthis holding Red Sea ports — conditional on Saudi de-escalation. Iran threatens to close Bab al-Mandab via Houthi signal if US strikes infra.",
+      tags: [{ text:"China", cls:"t-blue" },{ text:"Houthis", cls:"t-gray" }]
+    },
+  ],
+
+  // ── MAP ───────────────────────────────────────────────────
+  mapTitle: "Conflict Theater — Apr 6, 2026",
+  // center: [lon, lat], scaleMult: multiplier on container width
+  mapCenter: [52, 27],
+  mapScaleMult: 1.05,
+  // customLabel: optional {lon, lat, lines:[], color} — pinned annotation on map
+  mapLabel: { lon:56.5, lat:26.55, lines:["HORMUZ DEADLINE","TUE APR 7 · 8PM ET"], color:"#e24b4a" },
+  // type: strike | airdef | naval | actor | diplo
+  markers: [
+    { name:"Tehran",             lat:35.69, lon:51.39, type:"strike", note:"Airstrikes confirmed — intense and continuous shelling" },
+    { name:"Shiraz",             lat:29.59, lon:52.58, type:"strike", note:"Heavy US/Israeli airstrikes" },
+    { name:"Qom",                lat:34.64, lon:50.88, type:"strike", note:"Nuclear-adjacent strikes confirmed" },
+    { name:"Bushehr",            lat:28.97, lon:50.84, type:"strike", note:"Explosion at Bushehr nuclear plant auxiliary building" },
+    { name:"Strait of Hormuz",   lat:26.55, lon:56.50, type:"strike", note:"Deadline Tue 8pm ET · ~5% pre-war volume · $2M/vessel" },
+    { name:"Kuwait",             lat:29.37, lon:47.99, type:"airdef", note:"Air defenses active · power & desalination plants hit" },
+    { name:"UAE",                lat:24.50, lon:54.40, type:"airdef", note:"Air defenses active — intercepting missiles/drones" },
+    { name:"Qatar/Ras Laffan",   lat:25.90, lon:51.50, type:"airdef", note:"Ras Laffan LNG — major strike risk" },
+    { name:"Haifa",              lat:32.82, lon:34.99, type:"strike", note:"Iranian missile struck residential building" },
+    { name:"Tel Aviv",           lat:32.08, lon:34.78, type:"strike", note:"IDF HaKirya HQ vicinity struck" },
+    { name:"CVN-72 Arabian Sea", lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — Arabian Sea (low-conf)" },
+    { name:"CVN-78 E.Med",       lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean" },
+    { name:"Hepu Dasha",         lat:31.90, lon:121.0, type:"actor",  note:"Chinese amphibious barge exercises — opportunistic timing" },
+    { name:"Oman",               lat:23.60, lon:58.60, type:"diplo",  note:"Ceasefire mediation — Hormuz discussions ongoing" },
+    { name:"Sulaymaniyah",       lat:35.56, lon:45.43, type:"strike", note:"Drone strike — likely Iranian proxy activity" },
+    { name:"Bab al-Mandab",      lat:12.60, lon:43.30, type:"airdef", note:"Houthis threatening closure — Iran proxy signal" },
+  ],
+
+  // ── POLYMARKET ────────────────────────────────────────────
+  polyTitle: "Polymarket · live odds",
+  // pct: 0-100 number, delta: string like "+18%" or "-5%" or "—", barColor: css var or hex
+  poly: [
+    { name:"US-Iran ceasefire by Apr 30",  pct:28, delta:"+18%", deltaUp:true,  barColor:"var(--blue)" },
+    { name:"Michigan wins NCAA tonight",   pct:74, delta:"—",    deltaUp:null,  barColor:"var(--green)" },
+    { name:"Claude Mythos by Apr 30",      pct:45, delta:"+18%", deltaUp:true,  barColor:"var(--purple)" },
+    { name:"ChatGPT outage by Apr 10",     pct:28, delta:"-15%", deltaUp:false, barColor:"var(--amber)" },
+    { name:"WTI hits $120 in April",       pct:55, delta:"rising",deltaUp:false, barColor:"var(--red)" },
+  ],
+
+  // ── WATCH LIST (up to 5) ──────────────────────────────────
+  // iconColor: css var string
+  watchItems: [
+    { icon:"!!!", iconColor:"var(--red)",   text:"<strong>Tue Apr 7, 8pm ET</strong> — Hormuz hard deadline. Iran rejected ceasefire. Either a deal materializes or Trump orders infrastructure strikes on Iranian power plants and bridges." },
+    { icon:"!!",  iconColor:"var(--red)",   text:"<strong>Gulf energy infra</strong> — Kuwait plants already hit. Any strike on Aramco facilities or Qatar's Ras Laffan LNG = catastrophic escalation. WTI could spike toward $130+." },
+    { icon:"!",   iconColor:"var(--amber)", text:"<strong>Friday CPI data</strong> — Highest-profile macro release of the week. Oil-driven inflation expected ugly. Fed minutes drop Wednesday." },
+    { icon:"i",   iconColor:"var(--blue)",  text:"<strong>China follow-on</strong> — Any Strait of Taiwan posturing during US-Iran engagement would be the big strategic signal of the week." },
+    { icon:"i",   iconColor:"var(--green)", text:"<strong>S&P divergence</strong> — Markets up but VIX above 24 and Goldman flagging 5,400 downside. Equity bounce may be short-covering. Unstable." },
+  ],
+
+  // ── THREAT LEVELS ─────────────────────────────────────────
+  // pct: 0-100, color: css var, label: CRITICAL|HIGH|ELEVATED|MODERATE|WATCH|STABLE
+  threats: [
+    { name:"Strait of Hormuz",        pct:96, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Gulf Arab states",         pct:88, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Iran / Israel front",      pct:75, color:"var(--amber)", label:"HIGH" },
+    { name:"South China Sea",          pct:52, color:"var(--amber)", label:"ELEVATED" },
+    { name:"Bab al-Mandab / Red Sea",  pct:40, color:"var(--blue)",  label:"MODERATE" },
+    { name:"Eastern Med / NATO flank", pct:25, color:"var(--green)", label:"WATCH" },
+  ],
+
+  // ── GAS CHART ─────────────────────────────────────────────
+  gasTitle: "US Avg Gas Price — Weekly (AAA national avg)",
+  gasSub: "Regular unleaded · Oct 2, 2025 – Apr 6, 2026 · sourced from AAA newsroom weekly reports",
+  gasCurrentVal: "$4.11",
+  gasCurrentSub: "Apr 6 · 4-yr high",
+  // splitIdx: index where the line color changes from blue → red
+  gasSplitIdx: 21,
+  gasData: [
+    { date:"Oct 2",  price:3.15 },
+    { date:"Oct 9",  price:3.11 },
+    { date:"Oct 16", price:3.05 },
+    { date:"Oct 23", price:3.07 },
+    { date:"Oct 30", price:3.03 },
+    { date:"Nov 6",  price:3.03 },
+    { date:"Nov 13", price:3.04 },
+    { date:"Nov 20", price:3.08 },
+    { date:"Nov 27", price:3.10 },
+    { date:"Dec 4",  price:2.99 },
+    { date:"Dec 11", price:2.94 },
+    { date:"Dec 18", price:2.91 },
+    { date:"Dec 25", price:2.88 },
+    { date:"Jan 8",  price:2.81 },
+    { date:"Jan 15", price:2.84 },
+    { date:"Jan 22", price:2.85 },
+    { date:"Jan 29", price:2.87 },
+    { date:"Feb 5",  price:2.89 },
+    { date:"Feb 12", price:2.94 },
+    { date:"Feb 19", price:2.92 },
+    { date:"Feb 26", price:2.98 },
+    { date:"Mar 5",  price:3.25 },
+    { date:"Mar 12", price:3.60 },
+    { date:"Mar 19", price:3.88 },
+    { date:"Mar 26", price:3.98 },
+    { date:"Apr 2",  price:4.08 },
+    { date:"Apr 6",  price:4.11 },
+  ],
+  // chart event markers — index is fractional position on x-axis
+  // color: #hex, label: max 2-element array of strings
+  gasEvents: [
+    { label:["War begins","Feb 28"],     index:20.5, color:"#e24b4a" },
+    { label:["Hormuz","closed"],         index:21.4, color:"#e24b4a" },
+    { label:["IEA releases","400M bbl"], index:22.4, color:"#3dba7f" },
+    { label:["Brent",">$100"],           index:23.1, color:"#e24b4a" },
+    { label:["Deadline","Mar 26"],        index:23.9, color:"#ef9f27" },
+    { label:["F-15 downed","Apr 3"],     index:25.2, color:"#e24b4a" },
+    { label:["Ceasefire","talks"],       index:25.7, color:"#ef9f27" },
+    { label:["Deadline","Apr 7 →"],      index:26.4, color:"#ef9f27" },
+  ],
+  // yMin/yMax for gas chart y-axis — adjust when price range changes
+  gasYMin: 2.6,
+  gasYMax: 4.5,
+  // summary stat cards below the chart
+  gasStats: [
+    { label:"6-mo low",   value:"$2.81", sub:"Jan 8, 2026" },
+    { label:"pre-event",  value:"$2.98", sub:"Feb 26 — day before" },
+    { label:"spike",      value:"+$1.13",sub:"in ~5 weeks", red:true },
+    { label:"today",      value:"$4.11", sub:"highest since Aug 2022", red:true },
+  ],
+
+  // ── FOOTER SOURCES ────────────────────────────────────────
+  sources: ["AAA weekly","SitDeck","Polymarket","NPR live","CNN live","NBC live","CNBC","EIA","Britannica"],
+
+}; // ← END OF DATA — do not edit below this line
+</script>
+
+<!-- ═══════════════════════════ RENDER ENGINE — DO NOT EDIT ═══════════════════════════ -->
+<script>
+(function(){
+  const C = DATA;
+
+  // helpers
+  const $ = id => document.getElementById(id);
+  const esc = s => s; // content already trusted from DATA
+
+  // meta
+  document.title = C.title;
+  $('footer-text').textContent = C.footerText;
+
+  // header
+  $('hdr-pill').textContent = C.headerPill;
+
+  // alert
+  $('alert-text').innerHTML = C.alert;
+
+  // hero
+  $('hero-date').textContent = C.heroDate;
+  $('hero-hed').innerHTML = C.heroHed;
+  $('hero-dek').textContent = C.heroDek;
+
+  // countdown
+  if (!C.countdown) {
+    $('hero-countdown-wrap').style.display = 'none';
+  } else {
+    $('countdown-label').textContent = C.countdown.label;
+    $('countdown-sub').textContent = C.countdown.sub;
+    const target = new Date(C.countdown.target);
+    function tick() {
+      const diff = target - new Date();
+      if (diff <= 0) { $('countdown').textContent = 'EXPIRED'; return; }
+      const h = Math.floor(diff/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      $('countdown').textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }
+    tick(); setInterval(tick, 1000);
+  }
+
+  // live clock
+  function updateClock() {
+    $('live-time').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});
+  }
+  updateClock(); setInterval(updateClock, 1000);
+
+  // metrics
+  $('metrics-row').innerHTML = C.metrics.map(m=>`
+    <div class="mc ${m.color}">
+      <div class="ml">${m.label}</div>
+      <div class="mv">${m.value}</div>
+      <div class="ms ${m.subClass}">${m.sub}</div>
+    </div>`).join('');
+
+  // stories
+  $('stories-title').textContent = C.storiesTitle;
+  $('stories-list').innerHTML = C.stories.map(s=>`
+    <div class="story">
+      <div class="sh"><div class="td ${s.dot}"></div><div class="stitle">${s.title}</div></div>
+      <div class="sbody">${s.body}</div>
+      <div class="tags">${s.tags.map(t=>`<span class="tag ${t.cls}">${t.text}</span>`).join('')}</div>
+    </div>`).join('');
+
+  // polymarket
+  $('poly-title').textContent = C.polyTitle;
+  $('poly-list').innerHTML = C.poly.map(p=>`
+    <div class="mr">
+      <div class="mn">${p.name}</div>
+      <div class="mright">
+        <div class="bbg"><div class="bb" style="width:${p.pct}%;background:${p.barColor}"></div></div>
+        <div class="mp">${p.pct}%</div>
+        <div class="md" style="color:${p.deltaUp===true?'var(--green)':p.deltaUp===false?'var(--red)':'var(--muted)'}">${p.delta}</div>
+      </div>
+    </div>`).join('');
+
+  // watch list
+  $('watch-list').innerHTML = C.watchItems.map(w=>`
+    <div class="wi">
+      <span class="wic" style="color:${w.iconColor}">${w.icon}</span>
+      <span>${w.text}</span>
+    </div>`).join('');
+
+  // threats
+  $('threat-list').innerHTML = C.threats.map(t=>`
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span style="color:var(--text)">${t.name}</span>
+        <span style="font-family:var(--mono);color:${t.color};font-size:11px">${t.label}</span>
+      </div>
+      <div style="background:rgba(255,255,255,.06);height:4px;border-radius:4px;overflow:hidden">
+        <div style="width:${t.pct}%;height:100%;background:${t.color};border-radius:4px"></div>
+      </div>
+    </div>`).join('');
+
+  // gas chart header
+  $('gas-title').textContent = C.gasTitle;
+  $('gas-sub').textContent   = C.gasSub;
+  $('gas-val').textContent   = C.gasCurrentVal;
+  $('gas-val-sub').textContent = C.gasCurrentSub;
+
+  // gas stat cards
+  $('gas-stats').innerHTML = C.gasStats.map(s=>`
+    <div class="stat">
+      <div class="sl">${s.label}</div>
+      <div class="sv"${s.red?' style="color:var(--red)"':''}>${s.value}</div>
+      <div class="ss">${s.sub}</div>
+    </div>`).join('');
+
+  // footer sources
+  $('footer-chips').innerHTML = C.sources.map(s=>`<span class="chip">${s}</span>`).join('');
+
+  // ── GAS CHART ──────────────────────────────────────────────
+  const gLabels = C.gasData.map(d=>d.date);
+  const gPrices = C.gasData.map(d=>d.price);
+  const splitIdx = C.gasSplitIdx;
+  const ptColors = gPrices.map((_,i)=>i>=splitIdx?'#e24b4a':'#4a9eff');
+
+  const isMobile = window.innerWidth <= 600;
+
+  const annotations = {};
+  C.gasEvents.forEach((ev,i)=>{
+    annotations['vl'+i] = { type:'line', xMin:ev.index, xMax:ev.index, borderColor:ev.color, borderWidth:1.5, borderDash:[4,3] };
+    if(!isMobile) annotations['lb'+i] = {
+      type:'label', xValue:ev.index, yValue:C.gasYMax-0.08,
+      content:ev.label, color:ev.color,
+      font:{ size:9, weight:'500', family:"'DM Mono',monospace" },
+      textAlign:'center', position:'start'
+    };
+  });
+
+  new Chart(document.getElementById('gasChart').getContext('2d'), {
+    type:'line',
+    data:{ labels:gLabels, datasets:[{
+      data:gPrices, borderWidth:2.5,
+      pointRadius:gPrices.map((_,i)=>i===13||i===20||i===gPrices.length-1?5:3),
+      pointBackgroundColor:ptColors, pointBorderColor:ptColors,
+      fill:true,
+      backgroundColor:function(c){
+        const{ctx:cx,chartArea}=c.chart;
+        if(!chartArea)return'transparent';
+        const g=cx.createLinearGradient(0,chartArea.top,0,chartArea.bottom);
+        g.addColorStop(0,'rgba(226,75,74,0.18)');
+        g.addColorStop(0.6,'rgba(74,158,255,0.08)');
+        g.addColorStop(1,'rgba(74,158,255,0.01)');
+        return g;
+      },
+      segment:{ borderColor:c=>c.p1DataIndex>=splitIdx?'#e24b4a':'#4a9eff' },
+      tension:0.4
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      layout:{ padding:{ top: isMobile ? 16 : 80 } },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          callbacks:{
+            label:v=>' $'+v.parsed.y.toFixed(2)+' / gal',
+            afterLabel:v=>v.dataIndex>=splitIdx?'  ⚠ disruption period':''
+          },
+          backgroundColor:'#17191c', titleColor:'#e8e6e1', bodyColor:'#9a9894',
+          borderColor:'rgba(255,255,255,0.1)', borderWidth:1, padding:10
+        },
+        annotation:{ annotations }
+      },
+      scales:{
+        x:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{ color:'#6b6a66', font:{size:10}, maxRotation:45, autoSkip:false, callback:function(v,i){return isMobile ? (i%4===0?this.getLabelForValue(v):'') : (i%2===0?this.getLabelForValue(v):'')} } },
+        y:{ min:C.gasYMin, max:C.gasYMax, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{ color:'#6b6a66', font:{size:10}, callback:v=>'$'+v.toFixed(2) } }
+      }
+    }
+  });
+
+  // ── MAP ────────────────────────────────────────────────────
+  const colorMap = { strike:'#e24b4a', airdef:'#ef9f27', naval:'#4a9eff', actor:'#9b8cf7', diplo:'#3dba7f' };
+  const legendLabels = { strike:'strikes / hit', airdef:'air defenses active', naval:'US naval assets', actor:'other actors', diplo:'ceasefire mediators' };
+
+  $('map-title').textContent = C.mapTitle;
+
+  // legend — only show types that exist in markers
+  const usedTypes = [...new Set(C.markers.map(m=>m.type))];
+  $('map-legend').innerHTML = usedTypes.map(t=>`
+    <div class="mli"><div class="ld" style="background:${colorMap[t]}"></div>${legendLabels[t]||t}</div>`).join('');
+
+  const container = $('map-wrap');
+  const W = container.clientWidth || 800;
+  const H = 360;
+  const svg = d3.select('#map-wrap').append('svg')
+    .attr('width','100%').attr('height',H).attr('viewBox',`0 0 ${W} ${H}`).style('display','block');
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#0e1520');
+  const proj = d3.geoMercator().center(C.mapCenter).scale(W*C.mapScaleMult).translate([W/2,H/2]);
+  const pathFn = d3.geoPath(proj);
+
+  const tip = d3.select('body').append('div')
+    .style('position','fixed').style('background','#17191c')
+    .style('border','1px solid rgba(255,255,255,0.1)').style('border-radius','8px')
+    .style('padding','8px 12px').style('font-size','12px').style('color','#e8e6e1')
+    .style('pointer-events','none').style('opacity',0).style('max-width','220px')
+    .style('line-height','1.4').style('z-index',9999).style('font-family',"'Geist',sans-serif");
+
+  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world=>{
+    svg.append('g').selectAll('path')
+      .data(topojson.feature(world,world.objects.countries).features)
+      .join('path').attr('d',pathFn)
+      .attr('fill','#161b24').attr('stroke','rgba(255,255,255,0.08)').attr('stroke-width',0.4);
+
+    // custom label
+    if(C.mapLabel){
+      const[lx,ly]=proj([C.mapLabel.lon,C.mapLabel.lat]);
+      C.mapLabel.lines.forEach((line,i)=>{
+        svg.append('text').attr('x',lx-32).attr('y',ly-12+(i*9))
+          .attr('font-size','9px').attr('font-family',"'DM Mono',monospace")
+          .attr('font-weight','500').attr('fill',C.mapLabel.color).attr('pointer-events','none')
+          .text(line);
+      });
+    }
+
+    C.markers.forEach(m=>{
+      const[x,y]=proj([m.lon,m.lat]);
+      if(!x||!y)return;
+      const col=colorMap[m.type]||'#888';
+      svg.append('circle').attr('cx',x).attr('cy',y).attr('r',5)
+        .attr('fill',col).attr('fill-opacity',0.85)
+        .attr('stroke','rgba(255,255,255,0.15)').attr('stroke-width',1).style('cursor','pointer')
+        .on('mouseover',()=>tip.style('opacity',1).html('<strong>'+m.name+'</strong><br>'+m.note))
+        .on('mousemove',e=>tip.style('left',(e.clientX+12)+'px').style('top',(e.clientY-28)+'px'))
+        .on('mouseout',()=>tip.style('opacity',0))
+        .on('touchstart',function(e){
+          e.preventDefault();
+          const t=e.touches[0];
+          tip.style('opacity',1).html('<strong>'+m.name+'</strong><br>'+m.note)
+            .style('left',(t.clientX+12)+'px').style('top',(t.clientY-28)+'px');
+          setTimeout(()=>tip.style('opacity',0),2800);
+        });
+      const lbl=m.name.split('/')[0].split(' ')[0];
+      svg.append('text').attr('x',x+7).attr('y',y+4).attr('font-size','9px')
+        .attr('fill','rgba(232,230,225,0.65)').attr('pointer-events','none')
+        .attr('font-family',"'Geist',sans-serif")
+        .text(lbl.length>10?lbl.slice(0,9)+'…':lbl);
+    });
+  }).catch(()=>{
+    svg.append('text').attr('x',W/2).attr('y',H/2).attr('text-anchor','middle')
+      .attr('fill','#6b6a66').attr('font-size','13px').text('Map topology could not load');
+  });
+
+})();
+</script>
+</body>
+</html>
