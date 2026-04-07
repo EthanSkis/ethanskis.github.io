@@ -293,21 +293,21 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 const DATA = {
 
   // ── META ──────────────────────────────────────────────────
-  date: "Apr 6, 2026",
-  title: "SITWATCH — Apr 6, 2026",
-  footerText: "SITWATCH · built from your inbox · Apr 6, 2026",
+  date: "Apr 7, 2026",
+  title: "SITWATCH — Apr 7, 2026",
+  footerText: "SITWATCH · built from your inbox · Apr 7, 2026",
 
   // ── HEADER ────────────────────────────────────────────────
   // pill text in top-right header
-  headerPill: "HORMUZ DEADLINE: TUE APR 7 · 8PM ET",
+  headerPill: "HORMUZ DEADLINE: TONIGHT · 8PM ET",
 
   // ── ALERT ─────────────────────────────────────────────────
-  alert: "<strong>BREAKING:</strong> Iran formally rejects 45-day ceasefire — insists on permanent end to all regional conflicts. Trump repeats infrastructure strike threat at White House presser.",
+  alert: "<strong>BREAKING:</strong> Hegseth confirms today is the highest-volume US strike day of the war — Trump's infrastructure deadline expires at 8pm ET tonight with no ceasefire deal in place.",
 
   // ── HERO ──────────────────────────────────────────────────
-  heroDate: "MONDAY, APRIL 6, 2026 · WEEK 6 OF OPERATION EPIC FURY",
-  heroHed: "The Strait<br>holds. <em>For now.</em>",
-  heroDek: "US-Iran conflict enters its 6th week with oil at $112, gas at a 4-year high, and Trump's infrastructure strike deadline expiring in under 28 hours. Ceasefire talks collapse as Iran rejects proposal.",
+  heroDate: "TUESDAY, APRIL 7, 2026 · DAY 39 OF OPERATION EPIC FURY",
+  heroHed: "Power Plant Day.<br><em>Tonight.</em>",
+  heroDek: "Trump's infrastructure strike deadline expires at 8pm ET tonight with no deal in hand. Hegseth confirms today is already the war's highest-volume strike day; Iran's 10-point permanent peace counter-proposal was rejected by the White House.",
 
   // ── COUNTDOWN ─────────────────────────────────────────────
   // set to null to hide the countdown block entirely
@@ -322,120 +322,120 @@ const DATA = {
   // color: red | amber | blue | green | neutral
   // subClass: up | dn | "" (empty = muted2)
   metrics: [
-    { color:"red",    label:"WTI Crude",  value:"$112",    sub:"+0.7% today · +90% since Feb 28", subClass:"up" },
-    { color:"red",    label:"Brent",      value:"$109",    sub:"+0.6% · peaked $126 in March",    subClass:"up" },
-    { color:"amber",  label:"US Gas Avg", value:"$4.11",   sub:"4-yr high · up from $2.98 pre-war", subClass:"dn" },
-    { color:"blue",   label:"S&P 500",    value:"+0.4%",   sub:"VIX 24+ · Fear & Greed: 13",      subClass:"" },
-    { color:"neutral",label:"DXY",        value:"100.03",  sub:"flat · no dollar flight yet",      subClass:"" },
+    { color:"red",    label:"WTI Crude",  value:"$113",    sub:"+0.9% today · +91% since Feb 28", subClass:"up" },
+    { color:"red",    label:"Brent",      value:"$109.60", sub:"-1.5% · peaked $126 in March",    subClass:"dn" },
+    { color:"amber",  label:"US Gas Avg", value:"$4.12",   sub:"4-yr high · +$1.14 since Feb 28", subClass:"dn" },
+    { color:"blue",   label:"S&P 500",    value:"6,611",   sub:"VIX 24.20 · +0.44% Mon close",    subClass:"" },
+    { color:"neutral",label:"DXY",        value:"~100",    sub:"flat · no dollar flight yet",      subClass:"" },
   ],
 
   // ── STORIES (up to 6) ─────────────────────────────────────
   // dot: d-crit | d-high | d-mod | d-low
   // tags: array of { text, cls } where cls is t-red | t-amber | t-blue | t-green | t-gray
-  storiesTitle: "Top Stories — Apr 6, 2026",
+  storiesTitle: "Top Stories — Apr 7, 2026",
   stories: [
     {
       dot: "d-crit",
-      title: "Iran rejects 45-day ceasefire — Hormuz deadline stands · Tue 8pm ET",
-      body: "Egypt, Pakistan &amp; Turkey submitted a 2-phase plan. Iran rejected it, demanding a permanent end to all regional conflicts. Trump called it \"not good enough, but a significant step.\" Hormuz transits at ~5% of pre-war volume. Iran charging up to $2M per vessel for passage.",
-      tags: [{ text:"war", cls:"t-red" },{ text:"oil shock", cls:"t-amber" },{ text:"diplomacy", cls:"t-blue" }]
+      title: "DEADLINE TONIGHT 8PM ET — Hegseth: today is the war's highest-volume strike day",
+      body: "Defense Secretary Hegseth confirmed US forces are running more strikes on Iran today than any single day since the war began Feb 28. The Hormuz infrastructure deadline expires at 8pm ET tonight; no deal is in place. Iran's IRGC says the Strait will 'never' revert to its pre-war state.",
+      tags: [{ text:"war", cls:"t-red" },{ text:"deadline", cls:"t-red" },{ text:"escalation", cls:"t-amber" }]
     },
     {
       dot: "d-crit",
-      title: "Trump: \"Power Plant Day and Bridge Day\" — threatens full infrastructure strikes",
-      body: "At the Easter Egg Roll, Trump confirmed 8pm Tuesday deadline is final. \"I don't know if it's winding down or ramping up — it depends what they do.\" Also threatened to seize Iranian oil. European Council president warned targeting civilian infrastructure is illegal.",
-      tags: [{ text:"escalation", cls:"t-red" },{ text:"infrastructure", cls:"t-amber" }]
+      title: "Iran submits 10-point permanent peace counter-proposal — Trump rejects it",
+      body: "Egypt, Pakistan &amp; Turkey submitted a 45-day ceasefire framework (the \"Islamabad Accord\"); Iran rejected it, countering with a 10-point plan demanding a permanent end to all regional conflicts, sanctions relief, and reconstruction aid. Trump called it 'significant but not good enough' and refused to extend the deadline.",
+      tags: [{ text:"diplomacy", cls:"t-blue" },{ text:"ceasefire", cls:"t-amber" }]
     },
     {
       dot: "d-high",
       title: "GCC under fire — Iranian drones hit Kuwait power &amp; desalination plants",
-      body: "Iranian drones struck Kuwaiti government ministries and two power/desalination facilities. UAE and Kuwait air defenses remain active. Iran's naval commander — cited as directly responsible for Hormuz closure — killed by Israel.",
+      body: "Iranian drones struck Kuwaiti government ministries and two power/desalination facilities. Israel struck Iran's largest petrochemical facility (Mahshahr) on Apr 6 as the Hormuz deadline loomed. UAE and Kuwait air defenses remain active.",
       tags: [{ text:"Gulf", cls:"t-red" },{ text:"energy infra", cls:"t-amber" }]
     },
     {
       dot: "d-high",
-      title: "US Air Force colonel rescued from deep inside Iran by SOF",
-      body: "The F-15E weapons systems officer was extracted from \"deep inside the mountains of Iran\" after a fierce firefight. An A-10 Warthog providing cover went down near Hormuz; pilot ejected safely and recovered in Kuwait. First confirmed US materiel losses on Iranian soil.",
+      title: "US Air Force colonel rescued from deep inside Iran by SOF — A-10 downed",
+      body: "The F-15E weapons systems officer was extracted from 'deep inside the mountains of Iran' after a fierce firefight. An A-10 Warthog providing cover went down near Hormuz; pilot safely recovered in Kuwait. 13 US service members killed in the conflict to date.",
       tags: [{ text:"military", cls:"t-gray" },{ text:"SOF", cls:"t-gray" }]
     },
     {
       dot: "d-high",
-      title: "Fuel surcharges spreading — Goldman warns S&P could fall to 5,400",
-      body: "Amazon, UPS, FedEx, USPS, United Airlines, and JetBlue all adding fuel surcharges. Goldman Sachs warns S&P could drop 22% from Jan peak if disruption persists. Fertilizer shortages emerging as secondary crisis. Gas avg topped $4.11, highest in four years.",
+      title: "Polymarket: WTI $120 this month now 76.5% — Goldman warns S&P 5,400",
+      body: "Oil market odds for WTI reaching $120 in April surged from 55% to 76.5% overnight; WTI $130 now at 46%. Amazon, UPS, FedEx, United Airlines, and JetBlue all adding fuel surcharges. Goldman Sachs warns S&P could fall to 5,400 (−22% from Jan peak) if disruption persists.",
       tags: [{ text:"inflation", cls:"t-amber" },{ text:"recession risk", cls:"t-red" }]
     },
     {
       dot: "d-mod",
-      title: "China amphibious drills continue — opportunistic timing assessed",
-      body: "Shuiqiao-class LPU barges at Hepu Dasha Beach, Nantong. OSINT assesses rehearsal activity exploiting US focus on Iran. Houthis holding Red Sea ports — conditional on Saudi de-escalation. Iran threatens to close Bab al-Mandab via Houthi signal if US strikes infra.",
+      title: "China amphibious drills continue — Houthis threaten Bab al-Mandab closure",
+      body: "Shuiqiao-class LPU barges active at Hepu Dasha Beach; OSINT assesses rehearsal exploiting US focus on Iran. Iran has signaled it may direct Houthis to close Bab al-Mandab if US strikes civilian infrastructure tonight.",
       tags: [{ text:"China", cls:"t-blue" },{ text:"Houthis", cls:"t-gray" }]
     },
   ],
 
   // ── MAP ───────────────────────────────────────────────────
-  mapTitle: "Conflict Theater — Apr 6, 2026",
+  mapTitle: "Conflict Theater — Apr 7, 2026",
   // center: [lon, lat], scaleMult: multiplier on container width
   mapCenter: [52, 27],
   mapScaleMult: 1.05,
   // customLabel: optional {lon, lat, lines:[], color} — pinned annotation on map
-  mapLabel: { lon:56.5, lat:26.55, lines:["HORMUZ DEADLINE","TUE APR 7 · 8PM ET"], color:"#e24b4a" },
+  mapLabel: { lon:56.5, lat:26.55, lines:["DEADLINE TONIGHT","APR 7 · 8PM ET"], color:"#e24b4a" },
   // type: strike | airdef | naval | actor | diplo
   markers: [
-    { name:"Tehran",             lat:35.69, lon:51.39, type:"strike", note:"Airstrikes confirmed — intense and continuous shelling" },
-    { name:"Shiraz",             lat:29.59, lon:52.58, type:"strike", note:"Heavy US/Israeli airstrikes" },
+    { name:"Tehran",             lat:35.69, lon:51.39, type:"strike", note:"Highest-volume US strike day of the war — Apr 7" },
+    { name:"Shiraz",             lat:29.59, lon:52.58, type:"strike", note:"Heavy US/Israeli airstrikes ongoing" },
     { name:"Qom",                lat:34.64, lon:50.88, type:"strike", note:"Nuclear-adjacent strikes confirmed" },
     { name:"Bushehr",            lat:28.97, lon:50.84, type:"strike", note:"Explosion at Bushehr nuclear plant auxiliary building" },
-    { name:"Strait of Hormuz",   lat:26.55, lon:56.50, type:"strike", note:"Deadline Tue 8pm ET · ~5% pre-war volume · $2M/vessel" },
-    { name:"Kuwait",             lat:29.37, lon:47.99, type:"airdef", note:"Air defenses active · power & desalination plants hit" },
+    { name:"Mahshahr Petrochem", lat:30.56, lon:49.20, type:"strike", note:"Israel struck Iran's largest petrochemical facility — Apr 6" },
+    { name:"Strait of Hormuz",   lat:26.55, lon:56.50, type:"strike", note:"DEADLINE TONIGHT 8PM ET · ~5% pre-war volume · $2M/vessel" },
+    { name:"Kuwait",             lat:29.37, lon:47.99, type:"airdef", note:"Power & desalination plants hit by Iranian drones" },
     { name:"UAE",                lat:24.50, lon:54.40, type:"airdef", note:"Air defenses active — intercepting missiles/drones" },
     { name:"Qatar/Ras Laffan",   lat:25.90, lon:51.50, type:"airdef", note:"Ras Laffan LNG — major strike risk" },
-    { name:"Haifa",              lat:32.82, lon:34.99, type:"strike", note:"Iranian missile struck residential building" },
+    { name:"Haifa",              lat:32.82, lon:34.99, type:"strike", note:"Iranian missile killed 4 in residential building" },
     { name:"Tel Aviv",           lat:32.08, lon:34.78, type:"strike", note:"IDF HaKirya HQ vicinity struck" },
-    { name:"CVN-72 Arabian Sea", lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — Arabian Sea (low-conf)" },
+    { name:"CVN-72 Arabian Sea", lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — Arabian Sea" },
     { name:"CVN-78 E.Med",       lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean" },
     { name:"Hepu Dasha",         lat:31.90, lon:121.0, type:"actor",  note:"Chinese amphibious barge exercises — opportunistic timing" },
-    { name:"Oman",               lat:23.60, lon:58.60, type:"diplo",  note:"Ceasefire mediation — Hormuz discussions ongoing" },
-    { name:"Sulaymaniyah",       lat:35.56, lon:45.43, type:"strike", note:"Drone strike — likely Iranian proxy activity" },
-    { name:"Bab al-Mandab",      lat:12.60, lon:43.30, type:"airdef", note:"Houthis threatening closure — Iran proxy signal" },
+    { name:"Oman",               lat:23.60, lon:58.60, type:"diplo",  note:"Ceasefire mediation ongoing — Iran 10-point counter submitted" },
+    { name:"Bab al-Mandab",      lat:12.60, lon:43.30, type:"airdef", note:"Houthis threatening closure if US strikes infra tonight" },
   ],
 
   // ── POLYMARKET ────────────────────────────────────────────
   polyTitle: "Polymarket · live odds",
   // pct: 0-100 number, delta: string like "+18%" or "-5%" or "—", barColor: css var or hex
   poly: [
-    { name:"US-Iran ceasefire by Apr 30",  pct:28, delta:"+18%", deltaUp:true,  barColor:"var(--blue)" },
-    { name:"Michigan wins NCAA tonight",   pct:74, delta:"—",    deltaUp:null,  barColor:"var(--green)" },
-    { name:"Claude Mythos by Apr 30",      pct:45, delta:"+18%", deltaUp:true,  barColor:"var(--purple)" },
-    { name:"ChatGPT outage by Apr 10",     pct:28, delta:"-15%", deltaUp:false, barColor:"var(--amber)" },
-    { name:"WTI hits $120 in April",       pct:55, delta:"rising",deltaUp:false, barColor:"var(--red)" },
+    { name:"US forces enter Iran by Apr 30",  pct:99,  delta:"new",   deltaUp:true,  barColor:"var(--red)" },
+    { name:"WTI hits $120 in April",          pct:77,  delta:"+21.5%",deltaUp:true,  barColor:"var(--amber)" },
+    { name:"WTI hits $130 in April",          pct:46,  delta:"new",   deltaUp:true,  barColor:"var(--red)" },
+    { name:"US-Iran ceasefire by Apr 30",     pct:29,  delta:"+0.5%", deltaUp:true,  barColor:"var(--blue)" },
+    { name:"US-Iran ceasefire by Apr 15",     pct:14,  delta:"—",     deltaUp:null,  barColor:"var(--blue)" },
   ],
 
   // ── WATCH LIST (up to 5) ──────────────────────────────────
   // iconColor: css var string
   watchItems: [
-    { icon:"!!!", iconColor:"var(--red)",   text:"<strong>Tue Apr 7, 8pm ET</strong> — Hormuz hard deadline. Iran rejected ceasefire. Either a deal materializes or Trump orders infrastructure strikes on Iranian power plants and bridges." },
-    { icon:"!!",  iconColor:"var(--red)",   text:"<strong>Gulf energy infra</strong> — Kuwait plants already hit. Any strike on Aramco facilities or Qatar's Ras Laffan LNG = catastrophic escalation. WTI could spike toward $130+." },
-    { icon:"!",   iconColor:"var(--amber)", text:"<strong>Friday CPI data</strong> — Highest-profile macro release of the week. Oil-driven inflation expected ugly. Fed minutes drop Wednesday." },
-    { icon:"i",   iconColor:"var(--blue)",  text:"<strong>China follow-on</strong> — Any Strait of Taiwan posturing during US-Iran engagement would be the big strategic signal of the week." },
-    { icon:"i",   iconColor:"var(--green)", text:"<strong>S&P divergence</strong> — Markets up but VIX above 24 and Goldman flagging 5,400 downside. Equity bounce may be short-covering. Unstable." },
+    { icon:"!!!", iconColor:"var(--red)",   text:"<strong>TONIGHT Apr 7, 8pm ET</strong> — Final Hormuz deadline. Hegseth already running the war's highest-volume strike day. No deal. Trump refuses to extend. Either Iran opens the strait or infrastructure strikes on power plants and bridges begin." },
+    { icon:"!!",  iconColor:"var(--red)",   text:"<strong>Gulf energy infra</strong> — Kuwait plants already hit. Any strike on Qatar's Ras Laffan LNG or Saudi Aramco = catastrophic escalation. WTI could spike toward $130+ overnight; Polymarket puts $130 at 46%." },
+    { icon:"!",   iconColor:"var(--amber)", text:"<strong>Friday CPI data</strong> — Oil-driven inflation print will be the key macro release of the week. Fed minutes drop Wednesday. Markets pricing stagflation risk." },
+    { icon:"i",   iconColor:"var(--blue)",  text:"<strong>China watch</strong> — Amphibious exercises at Hepu Dasha continue. Any Strait of Taiwan posturing during tonight's US escalation would be the week's biggest strategic signal." },
+    { icon:"i",   iconColor:"var(--green)", text:"<strong>Market reaction post-8pm</strong> — S&P at 6,611 after 4-day rally on ceasefire hopes. If strikes happen tonight, expect sharp reversal. Goldman's 5,400 downside scenario becomes significantly more credible." },
   ],
 
   // ── THREAT LEVELS ─────────────────────────────────────────
   // pct: 0-100, color: css var, label: CRITICAL|HIGH|ELEVATED|MODERATE|WATCH|STABLE
   threats: [
-    { name:"Strait of Hormuz",        pct:96, color:"var(--red)",   label:"CRITICAL" },
-    { name:"Gulf Arab states",         pct:88, color:"var(--red)",   label:"CRITICAL" },
-    { name:"Iran / Israel front",      pct:75, color:"var(--amber)", label:"HIGH" },
+    { name:"Strait of Hormuz",        pct:98, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Gulf Arab states",         pct:90, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Iran / Israel front",      pct:80, color:"var(--red)",   label:"CRITICAL" },
     { name:"South China Sea",          pct:52, color:"var(--amber)", label:"ELEVATED" },
-    { name:"Bab al-Mandab / Red Sea",  pct:40, color:"var(--blue)",  label:"MODERATE" },
-    { name:"Eastern Med / NATO flank", pct:25, color:"var(--green)", label:"WATCH" },
+    { name:"Bab al-Mandab / Red Sea",  pct:45, color:"var(--amber)", label:"ELEVATED" },
+    { name:"Eastern Med / NATO flank", pct:28, color:"var(--green)", label:"WATCH" },
   ],
 
   // ── GAS CHART ─────────────────────────────────────────────
   gasTitle: "US Avg Gas Price — Weekly (AAA national avg)",
-  gasSub: "Regular unleaded · Oct 2, 2025 – Apr 6, 2026 · sourced from AAA newsroom weekly reports",
-  gasCurrentVal: "$4.11",
-  gasCurrentSub: "Apr 6 · 4-yr high",
+  gasSub: "Regular unleaded · Oct 2, 2025 – Apr 7, 2026 · sourced from AAA newsroom weekly reports",
+  gasCurrentVal: "$4.12",
+  gasCurrentSub: "Apr 7 · 4-yr high",
   // splitIdx: index where the line color changes from blue → red
   gasSplitIdx: 21,
   gasData: [
@@ -466,6 +466,7 @@ const DATA = {
     { date:"Mar 26", price:3.98 },
     { date:"Apr 2",  price:4.08 },
     { date:"Apr 6",  price:4.11 },
+    { date:"Apr 7",  price:4.12 },
   ],
   // chart event markers — index is fractional position on x-axis
   // color: #hex, label: max 2-element array of strings
@@ -477,7 +478,7 @@ const DATA = {
     { label:["Deadline","Mar 26"],        index:23.9, color:"#ef9f27" },
     { label:["F-15 downed","Apr 3"],     index:25.2, color:"#e24b4a" },
     { label:["Ceasefire","talks"],       index:25.7, color:"#ef9f27" },
-    { label:["Deadline","Apr 7 →"],      index:26.4, color:"#ef9f27" },
+    { label:["DEADLINE","TONIGHT →"],   index:27.0, color:"#e24b4a" },
   ],
   // yMin/yMax for gas chart y-axis — adjust when price range changes
   gasYMin: 2.6,
@@ -486,12 +487,12 @@ const DATA = {
   gasStats: [
     { label:"6-mo low",   value:"$2.81", sub:"Jan 8, 2026" },
     { label:"pre-event",  value:"$2.98", sub:"Feb 26 — day before" },
-    { label:"spike",      value:"+$1.13",sub:"in ~5 weeks", red:true },
-    { label:"today",      value:"$4.11", sub:"highest since Aug 2022", red:true },
+    { label:"spike",      value:"+$1.14",sub:"in ~5 weeks", red:true },
+    { label:"today",      value:"$4.12", sub:"highest since Aug 2022", red:true },
   ],
 
   // ── FOOTER SOURCES ────────────────────────────────────────
-  sources: ["AAA weekly","SitDeck","Polymarket","NPR live","CNN live","NBC live","CNBC","EIA","Britannica"],
+  sources: ["AAA newsroom","oilpriceapi.com","Polymarket","Al Jazeera live","NBC News live","Bloomberg","CNBC","SOF News","Fortune","Axios","NPR"],
 
 }; // ← END OF DATA — do not edit below this line
 </script>
