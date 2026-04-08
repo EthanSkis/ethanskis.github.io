@@ -564,7 +564,7 @@
   let currentUserId = null;
   let realtimeChannel = null;
   let isSaving = false;
-  let lastSavedContent = '';
+  let lastSavedAt = null;
 
   // ── AUTH ────────────────────────────────────────────
   async function enter() {
@@ -595,7 +595,6 @@
     editor.classList.add('loaded', 'animate-in');
     setTimeout(() => editor.classList.remove('animate-in'), 1000);
     currentUserId = user.id;
-    lastSavedContent = editor.innerHTML;
     subscribeRealtime(user.id);
   }
 
@@ -605,7 +604,7 @@
     editor.innerHTML = '';
     editor.classList.remove('loaded', 'animate-in');
     currentUserId = null;
-    lastSavedContent = '';
+    lastSavedAt = null;
     document.getElementById('appBox').style.display = 'none';
     document.getElementById('authBox').style.display = 'flex';
     document.getElementById('u').value = '';
@@ -621,6 +620,7 @@
     const msg = document.getElementById('saveMsg');
     msg.style.color = 'var(--accent)'; msg.textContent = 'Saving...';
     const now = new Date().toISOString();
+    lastSavedAt = now;
     const { error } = await sb.from('notes').upsert(
       { user_id: currentUserId, content: editor.innerHTML, updated_at: now },
       { onConflict: 'user_id' }
@@ -628,7 +628,6 @@
     isSaving = false;
     if (error) { msg.style.color = 'var(--danger)'; msg.textContent = 'Save failed'; }
     else {
-      lastSavedContent = editor.innerHTML;
       msg.style.color = 'var(--success)'; msg.textContent = 'Saved';
       setLS(now);
       setTimeout(() => { if (msg.textContent === 'Saved') { msg.style.color = 'var(--muted)'; msg.textContent = 'Auto-save on'; } }, 2000);
@@ -654,12 +653,11 @@
         const remote = payload.new.content;
         if (remote == null) return;
         if (remote === editor.innerHTML) return;
-        if (remote === lastSavedContent) return;
+        if (payload.new.updated_at && lastSavedAt && payload.new.updated_at <= lastSavedAt) return;
         isRemoteUpdate = true;
         const tempContainer = document.createElement('div');
         tempContainer.innerHTML = remote;
         morphdom(editor, tempContainer, { childrenOnly: true });
-        lastSavedContent = remote;
         if (payload.new.updated_at) setLS(payload.new.updated_at);
         updateCounts();
         const msg = document.getElementById('saveMsg');
