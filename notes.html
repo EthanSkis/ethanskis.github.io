@@ -29,6 +29,15 @@
       --sans: 'Geist', system-ui, sans-serif;
     }
 
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
@@ -79,7 +88,7 @@
     .auth-err { font-family: var(--mono); font-size: .75rem; color: var(--danger); min-height: 1em; }
 
     /* APP */
-    #appBox { display: none; flex: 1; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; }
+    #appBox { display: none; flex: 1; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; animation: fadeIn 0.5s ease-in; }
 
     /* TOPBAR */
     .topbar {
