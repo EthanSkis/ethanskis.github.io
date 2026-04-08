@@ -188,8 +188,21 @@
 
 // Configuration
 const LOCAL_LLM_URL = 'https://pc.tailf5c50a.ts.net'; // Ollama on Windows
-const MODEL = 'llama3.2'; // Change if you pulled a different model
-        
+const MODEL = 'llama3.2';
+
+// CORS proxy wrapper
+async function proxyFetch(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            ...options,
+            mode: 'no-cors'
+        });
+        return response;
+    } catch (err) {
+        console.error('Proxy fetch error:', err);
+        throw err;
+    }
+}
         let isConnected = false;
         let isWaiting = false;
 
