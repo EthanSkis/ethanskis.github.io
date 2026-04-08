@@ -609,11 +609,23 @@ const DATA = {
 
   const isMobile = window.innerWidth <= 600;
 
+  // Assign vertical tiers to avoid label overlap (greedy: min 1.2 x-units between same-tier labels)
+  const tierLast = [];
+  const evTiers = C.gasEvents.map(ev => {
+    for (let t = 0; ; t++) {
+      if (tierLast[t] === undefined || ev.index - tierLast[t] >= 1.2) {
+        tierLast[t] = ev.index;
+        return t;
+      }
+    }
+  });
+
   const annotations = {};
   C.gasEvents.forEach((ev,i)=>{
     annotations['vl'+i] = { type:'line', xMin:ev.index, xMax:ev.index, borderColor:ev.color, borderWidth:1.5, borderDash:[4,3] };
     if(!isMobile) annotations['lb'+i] = {
       type:'label', xValue:ev.index, yValue:C.gasYMax-0.08,
+      yAdjust: evTiers[i] * 18,
       content:ev.label, color:ev.color,
       font:{ size:9, weight:'500', family:"'DM Mono',monospace" },
       textAlign:'center', position:'start'
