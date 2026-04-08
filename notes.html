@@ -633,6 +633,7 @@
 
   async function showApp(u) {
     document.getElementById('authBox').style.display = 'none';
+    document.getElementById('authThemeToggle').style.display = 'none';
     const app = document.getElementById('appBox');
     app.style.display = 'flex';
     app.style.flexDirection = 'column';
@@ -657,6 +658,7 @@
     lastSavedAt = null;
     document.getElementById('appBox').style.display = 'none';
     document.getElementById('authBox').style.display = 'flex';
+    document.getElementById('authThemeToggle').style.display = '';
     document.getElementById('u').value = '';
   }
 
