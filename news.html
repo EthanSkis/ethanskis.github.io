@@ -345,21 +345,21 @@ const DATA = {
 
   // ── HEADER ────────────────────────────────────────────────
   // pill text in top-right header
-  headerPill: "ISLAMABAD ACCORDS · SUMMIT APR 10",
+  headerPill: "ISLAMABAD SUMMIT · APR 10 · AT RISK",
 
   // ── ALERT ─────────────────────────────────────────────────
-  alert: "<strong>ACCORDS STRAINED HOURS AFTER SIGNING:</strong> Kuwait intercepted 28 Iranian drones targeting oil installations Apr 8; UAE air defenses engaged incoming Iranian missiles and suspended Habshan gas complex. Israel struck a Sidon café killing 8 — Netanyahu excluded Lebanon from the Islamabad Accords. Summit still on Apr 10 with Witkoff, Kushner &amp; Vance.",
+  alert: "<strong>CEASEFIRE COLLAPSING:</strong> Israel struck 100+ Lebanon sites Apr 8 killing 254 in a single day; Hormuz remains blocked despite ceasefire terms; Iran threatens to boycott Islamabad summit Apr 10 unless Lebanon ceasefire included; Saudi oil pipeline hit by drone; Bahrain, UAE, Kuwait absorbing ongoing strikes.",
 
   // ── HERO ──────────────────────────────────────────────────
   heroDate: "WEDNESDAY, APRIL 8, 2026 · DAY 40 OF OPERATION EPIC FURY",
-  heroHed: "The Islamabad<br><em>Accords.</em>",
-  heroDek: "US and Iran endorsed the Islamabad Accords on April 8, but violations emerged within hours — Kuwait intercepted 28 Iranian drones, UAE air defenses engaged incoming missiles, and Israel struck Sidon killing 8. Witkoff, Kushner, and Vance fly to Islamabad Friday carrying Iran's maximalist 10-point demands and a ceasefire that is already under strain.",
+  heroHed: "254 Killed in Lebanon —<br><em>Ceasefire Unraveling.</em>",
+  heroDek: "Hours after the Islamabad Accords were announced, Israel struck more than 100 sites across Lebanon killing at least 254 and wounding 1,165 — its deadliest Lebanon operation in decades. Iran is threatening to boycott the April 10 Islamabad summit unless a Lebanon ceasefire is included, while Hormuz remains blocked and Gulf states continue absorbing drone and missile attacks.",
 
   // ── COUNTDOWN ─────────────────────────────────────────────
   // set to null to hide the countdown block entirely
   countdown: {
     label: "ISLAMABAD SUMMIT",
-    sub: "to peace talks",
+    sub: "Iran threatening to boycott",
     // ISO datetime string — the target moment
     target: "2026-04-10T09:00:00-04:00"
   },
@@ -368,11 +368,11 @@ const DATA = {
   // color: red | amber | blue | green | neutral
   // subClass: up | dn | "" (empty = muted2)
   metrics: [
-    { color:"green",   label:"WTI Crude",  value:"$95.85",  sub:"settled post-ceasefire · Poly 91% odds < $90", subClass:"dn" },
-    { color:"amber",   label:"Brent",      value:"~$103",   sub:"down from $109 pre-ceasefire · spread narrows", subClass:"dn" },
-    { color:"amber",   label:"US Gas Avg", value:"$4.16",   sub:"Apr 8 · 4-yr high · +$1.18 since Feb 26", subClass:"dn" },
-    { color:"blue",    label:"S&P 500",    value:"6,611",   sub:"Mon close · Wed rally on ceasefire expected", subClass:"up" },
-    { color:"neutral", label:"DXY",        value:"~100",    sub:"flat · no dollar flight yet",                  subClass:"" },
+    { color:"green",   label:"WTI Crude",  value:"$93.42",    sub:"Apr 8 · down 17% on ceasefire · Hormuz still blocked", subClass:"dn" },
+    { color:"green",   label:"Brent",      value:"$91.65",    sub:"down from $113+ pre-ceasefire · spread narrows",       subClass:"dn" },
+    { color:"amber",   label:"US Gas Avg", value:"$4.16",     sub:"Apr 8 · 4-yr high · +$1.18 since Feb 26",             subClass:"dn" },
+    { color:"blue",    label:"Dow Jones",  value:"+1,100 pts",sub:"Apr 8 · surged on ceasefire news",                     subClass:"up" },
+    { color:"neutral", label:"DXY",        value:"~100",      sub:"flat",                                                 subClass:"" },
   ],
 
   // ── STORIES (up to 6) ─────────────────────────────────────
@@ -382,39 +382,39 @@ const DATA = {
   stories: [
     {
       dot: "d-crit",
-      title: "ISLAMABAD ACCORDS — Ceasefire formalized; Iran commits to full Hormuz reopening; Netanyahu excludes Lebanon",
-      body: "The US-Iran ceasefire (Islamabad Accords) was signed April 7-8, but violations emerged within hours: Kuwait intercepted 28 Iranian drones targeting oil installations; UAE air defenses engaged incoming Iranian missiles and suspended the Habshan gas complex. Iran blamed Israeli strikes on Lavan Island; Netanyahu affirmed Israel excluded Lebanon — where Sidon was struck killing 8.",
-      tags: [{ text:"ceasefire", cls:"t-amber" },{ text:"Kuwait/UAE violated", cls:"t-red" },{ text:"Lebanon active", cls:"t-red" }]
+      title: "LEBANON MASSACRE — Israel strikes 100+ sites killing 254, wounding 1,165 in a single day",
+      body: "Hours after the Iran-US ceasefire was announced, Israel struck more than 100 sites across Lebanon on April 8, killing at least 254 and wounding 1,165 — the deadliest single-day Lebanon operation in decades. Netanyahu explicitly excluded Lebanon from the Islamabad Accords; Iran is now threatening to boycott the April 10 summit unless a Lebanon ceasefire is included.",
+      tags: [{ text:"CRITICAL", cls:"t-red" },{ text:"Lebanon", cls:"t-red" },{ text:"254 killed", cls:"t-red" }]
     },
     {
       dot: "d-crit",
-      title: "Islamabad summit Apr 10 — Witkoff, Kushner &amp; Vance lead US; Iran demands nuclear rights, sanctions relief, troop withdrawal",
-      body: "Trump envoy Steve Witkoff, Jared Kushner, and VP JD Vance lead the US delegation Friday. Iran's 10-point proposal demands nuclear enrichment rights, full sanctions lifting, US troop withdrawal from regional bases, and compensation via ship transit fees; analyst Trita Parsi warns the failed military campaign has weakened US leverage for dictated terms.",
-      tags: [{ text:"diplomacy", cls:"t-blue" },{ text:"summit Apr 10", cls:"t-amber" },{ text:"nuclear", cls:"t-red" }]
+      title: "HORMUZ STILL BLOCKED — Gulf attacks continue; Saudi pipeline hit; Pakistan PM cites multiple violations",
+      body: "Bloomberg confirmed April 8 that 'Hormuz stays blocked' despite ceasefire terms requiring complete, immediate reopening. On April 8: Kuwait intercepted 28 Iranian drones; UAE air defenses engaged incoming missiles, suspending Habshan gas complex; Bahrain also reported attacks; a Saudi oil pipeline pumping station was hit by drone. Pakistan's PM publicly noted violations 'at multiple locations.'",
+      tags: [{ text:"Hormuz blocked", cls:"t-red" },{ text:"Gulf attacks", cls:"t-red" },{ text:"Saudi pipeline", cls:"t-amber" }]
+    },
+    {
+      dot: "d-crit",
+      title: "ISLAMABAD APR 10 AT RISK — Iran threatens boycott; Vance to lead US; Iran demands Lebanon ceasefire first",
+      body: "JD Vance will lead the US delegation (Iran specifically requested Vance, accusing Witkoff and Kushner of misrepresenting Tehran's positions). Iran's parliament speaker Qalibaf and FM Aragchi lead Tehran. Iran's 10-point demands include Hormuz dominance, full US troop withdrawal, halt to Houthi/Hezbollah operations, war compensation, and full sanctions lifting.",
+      tags: [{ text:"diplomacy", cls:"t-blue" },{ text:"summit Apr 10", cls:"t-amber" },{ text:"boycott threat", cls:"t-red" }]
     },
     {
       dot: "d-high",
-      title: "WTI $95.85 — Polymarket prices 91% chance WTI drops below $90 this month",
-      body: "WTI settled near $95.85 on April 8 (Brent ~$103), down from $112–117 the day before; Polymarket's April ladder shows 91% odds of a sub-$90 print and only 20% for $120. AAA gas is still $4.16 — retail prices lag crude by 2–4 weeks, so US consumers won't feel pump relief before late April.",
-      tags: [{ text:"oil crash", cls:"t-green" },{ text:"Polymarket", cls:"t-blue" },{ text:"gas lag", cls:"t-amber" }]
+      title: "WTI crashes to $93.42 — Dow +1,100 pts on ceasefire; but Polymarket gives durable deal only 22.5% by April",
+      body: "WTI fell from ~$113 to $93.42 and Brent to $91.65 on April 8's ceasefire news — but with Hormuz still blocked and violations mounting, the price drop may be premature. Polymarket prices a durable US-Iran ceasefire by end of April at only 22.5%; AAA gas remains $4.16, lagging crude by 2–4 weeks.",
+      tags: [{ text:"oil crash", cls:"t-green" },{ text:"Hormuz blocked", cls:"t-red" },{ text:"gas lag", cls:"t-amber" }]
     },
     {
       dot: "d-high",
-      title: "Kharg Island struck — US hit 50+ military targets on Iran's primary oil export hub",
-      body: "Hours before the ceasefire, US forces struck more than 50 military targets on Kharg Island, handling roughly 90% of Iran's crude exports. VP Vance confirmed the strikes were not 'a change in strategy.' Iran's 10-point demand for transit-fee compensation is partly a response to Kharg Island infrastructure damage.",
-      tags: [{ text:"strike", cls:"t-red" },{ text:"Iran", cls:"t-red" },{ text:"oil infra", cls:"t-amber" }]
-    },
-    {
-      dot: "d-high",
-      title: "1,497+ confirmed killed in 40 days — including 57 health workers; Lebanon front remains active",
-      body: "Al Jazeera confirmed at least 1,497 killed since war began Feb 28, including 57 health workers among the dead. Russia was reported feeding Iran Israeli target coordinates prior to the ceasefire halting strikes. Netanyahu's explicit Lebanon carve-out means IDF-Hezbollah fighting — and its potential to drag Iran back in — continues.",
+      title: "1,497+ killed in 40 days — Lebanon toll surging; Russia fed Iran Israeli target coordinates",
+      body: "Al Jazeera confirmed at least 1,497 killed since Feb 28 across the broader conflict, with the April 8 Lebanon single-day toll of 254 set to push the cumulative figure sharply higher. Russia was reported feeding Iran Israeli target coordinates prior to the ceasefire. Lebanon's total wounded now exceeds 4,639; ~1 million displaced (20% of population).",
       tags: [{ text:"casualties", cls:"t-red" },{ text:"day 40", cls:"t-gray" },{ text:"Lebanon active", cls:"t-amber" }]
     },
     {
       dot: "d-mod",
       title: "Gaza, Ukraine, Sudan — secondary fronts persist",
-      body: "Gaza ceasefire technically holds but 689 Palestinians killed since October, 22 violations since the Iran war began; Trump-Zelenskyy agreed on 90–95% of a Ukraine draft peace deal with June 2026 deadline. Sudan's RSF took border town Al-Tina, prompting Chad to close its border; 33.7M Sudanese now need humanitarian aid.",
-      tags: [{ text:"Gaza", cls:"t-amber" },{ text:"Ukraine deal 90%", cls:"t-blue" },{ text:"Sudan/Al-Tina", cls:"t-gray" }]
+      body: "Gaza: 75,227 total killed, 1.6M facing crisis-level food insecurity, 101K children at risk of acute malnutrition. Ukraine: Russia lost record 35,351 troops in March 2026 alone; Trump-Zelenskyy at 90–95% of a peace draft. Sudan: 64 civilians killed in SAF airstrikes on Al Zorg, including the town hospital; 150,000–400,000 total killed since April 2023.",
+      tags: [{ text:"Gaza", cls:"t-amber" },{ text:"Ukraine deal 90%", cls:"t-blue" },{ text:"Sudan/Al Zorg", cls:"t-gray" }]
     },
   ],
 
@@ -424,59 +424,60 @@ const DATA = {
   mapCenter: [52, 27],
   mapScaleMult: 1.05,
   // customLabel: optional {lon, lat, lines:[], color} — pinned annotation on map
-  mapLabel: { lon:56.5, lat:26.55, lines:["HORMUZ OPEN","FULL · APR 8"], color:"#3dba7f" },
+  mapLabel: { lon:56.5, lat:26.55, lines:["HORMUZ","STILL BLOCKED"], color:"#e24b4a" },
   // type: strike | airdef | naval | actor | diplo
   markers: [
-    { name:"Tehran",             lat:35.69, lon:51.39, type:"strike", note:"US/Israeli strikes paused — Islamabad Accords ceasefire from Apr 7" },
-    { name:"Shiraz",             lat:29.59, lon:52.58, type:"strike", note:"Strike campaign paused under ceasefire from Apr 7" },
-    { name:"Qom",                lat:34.64, lon:50.88, type:"strike", note:"Nuclear-adjacent strikes through Apr 7; paused under ceasefire" },
-    { name:"Bushehr",            lat:28.97, lon:50.84, type:"strike", note:"Explosion at Bushehr nuclear plant auxiliary building" },
-    { name:"Kharg Island",       lat:29.24, lon:50.32, type:"strike", note:"US struck 50+ military targets Apr 7 — handles 90% of Iran's crude exports; Iran demanding transit-fee compensation" },
-    { name:"Mahshahr Petrochem", lat:30.56, lon:49.20, type:"strike", note:"Israel struck Iran's largest petrochemical facility — Apr 6" },
-    { name:"Strait of Hormuz",   lat:26.55, lon:56.50, type:"airdef", note:"OPEN — Iran committed to complete, immediate, safe reopening under Islamabad Accords" },
-    { name:"Kuwait",             lat:29.37, lon:47.99, type:"airdef", note:"ACTIVE Apr 8 — intercepted 28 Iranian drones targeting oil installations; significant material damage despite intercept" },
-    { name:"UAE",                lat:24.50, lon:54.40, type:"airdef", note:"ACTIVE Apr 8 — air defenses engaged incoming Iranian missiles; Habshan gas complex suspended; 3 injured" },
-    { name:"Qatar/Ras Laffan",   lat:25.90, lon:51.50, type:"airdef", note:"Ras Laffan LNG — strike risk reduced under ceasefire" },
-    { name:"Haifa",              lat:32.82, lon:34.99, type:"strike", note:"10+ sites struck Apr 7 — Russia reported feeding Iran Israeli target coordinates before ceasefire" },
-    { name:"Tel Aviv",           lat:32.08, lon:34.78, type:"strike", note:"IDF HaKirya HQ vicinity struck" },
-    { name:"South Lebanon",      lat:33.20, lon:35.50, type:"strike", note:"ACTIVE — Netanyahu: Israel-Hezbollah fighting explicitly excluded from Islamabad Accords" },
-    { name:"CVN-72 Arabian Sea", lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — Arabian Sea" },
-    { name:"CVN-78 E.Med",       lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean" },
-    { name:"Islamabad",          lat:33.72, lon:73.06, type:"diplo",  note:"SUMMIT APR 10 — Witkoff, Kushner &amp; Vance lead US; Iran delegation for Islamabad Accords framework talks" },
-    { name:"Oman",               lat:23.60, lon:58.60, type:"diplo",  note:"Prior mediation channel — Islamabad format now active for Apr 10" },
-    { name:"Bab al-Mandab",      lat:12.60, lon:43.30, type:"airdef", note:"Houthis monitoring ceasefire — Hormuz now fully open under Islamabad Accords" },
+    { name:"Tehran",              lat:35.69, lon:51.39, type:"strike", note:"US/Israeli strikes paused — Islamabad Accords ceasefire from Apr 7" },
+    { name:"Shiraz",              lat:29.59, lon:52.58, type:"strike", note:"Strike campaign paused under ceasefire from Apr 7" },
+    { name:"Qom",                 lat:34.64, lon:50.88, type:"strike", note:"Nuclear-adjacent strikes through Apr 7; paused under ceasefire" },
+    { name:"Bushehr",             lat:28.97, lon:50.84, type:"strike", note:"Explosion at Bushehr nuclear plant auxiliary building" },
+    { name:"Kharg Island",        lat:29.24, lon:50.32, type:"strike", note:"US struck 50+ military targets Apr 7 — handles 90% of Iran's crude exports; Iran demanding transit-fee compensation" },
+    { name:"Mahshahr Petrochem",  lat:30.56, lon:49.20, type:"strike", note:"Israel struck Iran's largest petrochemical facility — Apr 6" },
+    { name:"Strait of Hormuz",    lat:26.55, lon:56.50, type:"airdef", note:"STILL BLOCKED — Bloomberg Apr 8: 'Hormuz stays blocked' despite ceasefire terms requiring complete, immediate reopening" },
+    { name:"Kuwait",              lat:29.37, lon:47.99, type:"airdef", note:"ACTIVE Apr 8 — intercepted 28 Iranian drones; Al-Ahmadi refinery and desalination plant hit Apr 3; attacks continue despite ceasefire" },
+    { name:"UAE",                 lat:24.50, lon:54.40, type:"airdef", note:"ACTIVE Apr 8 — air defenses engaged incoming missiles; Habshan gas complex suspended; AWS data centers struck; 3 injured" },
+    { name:"Bahrain",             lat:26.07, lon:50.55, type:"airdef", note:"ACTIVE Apr 8 — attacks reported despite ceasefire announcement" },
+    { name:"Saudi Arabia",        lat:26.50, lon:44.00, type:"strike", note:"ACTIVE Apr 8 — oil pipeline pumping station attacked by drone" },
+    { name:"Qatar/Ras Laffan",    lat:25.90, lon:51.50, type:"airdef", note:"Ras Laffan LNG — strike risk reduced under ceasefire" },
+    { name:"Lebanon",             lat:33.80, lon:35.80, type:"strike", note:"CRITICAL Apr 8 — Israel struck 100+ sites killing 254, wounding 1,165 in a single day; Netanyahu: Lebanon excluded from Islamabad Accords; Iran threatening summit boycott over this" },
+    { name:"Haifa",               lat:32.82, lon:34.99, type:"strike", note:"10+ sites struck Apr 7 — Russia reported feeding Iran Israeli target coordinates before ceasefire" },
+    { name:"Tel Aviv",            lat:32.08, lon:34.78, type:"strike", note:"IDF HaKirya HQ vicinity struck" },
+    { name:"CVN-72 Arabian Sea",  lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — Arabian Sea" },
+    { name:"CVN-78 E.Med",        lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean" },
+    { name:"Islamabad",           lat:33.72, lon:73.06, type:"diplo",  note:"SUMMIT APR 10 — Vance leads US; Iran (Qalibaf + Aragchi) threatening boycott unless Lebanon ceasefire included; Pakistan PM citing ongoing violations" },
+    { name:"Bab al-Mandab",       lat:12.60, lon:43.30, type:"airdef", note:"Houthis monitoring ceasefire — Hormuz still blocked; Islamabad Accords terms not yet enforced" },
   ],
 
   // ── POLYMARKET ────────────────────────────────────────────
   polyTitle: "Polymarket · live odds",
   // pct: 0-100 number, delta: string like "+18%" or "-5%" or "—", barColor: css var or hex
   poly: [
-    { name:"WTI drops below $90 in April",          pct:91,  delta:"NEW",   deltaUp:null,  barColor:"var(--green)" },
-    { name:"WTI hits $120 in April",                pct:20,  delta:"−15%",  deltaUp:false, barColor:"var(--amber)" },
-    { name:"Hormuz traffic normalizes by Apr 30",   pct:16,  delta:"—",     deltaUp:null,  barColor:"var(--blue)" },
-    { name:"WTI hits $130 in April",                pct:12,  delta:"−6%",   deltaUp:false, barColor:"var(--red)" },
-    { name:"US-Iran permanent deal by Dec 31",      pct:76,  delta:"—",     deltaUp:null,  barColor:"var(--green)" },
+    { name:"US-Iran ceasefire by end of April",      pct:22,  delta:"NEW",   deltaUp:null,  barColor:"var(--amber)" },
+    { name:"US-Iran ceasefire by end of June",       pct:52,  delta:"NEW",   deltaUp:null,  barColor:"var(--blue)" },
+    { name:"US-Iran permanent deal by Dec 31",       pct:76,  delta:"—",     deltaUp:null,  barColor:"var(--green)" },
+    { name:"US-Iran ceasefire before oil hits $120", pct:19,  delta:"NEW",   deltaUp:null,  barColor:"var(--amber)" },
+    { name:"Hormuz traffic normalizes by Apr 30",    pct:16,  delta:"—",     deltaUp:null,  barColor:"var(--red)" },
   ],
 
   // ── WATCH LIST (up to 5) ──────────────────────────────────
   // iconColor: css var string
   watchItems: [
-    { icon:"!!!", iconColor:"var(--amber)", text:"<strong>ISLAMABAD APR 10</strong> — Witkoff, Kushner &amp; Vance lead US for permanent framework. Iran demands nuclear enrichment rights, full sanctions lifting, US troop withdrawal, and transit-fee compensation. Failure to produce a framework risks ceasefire collapse and WTI spiking back above $110." },
-    { icon:"!!",  iconColor:"var(--red)",   text:"<strong>Lebanon already at war — ceasefire already violated</strong> — Israel struck Sidon killing 8 on April 8; IDF issued evacuation orders for Tyre. Kuwait intercepted 28 Iranian drones; UAE's Habshan gas complex suspended after incoming missiles. Iran blamed Israeli Lavan Island strikes as provocation. The Islamabad Accords are strained hours after signing." },
-    { icon:"!",   iconColor:"var(--amber)", text:"<strong>Ceasefire fragility</strong> — Iran's Hormuz reopening requires a verified US/Israeli strike halt (Lebanon excluded). Rogue drone, IRGC provocation, or Israeli unilateral action against Iran proper could restart the war immediately. Polymarket gives only 91% for sub-$90 WTI — a 9% upside-shock tail risk remains." },
-    { icon:"i",   iconColor:"var(--blue)",  text:"<strong>Oil price lag — pump prices still hurt</strong> — WTI crashed to $95.85 but AAA gas is still $4.16. Retail prices lag wholesale by 2–4 weeks; US consumers won't feel relief until late April at earliest. Polymarket has Hormuz not normalizing by Apr 30 at 84% — sustained retail pain likely through month-end." },
-    { icon:"i",   iconColor:"var(--amber)", text:"<strong>Iran nuclear demand</strong> — Tehran's 10-point proposal explicitly demands continued nuclear enrichment rights, making the Islamabad talks structurally similar to prior JCPOA negotiations. A deal that leaves the nuclear file unresolved will face a hostile US Senate; watch Trump's post-Apr 10 framing carefully." },
+    { icon:"!!!", iconColor:"var(--red)",   text:"<strong>LEBANON AT WAR — SUMMIT BOYCOTT THREAT</strong> — Israel struck 100+ Lebanon sites on April 8 killing 254 in a single day. Iran is threatening to boycott the April 10 Islamabad summit unless a simultaneous Lebanon ceasefire is added. If Vance cannot bridge this gap before arriving in Islamabad, talks collapse before they start and Hormuz stays closed." },
+    { icon:"!!",  iconColor:"var(--red)",   text:"<strong>HORMUZ STILL BLOCKED — ceasefire is paper fiction</strong> — Bloomberg confirmed April 8 that 'Hormuz stays blocked' despite Islamabad Accords terms requiring complete, immediate reopening. Gulf attacks (Kuwait, UAE, Bahrain, Saudi pipeline) continue. Pakistan's PM has publicly noted violations 'at multiple locations.' The ceasefire exists on paper only." },
+    { icon:"!!",  iconColor:"var(--amber)", text:"<strong>ISLAMABAD APR 10 — last-chance framework</strong> — JD Vance leads US; Iran requested Vance personally, accusing Witkoff and Kushner of misrepresenting Tehran's positions. Iran's demands include Hormuz dominance, full US troop withdrawal, Houthi/Hezbollah protection, and war compensation. Iran parliament speaker Qalibaf and FM Aragchi lead Tehran's delegation." },
+    { icon:"!",   iconColor:"var(--amber)", text:"<strong>Oil crash may be premature</strong> — WTI fell 17% to $93.42 on ceasefire news, but Hormuz is still blocked and Polymarket prices a durable ceasefire by April at only 22.5%. If violations escalate and talks collapse April 10, expect a sharp reversal. AAA gas is still $4.16 — retail prices won't fall until late April regardless." },
+    { icon:"i",   iconColor:"var(--blue)",  text:"<strong>Iran nuclear demand remains the core obstacle</strong> — Tehran's 10-point proposal demands continued nuclear enrichment rights and full sanctions lifting. A deal that leaves the nuclear file unresolved faces a hostile US Senate. Iran's parliament speaker Qalibaf leads their delegation — signaling Tehran wants a permanent framework, not a temporary pause." },
   ],
 
   // ── THREAT LEVELS ─────────────────────────────────────────
   // pct: 0-100, color: css var, label: CRITICAL|HIGH|ELEVATED|MODERATE|WATCH|STABLE
   threats: [
-    { name:"Iran / Israel–Lebanon front",    pct:70, color:"var(--amber)", label:"HIGH" },
-    { name:"Gulf Arab states",               pct:68, color:"var(--amber)", label:"HIGH" },
-    { name:"Strait of Hormuz",               pct:55, color:"var(--amber)", label:"HIGH" },
+    { name:"Lebanon / Israel front",          pct:92, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Iran / Gulf Arab states",         pct:80, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Strait of Hormuz",               pct:72, color:"var(--amber)", label:"HIGH" },
     { name:"South China Sea",                pct:52, color:"var(--amber)", label:"ELEVATED" },
-    { name:"Bab al-Mandab / Red Sea",        pct:35, color:"var(--amber)", label:"ELEVATED" },
-    { name:"Eastern Med / NATO flank",       pct:28, color:"var(--blue)",  label:"MODERATE" },
+    { name:"Bab al-Mandab / Red Sea",        pct:38, color:"var(--amber)", label:"ELEVATED" },
+    { name:"Eastern Med / NATO flank",       pct:32, color:"var(--blue)",  label:"MODERATE" },
   ],
 
   // ── GAS CHART ─────────────────────────────────────────────
@@ -515,7 +516,7 @@ const DATA = {
     { label:["F-15 downed","Apr 3"],     index:12.2, color:"#e24b4a" },
     { label:["Iran rejects","Accord"],   index:13.2, color:"#e24b4a" },
     { label:["Kharg Island","struck"],   index:14.0, color:"#e24b4a" },
-    { label:["CEASEFIRE","APR 7 →"],    index:14.5, color:"#3dba7f" },
+    { label:["Ceasefire","Apr 7 →"],     index:14.5, color:"#3dba7f" },
   ],
   // yMin/yMax for gas chart y-axis — adjust when price range changes
   gasYMin: 2.7,
@@ -529,7 +530,7 @@ const DATA = {
   ],
 
   // ── FOOTER SOURCES ────────────────────────────────────────
-  sources: ["Al Jazeera","NBC News","NPR","PBS NewsHour","Axios","CNN","Bloomberg","Newsmax","OilPrice.com","AAA newsroom","Polymarket","EIA","Wikipedia/2026 Iran war"],
+  sources: ["Al Jazeera","Bloomberg","NPR","PBS NewsHour","Axios","CNBC","Fortune","OilPrice.com","AAA newsroom","Polymarket","Daily News Egypt","Kurdistan 24","Pakistan PM statement"],
 
 }; // ← END OF DATA — do not edit below this line
 </script>
