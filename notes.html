@@ -129,7 +129,7 @@
       letter-spacing: .04em;
     }
     .topbar-right { display: flex; align-items: center; gap: .5rem; }
-    #saveMsg { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
+    #saveMsg { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em; transition: color 0.3s; }
     .save-btn {
       background: var(--accent);
       color: #000;
@@ -366,8 +366,7 @@
 
       .topbar { padding: .55rem .9rem; }
       .topbar-title { font-size: .72rem; }
-      #saveMsg { display: none; }
-      .save-btn { padding: .32rem .65rem; font-size: .7rem; }
+      #saveMsg { font-size: .65rem; }
       .logout-btn { padding: .32rem .5rem; font-size: .65rem; }
 
       .toolbar {
@@ -418,8 +417,7 @@
       <span class="topbar-user" id="topUser"></span>
     </div>
     <div class="topbar-right">
-      <span id="saveMsg"></span>
-      <button class="save-btn" onclick="save()">Save</button>
+      <span id="saveMsg">Auto-save on</span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
@@ -558,6 +556,11 @@
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const editor = document.getElementById('editor');
   let savedRange = null;
+  let isRemoteUpdate = false;
+  let currentUserId = null;
+  let realtimeChannel = null;
+  let isSaving = false;
+  let lastSavedContent = '';
 
   // ── AUTH ────────────────────────────────────────────
   async function enter() {
@@ -586,12 +589,18 @@
     if (data?.updated_at) setLS(data.updated_at);
     updateCounts();
     editor.classList.add('loaded');
+    currentUserId = user.id;
+    lastSavedContent = editor.innerHTML;
+    subscribeRealtime(user.id);
   }
 
   async function logout() {
+    if (realtimeChannel) { sb.removeChannel(realtimeChannel); realtimeChannel = null; }
     await sb.auth.signOut();
     editor.innerHTML = '';
     editor.classList.remove('loaded');
+    currentUserId = null;
+    lastSavedContent = '';
     document.getElementById('appBox').style.display = 'none';
     document.getElementById('authBox').style.display = 'flex';
     document.getElementById('u').value = '';
@@ -599,17 +608,21 @@
 
   // ── SAVE ────────────────────────────────────────────
   async function save() {
-    const { data: { user } } = await sb.auth.getUser();
+    if (isSaving || !currentUserId) return;
+    isSaving = true;
+    const msg = document.getElementById('saveMsg');
+    msg.style.color = 'var(--accent)'; msg.textContent = 'Saving...';
     const now = new Date().toISOString();
     const { error } = await sb.from('notes').upsert(
-      { user_id: user.id, content: editor.innerHTML, updated_at: now },
+      { user_id: currentUserId, content: editor.innerHTML, updated_at: now },
       { onConflict: 'user_id' }
     );
-    const msg = document.getElementById('saveMsg');
-    if (error) { msg.style.color = 'var(--danger)'; msg.textContent = 'Save failed: ' + error.message; return; }
-    msg.style.color = 'var(--muted)'; msg.textContent = 'Saved';
+    isSaving = false;
+    if (error) { msg.style.color = 'var(--danger)'; msg.textContent = 'Save failed'; return; }
+    lastSavedContent = editor.innerHTML;
+    msg.style.color = 'var(--success)'; msg.textContent = 'Saved';
     setLS(now);
-    setTimeout(() => msg.textContent = '', 2000);
+    setTimeout(() => { if (msg.textContent === 'Saved') { msg.style.color = 'var(--muted)'; msg.textContent = 'Auto-save on'; } }, 2000);
   }
 
   function setLS(iso) {
@@ -617,11 +630,41 @@
       'Saved ' + new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
+  function subscribeRealtime(userId) {
+    if (realtimeChannel) sb.removeChannel(realtimeChannel);
+    realtimeChannel = sb.channel('notes-sync')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'notes',
+        filter: `user_id=eq.${userId}`
+      }, (payload) => {
+        if (!payload.new) return;
+        const remote = payload.new.content;
+        if (remote == null) return;
+        if (remote === editor.innerHTML) return;
+        if (remote === lastSavedContent) return;
+        isRemoteUpdate = true;
+        editor.innerHTML = remote;
+        lastSavedContent = remote;
+        if (payload.new.updated_at) setLS(payload.new.updated_at);
+        updateCounts();
+        const msg = document.getElementById('saveMsg');
+        msg.style.color = 'var(--blue)'; msg.textContent = 'Synced';
+        setTimeout(() => { if (msg.textContent === 'Synced') { msg.style.color = 'var(--muted)'; msg.textContent = 'Auto-save on'; } }, 2000);
+        isRemoteUpdate = false;
+      })
+      .subscribe();
+  }
+
   let autoTimer;
   editor.addEventListener('input', () => {
     updateCounts();
+    if (isRemoteUpdate) return;
     clearTimeout(autoTimer);
-    autoTimer = setTimeout(save, 3000);
+    autoTimer = setTimeout(save, 1500);
+    const msg = document.getElementById('saveMsg');
+    if (!isSaving) { msg.style.color = 'var(--muted)'; msg.textContent = 'Unsaved changes'; }
   });
 
   // ── FORMAT HELPERS ──────────────────────────────────
@@ -742,7 +785,7 @@
   function toggleCheck(cb) {
     cb.parentElement.classList.toggle('checked', cb.checked);
     clearTimeout(autoTimer);
-    autoTimer = setTimeout(save, 1500);
+    autoTimer = setTimeout(save, 1000);
   }
 
   // ── LINK MODAL ──────────────────────────────────────
