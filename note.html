@@ -185,6 +185,12 @@
       flex-shrink: 0;
     }
     .color-dot:hover { border-color: #fff; }
+    .hl-dot {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .hl-dot:hover { border-color: rgba(255,255,255,0.5); }
 
     /* EDITOR */
     #editor {
@@ -412,27 +418,25 @@
 
     <div class="tb-sep"></div>
 
-    <!-- Highlight -->
-    <button class="tb" title="Highlight (amber)" onclick="toggleHighlight()">
+    <!-- Highlight colors -->
+    <button class="tb" title="Toggle highlight" onmousedown="event.preventDefault()" onclick="toggleHighlight()">
       <svg viewBox="0 0 24 24"><path d="m9 11-6 6v3h3l6-6"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
     </button>
-    <select class="heading-sel" onchange="applyHighlightColor(this.value);this.selectedIndex=0" title="Highlight color">
-      <option value="">hl</option>
-      <option value="">amber</option>
-      <option value="hl-blue">blue</option>
-      <option value="hl-green">green</option>
-      <option value="hl-red">red</option>
-      <option value="hl-purple">purple</option>
-      <option value="__remove__">remove</option>
-    </select>
+    <span class="color-dot hl-dot" style="background:rgba(239,159,39,0.55)" onmousedown="event.preventDefault()" onclick="applyHL('')" title="Amber highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(74,158,255,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-blue')" title="Blue highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(61,186,127,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-green')" title="Green highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(226,75,74,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-red')" title="Red highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(155,140,247,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-purple')" title="Purple highlight"></span>
+
+    <div class="tb-sep"></div>
 
     <!-- Text colors -->
-    <span class="color-dot" style="background:#e8e6e1" onclick="fmt('foreColor','#e8e6e1')" title="White"></span>
-    <span class="color-dot" style="background:#ef9f27" onclick="fmt('foreColor','#ef9f27')" title="Amber"></span>
-    <span class="color-dot" style="background:#e24b4a" onclick="fmt('foreColor','#e24b4a')" title="Red"></span>
-    <span class="color-dot" style="background:#4a9eff" onclick="fmt('foreColor','#4a9eff')" title="Blue"></span>
-    <span class="color-dot" style="background:#3dba7f" onclick="fmt('foreColor','#3dba7f')" title="Green"></span>
-    <span class="color-dot" style="background:#9b8cf7" onclick="fmt('foreColor','#9b8cf7')" title="Purple"></span>
+    <span class="color-dot" style="background:#e8e6e1" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#e8e6e1')" title="White"></span>
+    <span class="color-dot" style="background:#ef9f27" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#ef9f27')" title="Amber"></span>
+    <span class="color-dot" style="background:#e24b4a" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#e24b4a')" title="Red"></span>
+    <span class="color-dot" style="background:#4a9eff" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#4a9eff')" title="Blue"></span>
+    <span class="color-dot" style="background:#3dba7f" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#3dba7f')" title="Green"></span>
+    <span class="color-dot" style="background:#9b8cf7" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#9b8cf7')" title="Purple"></span>
 
     <div class="tb-sep"></div>
     <button class="tb" title="Clear formatting" style="font-size:.6rem;width:auto;padding:0 5px" onclick="fmt('removeFormat')">clear</button>
@@ -588,68 +592,50 @@
     return d.innerHTML;
   }
 
-  function toggleHighlight(colorClass) {
+  // toggle highlight: if inside a mark, remove it; otherwise apply default amber
+  function toggleHighlight() {
     const sel = window.getSelection();
     if (!sel.rangeCount || sel.isCollapsed) return;
-    editor.focus();
     const range = sel.getRangeAt(0);
     const parentMark = closestTag(range.commonAncestorContainer, 'MARK');
     if (parentMark) {
-      // already highlighted — remove it
       unwrapEl(parentMark);
     } else {
-      // wrap in mark
-      const mark = document.createElement('mark');
-      if (colorClass) mark.className = colorClass;
-      try {
-        range.surroundContents(mark);
-      } catch(e) {
-        // selection crosses element boundaries — use fragment approach
-        const frag = range.extractContents();
-        mark.appendChild(frag);
-        range.insertNode(mark);
-      }
-      sel.removeAllRanges();
-      const newRange = document.createRange();
-      newRange.selectNodeContents(mark);
-      sel.addRange(newRange);
+      wrapInMark(range, sel, '');
     }
     syncToolbar();
   }
 
-  function applyHighlightColor(colorClass) {
-    if (colorClass === '__remove__') { removeAllHighlights(); return; }
+  // apply a specific highlight color (called by color dots)
+  function applyHL(colorClass) {
     const sel = window.getSelection();
     if (!sel.rangeCount || sel.isCollapsed) return;
-    editor.focus();
     const range = sel.getRangeAt(0);
     const parentMark = closestTag(range.commonAncestorContainer, 'MARK');
     if (parentMark) {
-      // change color of existing mark
+      // already highlighted — just change the color
       parentMark.className = colorClass;
     } else {
-      toggleHighlight(colorClass);
+      wrapInMark(range, sel, colorClass);
     }
+    syncToolbar();
   }
 
-  function removeAllHighlights() {
-    const sel = window.getSelection();
-    if (!sel.rangeCount) return;
-    editor.focus();
-    const range = sel.getRangeAt(0);
-    // check if cursor is inside a mark
-    const parentMark = closestTag(range.commonAncestorContainer, 'MARK');
-    if (parentMark) {
-      unwrapEl(parentMark);
-      return;
+  function wrapInMark(range, sel, colorClass) {
+    const mark = document.createElement('mark');
+    if (colorClass) mark.className = colorClass;
+    try {
+      range.surroundContents(mark);
+    } catch(e) {
+      // selection crosses element boundaries — use fragment approach
+      const frag = range.extractContents();
+      mark.appendChild(frag);
+      range.insertNode(mark);
     }
-    // if selection spans multiple marks, remove all within range
-    const container = range.commonAncestorContainer;
-    const root = container.nodeType === 1 ? container : container.parentElement;
-    if (root) {
-      const marks = root.querySelectorAll('mark');
-      marks.forEach(m => unwrapEl(m));
-    }
+    sel.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(mark);
+    sel.addRange(newRange);
   }
 
   function insertTable() {
