@@ -64,10 +64,10 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'YOUR_URL';
-  const SUPABASE_KEY = 'YOUR_KEY';
+  const SUPABASE_URL = 'https://wuczornurppubchayatb.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_nr34BwBdIY4fi3MW-PtsKw_EfjWUXo9';
   const DOMAIN  = 'notes.local';
-  const SECRET  = 'shared-secret-xK9mP2'; // change this to anything random
+  const SECRET  = 'shared-secret-xK9mP2';
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -78,17 +78,14 @@
     if (!u) return;
     document.getElementById('authErr').textContent = '';
 
-    // try login first
     const { error: loginErr } = await sb.auth.signInWithPassword({ email: email(u), password: SECRET });
 
     if (loginErr) {
-      // user doesn't exist — create them
       const { error: signupErr } = await sb.auth.signUp({ email: email(u), password: SECRET });
       if (signupErr) {
         document.getElementById('authErr').textContent = signupErr.message;
         return;
       }
-      // sign in after signup
       await sb.auth.signInWithPassword({ email: email(u), password: SECRET });
     }
 
@@ -122,7 +119,6 @@
     document.getElementById('note').value = '';
   }
 
-  // restore session on reload
   (async () => {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
