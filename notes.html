@@ -8,6 +8,7 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect x='36' y='27' width='108' height='126' rx='5' fill='none' stroke='%23ef9f27' stroke-width='4'/><line x1='50' y1='50' x2='130' y2='50' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='68' x2='130' y2='68' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='86' x2='108' y2='86' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='104' x2='117' y2='104' stroke='%23ef9f27' stroke-width='3'/></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/morphdom@2/dist/morphdom-umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -229,19 +230,22 @@
       opacity: 0;
     }
     #editor.loaded > * {
+      opacity: 1;
+    }
+    #editor.animate-in > * {
       animation: fadeInDown 0.5s ease-out forwards;
     }
-    #editor.loaded > :nth-child(1) { animation-delay: 0ms; }
-    #editor.loaded > :nth-child(2) { animation-delay: 50ms; }
-    #editor.loaded > :nth-child(3) { animation-delay: 100ms; }
-    #editor.loaded > :nth-child(4) { animation-delay: 150ms; }
-    #editor.loaded > :nth-child(5) { animation-delay: 200ms; }
-    #editor.loaded > :nth-child(6) { animation-delay: 250ms; }
-    #editor.loaded > :nth-child(7) { animation-delay: 300ms; }
-    #editor.loaded > :nth-child(8) { animation-delay: 350ms; }
-    #editor.loaded > :nth-child(9) { animation-delay: 400ms; }
-    #editor.loaded > :nth-child(10) { animation-delay: 450ms; }
-    #editor.loaded > :nth-child(n+11) { animation-delay: 500ms; }
+    #editor.animate-in > :nth-child(1) { animation-delay: 0ms; }
+    #editor.animate-in > :nth-child(2) { animation-delay: 50ms; }
+    #editor.animate-in > :nth-child(3) { animation-delay: 100ms; }
+    #editor.animate-in > :nth-child(4) { animation-delay: 150ms; }
+    #editor.animate-in > :nth-child(5) { animation-delay: 200ms; }
+    #editor.animate-in > :nth-child(6) { animation-delay: 250ms; }
+    #editor.animate-in > :nth-child(7) { animation-delay: 300ms; }
+    #editor.animate-in > :nth-child(8) { animation-delay: 350ms; }
+    #editor.animate-in > :nth-child(9) { animation-delay: 400ms; }
+    #editor.animate-in > :nth-child(10) { animation-delay: 450ms; }
+    #editor.animate-in > :nth-child(n+11) { animation-delay: 500ms; }
     #editor:empty::before {
       content: attr(data-placeholder);
       color: var(--muted);
@@ -588,7 +592,8 @@
     if (data?.content) editor.innerHTML = data.content;
     if (data?.updated_at) setLS(data.updated_at);
     updateCounts();
-    editor.classList.add('loaded');
+    editor.classList.add('loaded', 'animate-in');
+    setTimeout(() => editor.classList.remove('animate-in'), 1000);
     currentUserId = user.id;
     lastSavedContent = editor.innerHTML;
     subscribeRealtime(user.id);
@@ -598,7 +603,7 @@
     if (realtimeChannel) { sb.removeChannel(realtimeChannel); realtimeChannel = null; }
     await sb.auth.signOut();
     editor.innerHTML = '';
-    editor.classList.remove('loaded');
+    editor.classList.remove('loaded', 'animate-in');
     currentUserId = null;
     lastSavedContent = '';
     document.getElementById('appBox').style.display = 'none';
@@ -607,8 +612,11 @@
   }
 
   // ── SAVE ────────────────────────────────────────────
+  let pendingSave = false;
+
   async function save() {
-    if (isSaving || !currentUserId) return;
+    if (!currentUserId) return;
+    if (isSaving) { pendingSave = true; return; }
     isSaving = true;
     const msg = document.getElementById('saveMsg');
     msg.style.color = 'var(--accent)'; msg.textContent = 'Saving...';
@@ -618,11 +626,14 @@
       { onConflict: 'user_id' }
     );
     isSaving = false;
-    if (error) { msg.style.color = 'var(--danger)'; msg.textContent = 'Save failed'; return; }
-    lastSavedContent = editor.innerHTML;
-    msg.style.color = 'var(--success)'; msg.textContent = 'Saved';
-    setLS(now);
-    setTimeout(() => { if (msg.textContent === 'Saved') { msg.style.color = 'var(--muted)'; msg.textContent = 'Auto-save on'; } }, 2000);
+    if (error) { msg.style.color = 'var(--danger)'; msg.textContent = 'Save failed'; }
+    else {
+      lastSavedContent = editor.innerHTML;
+      msg.style.color = 'var(--success)'; msg.textContent = 'Saved';
+      setLS(now);
+      setTimeout(() => { if (msg.textContent === 'Saved') { msg.style.color = 'var(--muted)'; msg.textContent = 'Auto-save on'; } }, 2000);
+    }
+    if (pendingSave) { pendingSave = false; save(); }
   }
 
   function setLS(iso) {
@@ -645,7 +656,9 @@
         if (remote === editor.innerHTML) return;
         if (remote === lastSavedContent) return;
         isRemoteUpdate = true;
-        editor.innerHTML = remote;
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = remote;
+        morphdom(editor, tempContainer, { childrenOnly: true });
         lastSavedContent = remote;
         if (payload.new.updated_at) setLS(payload.new.updated_at);
         updateCounts();
@@ -657,14 +670,24 @@
       .subscribe();
   }
 
-  let autoTimer;
+  let lastSaveTime = 0;
+  let trailingTimer = null;
+  const THROTTLE_MS = 300;
+
   editor.addEventListener('input', () => {
     updateCounts();
     if (isRemoteUpdate) return;
-    clearTimeout(autoTimer);
-    autoTimer = setTimeout(save, 1500);
-    const msg = document.getElementById('saveMsg');
-    if (!isSaving) { msg.style.color = 'var(--muted)'; msg.textContent = 'Unsaved changes'; }
+    const now = Date.now();
+    clearTimeout(trailingTimer);
+    if (now - lastSaveTime >= THROTTLE_MS) {
+      lastSaveTime = now;
+      save();
+    } else {
+      trailingTimer = setTimeout(() => {
+        lastSaveTime = Date.now();
+        save();
+      }, THROTTLE_MS - (now - lastSaveTime));
+    }
   });
 
   // ── FORMAT HELPERS ──────────────────────────────────
@@ -784,8 +807,7 @@
 
   function toggleCheck(cb) {
     cb.parentElement.classList.toggle('checked', cb.checked);
-    clearTimeout(autoTimer);
-    autoTimer = setTimeout(save, 1000);
+    save();
   }
 
   // ── LINK MODAL ──────────────────────────────────────
