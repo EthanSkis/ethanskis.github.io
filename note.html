@@ -6,59 +6,424 @@
   <title>Notes</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f0f;
+      --surface: #161616;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --muted: #555;
+      --accent: #f5a623;
+      --danger: #c0392b;
+      --success: #27ae60;
+    }
+
     body {
-      background: #0a0a0a; color: #e8e8e8;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* AUTH */
+    #authBox {
+      flex: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 2rem;
+    }
+    #authBox h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: .25rem; }
+    #authBox p { font-size: .85rem; color: var(--muted); }
+    #authBox input {
+      width: 280px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1rem;
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      outline: none;
+      font-family: inherit;
+    }
+    #authBox input:focus { border-color: #444; }
+    #authBox button {
+      width: 280px;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #authBox button:hover { opacity: .9; }
+    .auth-err { font-size: .8rem; color: var(--danger); min-height: 1em; }
+
+    /* APP */
+    #appBox { display: none; flex: 1; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .7rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar-left { display: flex; align-items: center; gap: .6rem; }
+    .topbar-title { font-size: .9rem; font-weight: 600; }
+    .topbar-user {
+      font-size: .72rem;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: .2rem .55rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .topbar-right { display: flex; align-items: center; gap: .5rem; }
+    #saveMsg { font-size: .75rem; color: var(--muted); }
+    .save-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: .38rem .85rem;
+      border-radius: 6px;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .save-btn:hover { opacity: .85; }
+    .logout-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: .38rem .7rem;
+      border-radius: 6px;
+      font-size: .75rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .logout-btn:hover { color: var(--text); }
+
+    /* TOOLBAR */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1px;
+      padding: .4rem .75rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 47px;
+      z-index: 9;
+    }
+    .tb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 3px; }
+    .tb {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+    }
+    .tb:hover { background: var(--surface2); color: var(--text); }
+    .tb svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .heading-sel, .font-sel {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: .72rem;
+      padding: .18rem .35rem;
+      border-radius: 5px;
+      cursor: pointer;
+      outline: none;
+      font-family: inherit;
+    }
+    .color-dot {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .color-dot:hover { border-color: #fff; }
+
+    /* EDITOR */
+    #editor {
+      flex: 1;
+      outline: none;
+      padding: 2.5rem 3rem;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--text);
+      min-height: 500px;
+      caret-color: var(--accent);
+    }
+    #editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--muted);
+      pointer-events: none;
+    }
+    #editor h1 { font-size: 2rem; font-weight: 700; margin: .4rem 0 .2rem; line-height: 1.2; }
+    #editor h2 { font-size: 1.4rem; font-weight: 600; margin: .6rem 0 .2rem; }
+    #editor h3 { font-size: 1.1rem; font-weight: 600; margin: .4rem 0 .15rem; }
+    #editor p { margin: .1rem 0; }
+    #editor ul, #editor ol { padding-left: 1.6rem; margin: .2rem 0; }
+    #editor li { margin: .1rem 0; }
+    #editor blockquote {
+      border-left: 3px solid var(--accent);
+      padding: .2rem 0 .2rem 1rem;
+      margin: .4rem 0;
+      color: #aaa;
+      font-style: italic;
+    }
+    #editor code {
+      background: var(--surface2);
+      padding: .1em .35em;
+      border-radius: 4px;
       font-family: 'Courier New', monospace;
-      min-height: 100vh; display: flex;
-      align-items: center; justify-content: center;
+      font-size: .9em;
+      color: #f5a623;
     }
-    .wrap { width: 100%; max-width: 520px; padding: 2rem; }
-    h1 { font-size: 1rem; letter-spacing: .2em; color: #444; margin-bottom: 2rem; }
-    input, textarea {
-      width: 100%; background: #111; border: 1px solid #222;
-      color: #e8e8e8; font-family: inherit; font-size: .95rem;
-      padding: .7rem 1rem; border-radius: 4px; outline: none;
+    #editor pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: .5rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: .88rem;
+      line-height: 1.6;
     }
-    input:focus, textarea:focus { border-color: #444; }
-    textarea { min-height: 220px; resize: vertical; line-height: 1.6; margin-bottom: .75rem; }
-    .row { display: flex; gap: .5rem; margin-top: .75rem; }
-    button {
-      background: #e8e8e8; color: #0a0a0a; border: none;
-      padding: .7rem 1.25rem; font-family: inherit;
-      font-size: .85rem; cursor: pointer; border-radius: 4px;
+    #editor pre code { background: none; padding: 0; color: var(--text); }
+    #editor hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+    #editor a { color: var(--accent); }
+    #editor mark { background: rgba(245,166,35,.28); color: var(--text); border-radius: 2px; padding: 0 2px; }
+    #editor table { border-collapse: collapse; width: 100%; margin: .5rem 0; font-size: .92rem; }
+    #editor th, #editor td { border: 1px solid var(--border); padding: .45rem .75rem; text-align: left; }
+    #editor th { background: var(--surface2); font-weight: 600; }
+    #editor ul[data-type="checklist"] { list-style: none; padding-left: 0; }
+    #editor ul[data-type="checklist"] li { display: flex; align-items: flex-start; gap: .5rem; }
+    #editor ul[data-type="checklist"] li input[type="checkbox"] { margin-top: .35rem; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+    #editor ul[data-type="checklist"] li.checked > span { text-decoration: line-through; color: var(--muted); }
+
+    /* STATUS BAR */
+    .statusbar {
+      padding: .3rem 1.5rem;
+      font-size: .7rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      gap: 1.25rem;
     }
-    button.ghost {
-      background: transparent; color: #555;
-      border: 1px solid #222;
+
+    /* LINK MODAL */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
     }
-    .meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: .75rem; }
-    .meta span { font-size: .8rem; color: #444; }
-    .err { font-size: .8rem; color: #c0392b; margin-top: .5rem; }
-    #authBox, #noteBox { display: none; }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      width: 310px;
+    }
+    .modal h3 { font-size: .88rem; margin-bottom: .75rem; font-weight: 600; }
+    .modal input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .55rem .75rem;
+      border-radius: 6px;
+      font-size: .88rem;
+      outline: none;
+      margin-bottom: .5rem;
+      font-family: inherit;
+    }
+    .modal-row { display: flex; gap: .5rem; justify-content: flex-end; margin-top: .5rem; }
+    .modal-row button {
+      padding: .38rem .85rem;
+      border-radius: 6px;
+      font-size: .78rem;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .modal-row button.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>// notes</h1>
 
-  <div id="authBox">
-    <input id="u" placeholder="username" autocomplete="off" />
-    <div class="row">
-      <button onclick="enter()">Enter</button>
+<div id="authBox">
+  <h1>Notes</h1>
+  <p>Enter your username to continue.</p>
+  <input id="u" placeholder="username" autocomplete="off" onkeydown="if(event.key==='Enter')enter()" />
+  <button onclick="enter()">Continue</button>
+  <div class="auth-err" id="authErr"></div>
+</div>
+
+<div id="appBox">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">Notes</span>
+      <span class="topbar-user" id="topUser"></span>
     </div>
-    <div class="err" id="authErr"></div>
+    <div class="topbar-right">
+      <span id="saveMsg"></span>
+      <button class="save-btn" onclick="save()">Save</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
   </div>
 
-  <div id="noteBox">
-    <div class="meta">
-      <span id="label"></span>
-      <button class="ghost" onclick="logout()" style="padding:.4rem .75rem;font-size:.75rem">logout</button>
-    </div>
-    <textarea id="note" placeholder="Start writing..."></textarea>
-    <div class="row">
-      <button onclick="save()">Save</button>
-      <span id="saveMsg" style="font-size:.8rem;color:#555;align-self:center"></span>
+  <div class="toolbar">
+    <!-- Block format -->
+    <select class="heading-sel" id="headingSel" onchange="setBlock(this.value)">
+      <option value="p">Body</option>
+      <option value="h1">Title</option>
+      <option value="h2">Heading</option>
+      <option value="h3">Subheading</option>
+      <option value="pre">Code block</option>
+    </select>
+
+    <div class="tb-sep"></div>
+
+    <!-- Bold / Italic / Underline / Strike -->
+    <button class="tb" title="Bold (⌘B)" onmousedown="e=>e.preventDefault()" onclick="fmt('bold')">
+      <svg viewBox="0 0 24 24"><path d="M6 4h8a4 4 0 0 1 0 8H6z"/><path d="M6 12h9a4 4 0 0 1 0 8H6z"/></svg>
+    </button>
+    <button class="tb" title="Italic (⌘I)" onclick="fmt('italic')">
+      <svg viewBox="0 0 24 24"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+    </button>
+    <button class="tb" title="Underline (⌘U)" onclick="fmt('underline')">
+      <svg viewBox="0 0 24 24"><path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+    </button>
+    <button class="tb" title="Strikethrough" onclick="fmt('strikeThrough')">
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6C16 6 14.5 4 12 4s-5 1.5-5 4c0 5 9 4 9 8s-2.5 4-5 4-5-2-5-2"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Lists -->
+    <button class="tb" title="Bullet list" onclick="fmt('insertUnorderedList')">
+      <svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <button class="tb" title="Numbered list" onclick="fmt('insertOrderedList')">
+      <svg viewBox="0 0 24 24"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+    </button>
+    <button class="tb" title="Checklist" onclick="insertChecklist()">
+      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Indent / Align -->
+    <button class="tb" title="Indent (Tab)" onclick="fmt('indent')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="7 14 11 12 7 10"/><line x1="3" y1="12" x2="11" y2="12"/></svg>
+    </button>
+    <button class="tb" title="Outdent (Shift+Tab)" onclick="fmt('outdent')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="11 14 7 12 11 10"/><line x1="7" y1="12" x2="21" y2="12"/></svg>
+    </button>
+    <button class="tb" title="Align left" onclick="fmt('justifyLeft')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+    </button>
+    <button class="tb" title="Align center" onclick="fmt('justifyCenter')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    </button>
+    <button class="tb" title="Align right" onclick="fmt('justifyRight')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Extras -->
+    <button class="tb" title="Blockquote" onclick="fmt('formatBlock',false,'blockquote')">
+      <svg viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+    </button>
+    <button class="tb" title="Inline code" onclick="insertInlineCode()">
+      <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    </button>
+    <button class="tb" title="Divider" onclick="insertHR()">
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="tb" title="Insert link" onclick="openLinkModal()">
+      <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </button>
+    <button class="tb" title="Insert table" onclick="insertTable()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Highlight -->
+    <button class="tb" title="Highlight" onclick="fmt('hiliteColor','rgba(245,166,35,.3)')">
+      <svg viewBox="0 0 24 24"><path d="m9 11-6 6v3h3l6-6"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+    </button>
+    <button class="tb" title="Remove highlight" onclick="fmt('hiliteColor','transparent')" style="font-size:.6rem;width:auto;padding:0 4px">–hl</button>
+
+    <!-- Text colors -->
+    <span class="color-dot" style="background:#e8e8e8" onclick="fmt('foreColor','#e8e8e8')" title="White"></span>
+    <span class="color-dot" style="background:#f5a623" onclick="fmt('foreColor','#f5a623')" title="Amber"></span>
+    <span class="color-dot" style="background:#e74c3c" onclick="fmt('foreColor','#e74c3c')" title="Red"></span>
+    <span class="color-dot" style="background:#3498db" onclick="fmt('foreColor','#3498db')" title="Blue"></span>
+    <span class="color-dot" style="background:#2ecc71" onclick="fmt('foreColor','#2ecc71')" title="Green"></span>
+    <span class="color-dot" style="background:#9b59b6" onclick="fmt('foreColor','#9b59b6')" title="Purple"></span>
+
+    <div class="tb-sep"></div>
+    <button class="tb" title="Clear formatting" style="font-size:.6rem;width:auto;padding:0 5px" onclick="fmt('removeFormat')">clear</button>
+  </div>
+
+  <div id="editor" contenteditable="true" data-placeholder="Start writing..." spellcheck="true"></div>
+
+  <div class="statusbar">
+    <span id="wc">0 words</span>
+    <span id="cc">0 characters</span>
+    <span id="ls"></span>
+  </div>
+</div>
+
+<!-- LINK MODAL -->
+<div class="modal-bg" id="linkModal">
+  <div class="modal">
+    <h3>Insert link</h3>
+    <input id="linkText" placeholder="Display text" />
+    <input id="linkUrl" placeholder="https://" onkeydown="if(event.key==='Enter')confirmLink()" />
+    <div class="modal-row">
+      <button onclick="closeLinkModal()">Cancel</button>
+      <button class="primary" onclick="confirmLink()">Insert</button>
     </div>
   </div>
 </div>
@@ -66,69 +431,172 @@
 <script>
   const SUPABASE_URL = 'https://wuczornurppubchayatb.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_nr34BwBdIY4fi3MW-PtsKw_EfjWUXo9';
-  const DOMAIN  = 'notes-app.com';
-  const SECRET  = 'shared-secret-xK9mP2';
+  const DOMAIN = 'notes-app.com';
+  const SECRET = 'shared-secret-xK9mP2';
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const editor = document.getElementById('editor');
+  let savedRange = null;
 
-  const email = u => `${u.trim().toLowerCase()}@${DOMAIN}`;
-
+  // ── AUTH ────────────────────────────────────────────
   async function enter() {
     const u = document.getElementById('u').value.trim();
     if (!u) return;
     document.getElementById('authErr').textContent = '';
-
-    const { error: loginErr } = await sb.auth.signInWithPassword({ email: email(u), password: SECRET });
-
-    if (loginErr) {
-      const { error: signupErr } = await sb.auth.signUp({ email: email(u), password: SECRET });
-      if (signupErr) {
-        document.getElementById('authErr').textContent = signupErr.message;
-        return;
-      }
-      await sb.auth.signInWithPassword({ email: email(u), password: SECRET });
+    const em = `${u.toLowerCase()}@${DOMAIN}`;
+    const { error: e1 } = await sb.auth.signInWithPassword({ email: em, password: SECRET });
+    if (e1) {
+      const { error: e2 } = await sb.auth.signUp({ email: em, password: SECRET });
+      if (e2) { document.getElementById('authErr').textContent = e2.message; return; }
+      await sb.auth.signInWithPassword({ email: em, password: SECRET });
     }
-
-    show(u);
+    showApp(u);
   }
 
-  async function show(u) {
+  async function showApp(u) {
     document.getElementById('authBox').style.display = 'none';
-    document.getElementById('noteBox').style.display = 'block';
-    document.getElementById('label').textContent = u;
+    const app = document.getElementById('appBox');
+    app.style.display = 'flex';
+    app.style.flexDirection = 'column';
+    document.getElementById('topUser').textContent = u;
     const { data: { user } } = await sb.auth.getUser();
-    const { data } = await sb.from('notes').select('content').eq('user_id', user.id).maybeSingle();
-    document.getElementById('note').value = data?.content ?? '';
-  }
-
-  async function save() {
-    const { data: { user } } = await sb.auth.getUser();
-    const { error } = await sb.from('notes').upsert(
-      { user_id: user.id, content: document.getElementById('note').value, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id' }
-    );
-    const msg = document.getElementById('saveMsg');
-    if (error) { msg.style.color = '#c0392b'; msg.textContent = 'Save failed: ' + error.message; return; }
-    msg.style.color = '#555';
-    msg.textContent = 'Saved';
-    setTimeout(() => msg.textContent = '', 2000);
+    const { data } = await sb.from('notes').select('content,updated_at').eq('user_id', user.id).maybeSingle();
+    if (data?.content) editor.innerHTML = data.content;
+    if (data?.updated_at) setLS(data.updated_at);
+    updateCounts();
   }
 
   async function logout() {
     await sb.auth.signOut();
-    document.getElementById('noteBox').style.display = 'none';
-    document.getElementById('authBox').style.display = 'block';
+    editor.innerHTML = '';
+    document.getElementById('appBox').style.display = 'none';
+    document.getElementById('authBox').style.display = 'flex';
     document.getElementById('u').value = '';
-    document.getElementById('note').value = '';
   }
 
+  // ── SAVE ────────────────────────────────────────────
+  async function save() {
+    const { data: { user } } = await sb.auth.getUser();
+    const now = new Date().toISOString();
+    const { error } = await sb.from('notes').upsert(
+      { user_id: user.id, content: editor.innerHTML, updated_at: now },
+      { onConflict: 'user_id' }
+    );
+    const msg = document.getElementById('saveMsg');
+    if (error) { msg.style.color = 'var(--danger)'; msg.textContent = 'Save failed: ' + error.message; return; }
+    msg.style.color = 'var(--muted)'; msg.textContent = 'Saved';
+    setLS(now);
+    setTimeout(() => msg.textContent = '', 2000);
+  }
+
+  function setLS(iso) {
+    document.getElementById('ls').textContent =
+      'Saved ' + new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  let autoTimer;
+  editor.addEventListener('input', () => {
+    updateCounts();
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(save, 3000);
+  });
+
+  // ── FORMAT HELPERS ──────────────────────────────────
+  function fmt(cmd, a, b) {
+    editor.focus();
+    if (b !== undefined) document.execCommand(cmd, a, b);
+    else document.execCommand(cmd, false, a ?? null);
+    syncToolbar();
+  }
+
+  function setBlock(tag) {
+    editor.focus();
+    document.execCommand('formatBlock', false, tag);
+    syncToolbar();
+  }
+
+  function insertHR() { document.execCommand('insertHTML', false, '<hr>'); }
+
+  function insertInlineCode() {
+    const sel = window.getSelection().toString();
+    if (sel) document.execCommand('insertHTML', false, `<code>${sel}</code>`);
+    else document.execCommand('insertHTML', false, '<code>code</code>');
+  }
+
+  function insertTable() {
+    document.execCommand('insertHTML', false,
+      `<table><thead><tr><th>Col 1</th><th>Col 2</th><th>Col 3</th></tr></thead>`+
+      `<tbody><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`+
+      `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table><p><br></p>`);
+  }
+
+  function insertChecklist() {
+    document.execCommand('insertHTML', false,
+      `<ul data-type="checklist">`+
+      `<li><input type="checkbox" onchange="toggleCheck(this)"><span>&nbsp;Task item</span></li>`+
+      `</ul><p><br></p>`);
+  }
+
+  function toggleCheck(cb) {
+    cb.parentElement.classList.toggle('checked', cb.checked);
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(save, 1500);
+  }
+
+  // ── LINK MODAL ──────────────────────────────────────
+  function openLinkModal() {
+    const sel = window.getSelection();
+    if (sel.rangeCount) savedRange = sel.getRangeAt(0).cloneRange();
+    document.getElementById('linkText').value = sel.toString();
+    document.getElementById('linkUrl').value = '';
+    document.getElementById('linkModal').classList.add('open');
+    setTimeout(() => document.getElementById('linkUrl').focus(), 60);
+  }
+  function closeLinkModal() { document.getElementById('linkModal').classList.remove('open'); }
+  function confirmLink() {
+    const text = document.getElementById('linkText').value;
+    const url = document.getElementById('linkUrl').value;
+    if (!url) { closeLinkModal(); return; }
+    editor.focus();
+    if (savedRange) {
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(savedRange);
+    }
+    document.execCommand('insertHTML', false, `<a href="${url}" target="_blank">${text || url}</a>`);
+    closeLinkModal();
+  }
+
+  // ── KEYBOARD SHORTCUTS ──────────────────────────────
+  editor.addEventListener('keydown', e => {
+    const mod = e.metaKey || e.ctrlKey;
+    if (mod && e.key === 's') { e.preventDefault(); save(); return; }
+    if (e.key === 'Tab') { e.preventDefault(); fmt(e.shiftKey ? 'outdent' : 'indent'); return; }
+  });
+
+  // ── TOOLBAR SYNC ────────────────────────────────────
+  function syncToolbar() {
+    const block = document.queryCommandValue('formatBlock').toLowerCase();
+    const sel = document.getElementById('headingSel');
+    const map = { h1: 'h1', h2: 'h2', h3: 'h3', pre: 'pre' };
+    sel.value = map[block] || 'p';
+  }
+  editor.addEventListener('keyup', syncToolbar);
+  editor.addEventListener('mouseup', syncToolbar);
+
+  // ── WORD / CHAR COUNT ───────────────────────────────
+  function updateCounts() {
+    const t = editor.innerText.trim();
+    const w = t ? t.split(/\s+/).filter(Boolean).length : 0;
+    document.getElementById('wc').textContent = w + ' word' + (w !== 1 ? 's' : '');
+    document.getElementById('cc').textContent = t.length + ' char' + (t.length !== 1 ? 's' : '');
+  }
+
+  // ── SESSION RESTORE ─────────────────────────────────
   (async () => {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
-      const u = session.user.email.replace(`@${DOMAIN}`, '');
-      show(u);
+      showApp(session.user.email.replace(`@${DOMAIN}`, ''));
     } else {
-      document.getElementById('authBox').style.display = 'block';
+      document.getElementById('authBox').style.display = 'flex';
     }
   })();
 </script>
