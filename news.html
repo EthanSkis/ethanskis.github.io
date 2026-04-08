@@ -81,7 +81,8 @@ header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filte
 .t-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
 .t-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(61,186,127,.2)}
 .t-gray{background:var(--surface2);color:var(--muted2);border:1px solid var(--border)}
-#map-wrap{width:100%;height:360px;border-radius:8px;overflow:hidden;position:relative}
+#map-card{flex:1;display:flex;flex-direction:column}
+#map-wrap{width:100%;flex:1;min-height:260px;border-radius:8px;overflow:hidden;position:relative}
 .map-bg{fill:#0e1520}
 .map-land{fill:#161b24;stroke:rgba(255,255,255,0.08);stroke-width:0.4}
 .map-marker{stroke:rgba(255,255,255,0.15);stroke-width:1}
@@ -191,7 +192,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   .card{padding:14px 16px}
 
   /* map — shorter on mobile */
-  #map-wrap{height:220px}
+  #map-wrap{min-height:200px}
 
   /* gas chart — hide annotation labels (too cramped), shorter */
   #gc-wrap{height:200px}
@@ -266,7 +267,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
         </div>
         <div id="stories-list"></div>
       </div>
-      <div class="card">
+      <div class="card" id="map-card">
         <div class="ct" id="map-title"></div>
         <div id="map-wrap"></div>
         <div class="map-leg" id="map-legend"></div>
@@ -731,9 +732,9 @@ const DATA = {
 
   const container = $('map-wrap');
   const W = container.clientWidth || 800;
-  const H = 360;
+  const H = container.clientHeight || 400;
   const svg = d3.select('#map-wrap').append('svg')
-    .attr('width','100%').attr('height',H).attr('viewBox',`0 0 ${W} ${H}`).style('display','block');
+    .attr('width','100%').attr('height','100%').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMidYMid meet').style('display','block');
   svg.append('rect').attr('width',W).attr('height',H).attr('class','map-bg');
   const proj = d3.geoMercator().center(C.mapCenter).scale(W*C.mapScaleMult).translate([W/2,H/2]);
   const pathFn = d3.geoPath(proj);
