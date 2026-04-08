@@ -313,6 +313,45 @@
       color: var(--text);
     }
     .modal-row button.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      #appBox { max-width: 100%; }
+
+      .topbar { padding: .55rem .9rem; }
+      .topbar-title { font-size: .72rem; }
+      #saveMsg { display: none; }
+      .save-btn { padding: .32rem .65rem; font-size: .7rem; }
+      .logout-btn { padding: .32rem .5rem; font-size: .65rem; }
+
+      .toolbar {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: .35rem .5rem;
+        top: 43px;
+        gap: 0;
+      }
+      .toolbar::-webkit-scrollbar { display: none; }
+      .tb { width: 32px; height: 32px; flex-shrink: 0; }
+      .heading-sel, .font-sel { flex-shrink: 0; }
+
+      #editor {
+        padding: 1.25rem 1rem;
+        font-size: .95rem;
+      }
+
+      .statusbar {
+        padding: .3rem .9rem;
+        font-size: .6rem;
+        gap: .75rem;
+      }
+
+      #authBox input, #authBox button { width: 100%; max-width: 320px; }
+
+      .modal { width: calc(100vw - 2rem); }
+    }
   </style>
 </head>
 <body>
