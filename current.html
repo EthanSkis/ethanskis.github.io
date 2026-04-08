@@ -434,25 +434,12 @@ const DATA = {
 
   // ── GAS CHART ─────────────────────────────────────────────
   gasTitle: "US Avg Gas Price — Weekly (AAA national avg)",
-  gasSub: "Regular unleaded · Oct 2, 2025 – Apr 8, 2026 · sourced from AAA newsroom weekly reports",
+  gasSub: "Regular unleaded · Jan 8 – Apr 8, 2026 · sourced from AAA newsroom weekly reports",
   gasCurrentVal: "$4.14",
   gasCurrentSub: "Apr 8 · 4-yr high · up $1.16 since Feb 28",
   // splitIdx: index where the line color changes from blue → red
-  gasSplitIdx: 21,
+  gasSplitIdx: 8,
   gasData: [
-    { date:"Oct 2",  price:3.15 },
-    { date:"Oct 9",  price:3.11 },
-    { date:"Oct 16", price:3.05 },
-    { date:"Oct 23", price:3.07 },
-    { date:"Oct 30", price:3.03 },
-    { date:"Nov 6",  price:3.03 },
-    { date:"Nov 13", price:3.04 },
-    { date:"Nov 20", price:3.08 },
-    { date:"Nov 27", price:3.10 },
-    { date:"Dec 4",  price:2.99 },
-    { date:"Dec 11", price:2.94 },
-    { date:"Dec 18", price:2.91 },
-    { date:"Dec 25", price:2.88 },
     { date:"Jan 8",  price:2.81 },
     { date:"Jan 15", price:2.84 },
     { date:"Jan 22", price:2.85 },
@@ -473,22 +460,22 @@ const DATA = {
   // chart event markers — index is fractional position on x-axis
   // color: #hex, label: max 2-element array of strings
   gasEvents: [
-    { label:["War begins","Feb 28"],     index:20.5, color:"#e24b4a" },
-    { label:["Hormuz","closed"],         index:21.4, color:"#e24b4a" },
-    { label:["IEA releases","400M bbl"], index:22.4, color:"#3dba7f" },
-    { label:["Brent",">$100"],           index:23.1, color:"#e24b4a" },
-    { label:["Deadline","Mar 26"],       index:23.9, color:"#ef9f27" },
-    { label:["F-15 downed","Apr 3"],     index:25.2, color:"#e24b4a" },
-    { label:["Iran rejects","Accord"],   index:26.2, color:"#e24b4a" },
-    { label:["Kharg Island","struck"],   index:27.0, color:"#e24b4a" },
-    { label:["CEASEFIRE","APR 7 →"],    index:27.5, color:"#3dba7f" },
+    { label:["War begins","Feb 28"],     index:7.5,  color:"#e24b4a" },
+    { label:["Hormuz","closed"],         index:8.4,  color:"#e24b4a" },
+    { label:["IEA releases","400M bbl"], index:9.4,  color:"#3dba7f" },
+    { label:["Brent",">$100"],           index:10.1, color:"#e24b4a" },
+    { label:["Deadline","Mar 26"],       index:10.9, color:"#ef9f27" },
+    { label:["F-15 downed","Apr 3"],     index:12.2, color:"#e24b4a" },
+    { label:["Iran rejects","Accord"],   index:13.2, color:"#e24b4a" },
+    { label:["Kharg Island","struck"],   index:14.0, color:"#e24b4a" },
+    { label:["CEASEFIRE","APR 7 →"],    index:14.5, color:"#3dba7f" },
   ],
   // yMin/yMax for gas chart y-axis — adjust when price range changes
-  gasYMin: 2.6,
+  gasYMin: 2.7,
   gasYMax: 4.5,
   // summary stat cards below the chart
   gasStats: [
-    { label:"6-mo low",   value:"$2.81", sub:"Jan 8, 2026" },
+    { label:"YTD low",    value:"$2.81", sub:"Jan 8, 2026" },
     { label:"pre-event",  value:"$2.98", sub:"Feb 26 — day before" },
     { label:"spike",      value:"+$1.16",sub:"in ~5 weeks", red:true },
     { label:"today",      value:"$4.14", sub:"Apr 8 · 4-yr high", red:true },
@@ -636,7 +623,7 @@ const DATA = {
     type:'line',
     data:{ labels:gLabels, datasets:[{
       data:gPrices, borderWidth:2.5,
-      pointRadius:gPrices.map((_,i)=>i===13||i===20||i===gPrices.length-1?5:3),
+      pointRadius:gPrices.map((_,i)=>i===0||i===7||i===gPrices.length-1?5:3),
       pointBackgroundColor:ptColors, pointBorderColor:ptColors,
       fill:true,
       backgroundColor:function(c){
