@@ -213,11 +213,24 @@
       color: var(--text);
       min-height: 500px;
       caret-color: var(--accent);
+    }
+    #editor > * {
       opacity: 0;
     }
-    #editor.loaded {
-      animation: fadeInDown 0.6s ease-out forwards;
+    #editor.loaded > * {
+      animation: fadeInDown 0.5s ease-out forwards;
     }
+    #editor.loaded > :nth-child(1) { animation-delay: 0ms; }
+    #editor.loaded > :nth-child(2) { animation-delay: 50ms; }
+    #editor.loaded > :nth-child(3) { animation-delay: 100ms; }
+    #editor.loaded > :nth-child(4) { animation-delay: 150ms; }
+    #editor.loaded > :nth-child(5) { animation-delay: 200ms; }
+    #editor.loaded > :nth-child(6) { animation-delay: 250ms; }
+    #editor.loaded > :nth-child(7) { animation-delay: 300ms; }
+    #editor.loaded > :nth-child(8) { animation-delay: 350ms; }
+    #editor.loaded > :nth-child(9) { animation-delay: 400ms; }
+    #editor.loaded > :nth-child(10) { animation-delay: 450ms; }
+    #editor.loaded > :nth-child(n+11) { animation-delay: 500ms; }
     #editor:empty::before {
       content: attr(data-placeholder);
       color: var(--muted);
