@@ -624,8 +624,8 @@ const DATA = {
   C.gasEvents.forEach((ev,i)=>{
     annotations['vl'+i] = { type:'line', xMin:ev.index, xMax:ev.index, borderColor:ev.color, borderWidth:1.5, borderDash:[4,3] };
     if(!isMobile) annotations['lb'+i] = {
-      type:'label', xValue:ev.index, yValue:C.gasYMax-0.08,
-      yAdjust: evTiers[i] * 18,
+      type:'label', xValue:ev.index, yValue:C.gasYMax,
+      yAdjust: -(26 + evTiers[i] * 18),
       content:ev.label, color:ev.color,
       font:{ size:9, weight:'500', family:"'DM Mono',monospace" },
       textAlign:'center', position:'start'
