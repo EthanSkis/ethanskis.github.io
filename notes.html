@@ -103,7 +103,7 @@
       border-radius: 8px;
       outline: none;
     }
-    #authBox input:focus { border-color: rgba(255,255,255,0.2); }
+    #authBox input:focus { border-color: var(--border2); }
     #authBox button {
       width: 280px;
       background: var(--text);
@@ -352,6 +352,20 @@
       transition: color .2s;
     }
     #themeToggle:hover { color: var(--accent); }
+    #authThemeToggle {
+      position: fixed;
+      bottom: .6rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: .85rem;
+      cursor: pointer;
+      font-family: var(--mono);
+      z-index: 50;
+      transition: color .2s;
+    }
+    #authThemeToggle:hover { color: var(--accent); }
 
     /* LINK MODAL */
     .modal-bg {
@@ -437,6 +451,8 @@
   </style>
 </head>
 <body>
+
+<button id="authThemeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
 
 <div id="authBox">
   <h1>Notes</h1>
@@ -872,18 +888,23 @@
   });
 
   // ── THEME TOGGLE ────────────────────────────────────
+  function setThemeIcon(theme) {
+    const icon = theme === 'light' ? '☾' : '☀';
+    document.getElementById('themeToggle').textContent = icon;
+    document.getElementById('authThemeToggle').textContent = icon;
+  }
   function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     const next = isLight ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
-    document.getElementById('themeToggle').textContent = next === 'light' ? '☾' : '☀';
+    setThemeIcon(next);
     localStorage.setItem('notes-theme', next);
   }
   (function initTheme() {
     const saved = localStorage.getItem('notes-theme');
     if (saved === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
-      document.getElementById('themeToggle').textContent = '☾';
+      setThemeIcon('light');
     }
   })();
 
