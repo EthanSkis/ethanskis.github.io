@@ -29,12 +29,14 @@
       --sans: 'Geist', system-ui, sans-serif;
     }
 
-    @keyframes fadeIn {
+    @keyframes fadeInDown {
       from {
         opacity: 0;
+        transform: translateY(-20px);
       }
       to {
         opacity: 1;
+        transform: translateY(0);
       }
     }
 
@@ -211,7 +213,10 @@
       color: var(--text);
       min-height: 500px;
       caret-color: var(--accent);
-      animation: fadeIn 0.6s ease-in;
+      opacity: 0;
+    }
+    #editor.loaded {
+      animation: fadeInDown 0.6s ease-out forwards;
     }
     #editor:empty::before {
       content: attr(data-placeholder);
@@ -554,11 +559,13 @@
     if (data?.content) editor.innerHTML = data.content;
     if (data?.updated_at) setLS(data.updated_at);
     updateCounts();
+    editor.classList.add('loaded');
   }
 
   async function logout() {
     await sb.auth.signOut();
     editor.innerHTML = '';
+    editor.classList.remove('loaded');
     document.getElementById('appBox').style.display = 'none';
     document.getElementById('authBox').style.display = 'flex';
     document.getElementById('u').value = '';
