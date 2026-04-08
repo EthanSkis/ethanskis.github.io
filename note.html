@@ -96,17 +96,20 @@
     document.getElementById('authBox').style.display = 'none';
     document.getElementById('noteBox').style.display = 'block';
     document.getElementById('label').textContent = u;
-    const { data } = await sb.from('notes').select('content').single().catch(() => ({ data: null }));
+    const { data: { user } } = await sb.auth.getUser();
+    const { data } = await sb.from('notes').select('content').eq('user_id', user.id).maybeSingle();
     document.getElementById('note').value = data?.content ?? '';
   }
 
   async function save() {
     const { data: { user } } = await sb.auth.getUser();
-    await sb.from('notes').upsert(
+    const { error } = await sb.from('notes').upsert(
       { user_id: user.id, content: document.getElementById('note').value, updated_at: new Date().toISOString() },
       { onConflict: 'user_id' }
     );
     const msg = document.getElementById('saveMsg');
+    if (error) { msg.style.color = '#c0392b'; msg.textContent = 'Save failed: ' + error.message; return; }
+    msg.style.color = '#555';
     msg.textContent = 'Saved';
     setTimeout(() => msg.textContent = '', 2000);
   }
