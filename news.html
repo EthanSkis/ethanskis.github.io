@@ -325,10 +325,9 @@ function toggleTheme(){
 }
 (function initTheme(){
   const saved=localStorage.getItem('news-theme');
-  if(saved==='light'){
-    document.documentElement.setAttribute('data-theme','light');
-    document.getElementById('themeToggle').textContent='☾';
-  }
+  const theme=saved!==null?saved:'light';
+  document.documentElement.setAttribute('data-theme',theme);
+  document.getElementById('themeToggle').textContent=theme==='light'?'☾':'☀';
 })();
 </script>
 
