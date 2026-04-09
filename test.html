@@ -46,6 +46,8 @@ header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filte
 .hero{padding:2rem 0 1.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border)}
 .hero-title{font-family:var(--serif);font-size:48px;line-height:1.05;color:var(--text);letter-spacing:-.02em;margin-bottom:12px}
 .hero-desc{font-size:14px;color:var(--muted2);max-width:600px;line-height:1.6}
+.inquire-btn{display:inline-block;margin-top:20px;padding:10px 24px;font-size:13px;font-weight:500;letter-spacing:0.02em;color:var(--text);border:1px solid var(--border2);border-radius:8px;background:var(--surface);text-decoration:none;transition:all .2s;cursor:pointer}
+.inquire-btn:hover{color:var(--text);border-color:var(--purple);background:rgba(155,140,247,0.08)}
 .projects-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:2rem}
 .projects-secondary{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:2rem}
 .project-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .2s;cursor:pointer}
@@ -68,6 +70,16 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 .footer-content{display:flex;gap:16px;flex-wrap:wrap}
 .footer-link{color:var(--muted);text-decoration:none;transition:color .2s}
 .footer-link:hover{color:var(--text)}
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.3);backdrop-filter:blur(20px);opacity:0;pointer-events:none;transition:opacity .3s;-webkit-backdrop-filter:blur(20px)}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{position:relative;width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transform:translateY(20px) scale(0.97);transition:transform .35s}
+.modal-overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;border:none;background:transparent;color:var(--muted);font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s}
+.modal-close:hover{color:var(--text)}
+.modal-submit{width:100%;margin-top:8px;padding:12px;border:none;border-radius:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;font-family:inherit;letter-spacing:0.01em;cursor:pointer;transition:opacity .15s,transform .15s}
+.modal-submit:hover{opacity:.88}
+.modal-submit:active{transform:scale(0.98)}
 
 /* ── TABLET (≤900px) ── */
 @media(max-width:900px){
@@ -84,6 +96,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   .hero{padding:1.25rem 0 1rem}
   .hero-title{font-size:26px;line-height:1.1}
   .hero-desc{font-size:12px}
+  .inquire-btn{font-size:12px;padding:8px 16px}
   .projects-grid{gap:12px}
   .project-card{padding:16px}
   .project-card.featured{padding:20px}
@@ -93,6 +106,8 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   .project-stats{grid-template-columns:repeat(3,1fr)}
   footer{flex-direction:column;align-items:flex-start;padding:12px 1rem;gap:10px}
   .footer-content{flex-direction:column;gap:8px}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal{width:100%;max-width:100%;border-radius:16px 16px 0 0;padding:20px;border-bottom-left-radius:0;border-bottom-right-radius:0}
 }
 </style>
 </head>
@@ -113,8 +128,11 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
 <div class="page">
   <div class="hero">
-    <h1 class="hero-title">Ethan Gardner's Work</h1>
-    <p class="hero-desc">A selection of projects spanning photography, digital art, web development, and interactive experiences. Each project represents a unique approach to visual storytelling and technical craftsmanship.</p>
+    <div>
+      <h1 class="hero-title">Ethan Gardner's Work</h1>
+      <p class="hero-desc">A selection of projects spanning photography, digital art, web development, and interactive experiences. Each project represents a unique approach to visual storytelling and technical craftsmanship.</p>
+      <button class="inquire-btn" id="inquire-btn" onclick="openInquireModal()">Inquire for pricing and availability</button>
+    </div>
   </div>
 
   <div class="project-card featured">
@@ -228,6 +246,39 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   </div>
 </div>
 
+<!-- Inquiry Modal -->
+<div class="modal-overlay" id="modal-overlay" aria-modal="true" role="dialog" aria-labelledby="modal-title">
+  <div class="modal">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <div id="modal-form-content">
+      <h2 id="modal-title" style="font-family:var(--serif);font-size:20px;color:var(--text);margin-bottom:8px;">Get in touch</h2>
+      <p style="font-size:13px;color:var(--muted2);margin-bottom:16px;line-height:1.5;">Tell me about your project and I'll get back to you as soon as possible.</p>
+      <form id="inquiry-form" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label for="f-name" style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);">Name</label>
+            <input id="f-name" name="name" type="text" placeholder="Jane Smith" required style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:14px;color:var(--text);font-family:inherit;outline:none;transition:all .15s;" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label for="f-email" style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);">Email</label>
+            <input id="f-email" name="email" type="email" placeholder="jane@example.com" required style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:14px;color:var(--text);font-family:inherit;outline:none;transition:all .15s;" />
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+          <label for="f-message" style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);">Message</label>
+          <textarea id="f-message" name="message" placeholder="Tell me about your project..." style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:14px;color:var(--text);font-family:inherit;outline:none;resize:none;height:100px;transition:all .15s;"></textarea>
+        </div>
+        <button type="submit" class="modal-submit">Send inquiry</button>
+      </form>
+    </div>
+    <div id="modal-success" style="display:none;flex-direction:column;align-items:center;text-align:center;gap:10px;">
+      <div style="font-size:32px;">✓</div>
+      <h3 style="font-size:18px;font-weight:600;color:var(--text);">Message sent</h3>
+      <p style="font-size:13px;color:var(--muted2);">Thanks — I'll be in touch soon.</p>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-content">
     <a href="/" class="footer-link">Home</a>
@@ -252,6 +303,62 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', theme);
   document.getElementById('themeToggle').textContent = theme === 'light' ? '☾' : '☀';
 })();
+
+// Modal functions
+function openInquireModal() {
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInquireModal() {
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal-close').addEventListener('click', closeInquireModal);
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal-overlay')) {
+    closeInquireModal();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeInquireModal();
+  }
+});
+
+document.getElementById('inquiry-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const data = {
+    name: document.getElementById('f-name').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    message: document.getElementById('f-message').value.trim(),
+  };
+
+  // Form validation
+  if (!data.name || !data.email || !data.message) {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  // Show success message
+  document.getElementById('modal-form-content').style.display = 'none';
+  document.getElementById('modal-success').style.display = 'flex';
+
+  // Reset after 2 seconds and close
+  setTimeout(() => {
+    closeInquireModal();
+    setTimeout(() => {
+      document.getElementById('modal-form-content').style.display = '';
+      document.getElementById('modal-success').style.display = 'none';
+      document.getElementById('inquiry-form').reset();
+    }, 300);
+  }, 2000);
+});
 </script>
 
 </body>
