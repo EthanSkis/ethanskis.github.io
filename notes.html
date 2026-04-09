@@ -904,10 +904,9 @@
   }
   (function initTheme() {
     const saved = localStorage.getItem('notes-theme');
-    if (saved === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      setThemeIcon('light');
-    }
+    const theme = saved !== null ? saved : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    setThemeIcon(theme);
   })();
 
   // ── TOOLBAR SYNC ────────────────────────────────────
