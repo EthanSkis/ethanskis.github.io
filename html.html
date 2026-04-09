@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 25 35 L 35 25 L 35 50 M 65 35 L 75 25 L 75 50' stroke='%234a9eff' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='42' y1='30' x2='58' y2='45' stroke='%234a9eff' stroke-width='2' stroke-linecap='round'/></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><path d='M 45 63 L 63 45 L 63 90 M 117 63 L 135 45 L 135 90' stroke='%234a9eff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='76' y1='54' x2='104' y2='81' stroke='%234a9eff' stroke-width='4' stroke-linecap='round'/></svg>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
@@ -19,6 +19,12 @@
     --serif:'Instrument Serif',Georgia,serif;
     --mono:'DM Mono',monospace;
     --sans:'Geist',system-ui,sans-serif;
+  }
+  [data-theme="light"]{
+    --bg:#f5f5f0;--surface:#eaeae5;--surface2:#deded9;
+    --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
+    --text:#1a1a1a;--muted:#7a7a72;--muted2:#5a5a54;
+    --red:#c43030;--amber:#c47f0a;--blue:#2a7de0;--purple:#7a6ad0;
   }
   body{
     font-family:var(--sans);background:var(--bg);color:var(--text);
@@ -33,6 +39,9 @@
     padding:0 1.25rem;height:48px;
     background:rgba(12,13,15,0.95);
     border-bottom:1px solid var(--border);flex-shrink:0;
+  }
+  [data-theme="light"] .topbar{
+    background:rgba(245,245,240,0.95);
   }
   .back-btn{
     display:flex;align-items:center;gap:6px;padding:4px 10px;
@@ -89,6 +98,8 @@
   .btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
   .btn-run{background:rgba(155,140,247,0.12);border-color:rgba(155,140,247,0.3);color:var(--purple)}
   .btn-run:hover{background:rgba(155,140,247,0.22);border-color:rgba(155,140,247,0.5);color:#c4b8ff}
+  #themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
+  #themeToggle:hover{color:var(--purple)}
   /* ── Split ── */
   .split{position:relative;z-index:1;display:flex;flex:1;overflow:hidden}
   /* ── Editor pane ── */
@@ -97,10 +108,14 @@
   .editor-wrap.active{display:flex;flex-direction:column}
   .editor-wrap .CodeMirror{
     flex:1;height:100%;font-size:13px;line-height:1.65;
-    font-family:var(--mono);background:#0c0d0f !important;
+    font-family:var(--mono);background:#0c0d0f !important;color:#e8e6e1 !important;
   }
   .editor-wrap .CodeMirror-scroll{height:100%}
   .editor-wrap .CodeMirror-gutters{background:#0c0d0f !important;border-right:1px solid var(--border) !important}
+  [data-theme="light"] .editor-wrap .CodeMirror{
+    background:#f5f5f0 !important;color:#1a1a1a !important;
+  }
+  [data-theme="light"] .editor-wrap .CodeMirror-gutters{background:#f5f5f0 !important}
   /* ── Divider ── */
   .divider{
     width:4px;background:var(--border);
@@ -179,6 +194,7 @@
     </label>
     <button class="btn btn-run" id="runBtn">&#9654; Run</button>
     <button class="btn" id="dlBtn">&#8595; Export</button>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
   </div>
 </div>
 
@@ -223,6 +239,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
 
 <script>
+function toggleTheme() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const next = isLight ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeToggle').textContent = next === 'light' ? '☾' : '☀';
+  localStorage.setItem('html-editor-theme', next);
+  // Update CodeMirror theme if editors exist
+  if (window.editors) {
+    const newTheme = next === 'light' ? 'eclipse' : 'dracula';
+    Object.values(window.editors).forEach(ed => ed.setOption('theme', newTheme));
+  }
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem('html-editor-theme');
+  const theme = saved !== null ? saved : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeToggle').textContent = theme === 'light' ? '☾' : '☀';
+})();
+
 (function () {
   // ── Starter code ────────────────────────────────────────
   const STARTER_HTML = `<h1>Hello, World!</h1>
@@ -273,9 +309,13 @@ button:active { transform: translateY(0); }`;
 }`;
 
   // ── CodeMirror instances ─────────────────────────────────
+  const getTheme = () => {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    return isDark ? 'dracula' : 'eclipse';
+  };
   const cmOpts = (mode, value) => ({
     mode,
-    theme: 'dracula',
+    theme: getTheme(),
     lineNumbers: true,
     tabSize: 2,
     indentWithTabs: false,
@@ -285,7 +325,7 @@ button:active { transform: translateY(0); }`;
     value,
   });
 
-  const editors = {
+  const editors = window.editors = {
     html: CodeMirror.fromTextArea(document.getElementById('cm-html'), cmOpts('htmlmixed', STARTER_HTML)),
     css:  CodeMirror.fromTextArea(document.getElementById('cm-css'),  cmOpts('css', STARTER_CSS)),
     js:   CodeMirror.fromTextArea(document.getElementById('cm-js'),   cmOpts('javascript', STARTER_JS)),
