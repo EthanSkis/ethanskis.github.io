@@ -38,8 +38,14 @@ header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filte
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .hdr-r{display:flex;align-items:center;gap:20px}
 .hdr-nav{display:flex;gap:16px;align-items:center}
-.nav-link{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.05em;transition:color .2s}
-.nav-link:hover{color:var(--text)}
+.menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease;font-size:0;position:relative}
+.menu-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
+.menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
+.nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:none;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100}
+.nav-menu.open{display:flex}
+.nav-link{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.05em;transition:color .2s;border:none;border-radius:4px;background:transparent;padding:6px 10px;text-align:left}
+.nav-link:hover{color:var(--text);background:var(--surface2)}
+.nav-link.active{color:var(--blue);background:rgba(74,158,255,0.15)}
 #themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
 #themeToggle:hover{color:var(--purple)}
 .page{padding:2rem;max-width:1000px;margin:0 auto}
@@ -96,8 +102,9 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 /* ── MOBILE (≤600px) ── */
 @media(max-width:600px){
   header{padding:0 1rem;height:48px}
-  .hdr-nav{gap:12px}
-  .nav-link{font-size:11px;display:none}
+  .hdr-nav{display:none}
+  .menu-btn{display:flex}
+  .nav-link{font-size:11px}
   .page{padding:1rem}
   .hero{padding:1.25rem 0 1rem}
   .hero-title{font-size:26px;line-height:1.1}
@@ -131,6 +138,21 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       <a href="/snake.html" class="nav-link">Snake</a>
       <a href="/html.html" class="nav-link">Editor</a>
     </nav>
+    <div style="position:relative">
+      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/test.html" class="nav-link active">Portfolio</a>
+        <a href="/news.html" class="nav-link">News</a>
+        <a href="/notes.html" class="nav-link">Notes</a>
+        <a href="/snake.html" class="nav-link">Snake</a>
+        <a href="/html.html" class="nav-link">Editor</a>
+      </nav>
+    </div>
     <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
   </div>
 </header>
@@ -315,6 +337,20 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     document.documentElement.setAttribute('data-theme', theme);
     document.getElementById('themeToggle').textContent = theme === 'light' ? '☾' : '☀';
   })();
+
+  function toggleMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('navMenu');
+    menu.classList.toggle('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('navMenu');
+    const btn = document.querySelector('.menu-btn');
+    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
 
   // Modal functions
   function openInquireModal() {
