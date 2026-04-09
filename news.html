@@ -819,22 +819,31 @@ const DATA = {
       .join('path').attr('d',pathFn)
       .attr('class','map-land');
 
+    const isMobile = W <= 600;
+
     // custom label
     if(C.mapLabel){
       const[lx,ly]=proj([C.mapLabel.lon,C.mapLabel.lat]);
+      const clFs = isMobile ? 7 : 9;
       C.mapLabel.lines.forEach((line,i)=>{
-        svg.append('text').attr('x',lx-32).attr('y',ly-12+(i*9))
-          .attr('font-size','9px').attr('font-family',"'DM Mono',monospace")
+        svg.append('text').attr('x',lx-(isMobile?20:32)).attr('y',ly-12+(i*(clFs+1)))
+          .attr('font-size',clFs+'px').attr('font-family',"'DM Mono',monospace")
           .attr('font-weight','500').attr('fill',C.mapLabel.color).attr('pointer-events','none')
           .text(line);
       });
     }
+    const fontSize = isMobile ? 7 : 9;
+    const charW = fontSize * 0.55;
+    const labelH = fontSize + 2;
+    const pad = 2;
 
+    // first pass: draw circles and collect label candidates
+    const labels = [];
     C.markers.forEach(m=>{
       const[x,y]=proj([m.lon,m.lat]);
       if(!x||!y)return;
       const col=colorMap[m.type]||'#888';
-      svg.append('circle').attr('cx',x).attr('cy',y).attr('r',5)
+      svg.append('circle').attr('cx',x).attr('cy',y).attr('r', isMobile ? 4 : 5)
         .attr('class','map-marker').attr('fill',col).attr('fill-opacity',0.85)
         .style('cursor','pointer')
         .on('mouseover',()=>tip.style('opacity',1).html('<strong>'+m.name+'</strong><br>'+m.note))
@@ -847,11 +856,47 @@ const DATA = {
             .style('left',(t.clientX+12)+'px').style('top',(t.clientY-28)+'px');
           setTimeout(()=>tip.style('opacity',0),2800);
         });
-      const lbl=m.name.split('/')[0].split(' ')[0];
-      svg.append('text').attr('x',x+7).attr('y',y+4).attr('font-size','9px')
+      let lbl=m.name.split('/')[0].split(' ')[0];
+      if(lbl.length>10) lbl=lbl.slice(0,9)+'…';
+      const lw = lbl.length * charW;
+      // default placement: right of marker
+      labels.push({ x:x+7, y:y+Math.round(fontSize*0.45), text:lbl, w:lw, h:labelH, ox:x, oy:y });
+    });
+
+    // collision resolution: try alternate placements for overlapping labels
+    const placements = [
+      (ox,oy,lw)=>({ x:ox+7, y:oy+Math.round(fontSize*0.45) }),                 // right
+      (ox,oy,lw)=>({ x:ox-lw-5, y:oy+Math.round(fontSize*0.45) }),              // left
+      (ox,oy,lw)=>({ x:ox+7, y:oy-8 }),                                          // top-right
+      (ox,oy,lw)=>({ x:ox+7, y:oy+Math.round(fontSize*0.45)+labelH }),           // bottom-right
+      (ox,oy,lw)=>({ x:ox-lw-5, y:oy-8 }),                                       // top-left
+      (ox,oy,lw)=>({ x:ox-lw-5, y:oy+Math.round(fontSize*0.45)+labelH }),        // bottom-left
+    ];
+
+    function rectsOverlap(a,b){
+      return a.x < b.x+b.w+pad && a.x+a.w+pad > b.x &&
+             a.y-a.h < b.y+pad && a.y+pad > b.y-b.h;
+    }
+
+    for(let i=0;i<labels.length;i++){
+      for(let p=0;p<placements.length;p++){
+        const pos = placements[p](labels[i].ox, labels[i].oy, labels[i].w);
+        labels[i].x = pos.x;
+        labels[i].y = pos.y;
+        let collision = false;
+        for(let j=0;j<i;j++){
+          if(rectsOverlap(labels[i], labels[j])){ collision=true; break; }
+        }
+        if(!collision) break;
+      }
+    }
+
+    // draw labels at resolved positions
+    labels.forEach(l=>{
+      svg.append('text').attr('x',l.x).attr('y',l.y).attr('font-size',fontSize+'px')
         .attr('class','map-label').attr('pointer-events','none')
         .attr('font-family',"'Geist',sans-serif")
-        .text(lbl.length>10?lbl.slice(0,9)+'…':lbl);
+        .text(l.text);
     });
   }).catch(()=>{
     svg.append('text').attr('x',W/2).attr('y',H/2).attr('text-anchor','middle')
