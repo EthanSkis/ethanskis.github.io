@@ -367,6 +367,37 @@
     }
     #authThemeToggle:hover { color: var(--accent); }
 
+    /* NAVIGATION */
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .nav-link {
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .nav-link:hover {
+      color: var(--text);
+      border-color: var(--border2);
+      background: var(--surface2);
+    }
+    .nav-link.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
     /* LINK MODAL */
     .modal-bg {
       display: none;
@@ -468,6 +499,14 @@
     <div class="topbar-left">
       <span class="topbar-title">Notes</span>
       <span class="topbar-user" id="topUser"></span>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/test.html" class="nav-link">Portfolio</a>
+      <a href="/news.html" class="nav-link">News</a>
+      <a href="/notes.html" class="nav-link active">Notes</a>
+      <a href="/snake.html" class="nav-link">Snake</a>
+      <a href="/html.html" class="nav-link">Editor</a>
     </div>
     <div class="topbar-right">
       <span id="saveMsg">Auto-save on</span>

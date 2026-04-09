@@ -98,6 +98,10 @@
   .btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
   .btn-run{background:rgba(155,140,247,0.12);border-color:rgba(155,140,247,0.3);color:var(--purple)}
   .btn-run:hover{background:rgba(155,140,247,0.22);border-color:rgba(155,140,247,0.5);color:#c4b8ff}
+  .nav-links{display:flex;gap:6px;align-items:center}
+  .nav-link{padding:4px 10px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.04em;text-decoration:none;color:var(--muted);border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s ease;white-space:nowrap}
+  .nav-link:hover{color:var(--text);border-color:var(--border2);background:var(--surface)}
+  .nav-link.active{color:var(--blue);border-color:var(--blue);background:rgba(74,158,255,0.1)}
   #themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
   #themeToggle:hover{color:var(--purple)}
   /* ── Split ── */
@@ -175,6 +179,15 @@
 <div class="topbar">
   <a href="/" class="back-btn">&#8592; Home</a>
   <span class="title">HTML Editor</span>
+
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/test.html" class="nav-link">Portfolio</a>
+    <a href="/news.html" class="nav-link">News</a>
+    <a href="/notes.html" class="nav-link">Notes</a>
+    <a href="/snake.html" class="nav-link">Snake</a>
+    <a href="/html.html" class="nav-link active">Editor</a>
+  </div>
 
   <div class="tabs">
     <button class="tab active" data-lang="html">HTML</button>
