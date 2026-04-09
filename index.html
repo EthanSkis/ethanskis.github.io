@@ -159,45 +159,89 @@
     }
 
     /* ── Navigation ── */
-    .nav-menu {
+    .menu-btn {
       position: fixed;
       top: 20px;
       left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(245, 245, 247, 0.15);
+      border-radius: 8px;
+      color: rgba(245, 245, 247, 0.6);
+      cursor: pointer;
+      z-index: 51;
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: rgba(245, 245, 247, 1);
+      border-color: rgba(245, 245, 247, 0.25);
+    }
+
+    .menu-bar {
+      width: 18px;
+      height: 2px;
+      background: currentColor;
+      border-radius: 1px;
+    }
+
+    .nav-menu {
+      position: fixed;
+      top: 70px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(245, 245, 247, 0.15);
+      border-radius: 8px;
+      padding: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
       z-index: 50;
-      flex-wrap: wrap;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-menu.open {
+      display: flex;
     }
 
     .nav-link {
-      padding: 8px 14px;
+      padding: 8px 12px;
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.05em;
       color: rgba(245, 245, 247, 0.6);
-      border: 1px solid rgba(245, 245, 247, 0.2);
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 4px;
+      background: transparent;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       cursor: pointer;
+      text-align: left;
     }
 
     .nav-link:hover {
       color: rgba(245, 245, 247, 1);
-      border-color: rgba(245, 245, 247, 0.4);
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .nav-link.active {
       color: rgba(245, 245, 247, 1);
-      border-color: rgba(100, 150, 255, 0.6);
       background: rgba(100, 150, 255, 0.15);
     }
 
     @media (max-width: 735px) {
-      .nav-menu { top: 10px; left: 10px; gap: 6px; }
-      .nav-link { padding: 6px 10px; font-size: 9px; }
+      .menu-btn { top: 10px; left: 10px; width: 36px; height: 36px; }
+      .menu-bar { width: 16px; height: 1.5px; }
+      .nav-menu { top: 56px; left: 10px; padding: 6px; }
+      .nav-link { padding: 6px 10px; font-size: 10px; }
     }
 
     /* ── Modal overlay ── */
@@ -537,7 +581,13 @@
 </head>
 <body>
 
-  <nav class="nav-menu">
+  <button class="menu-btn" onclick="toggleMenu()" title="Menu">
+    <div class="menu-bar"></div>
+    <div class="menu-bar"></div>
+    <div class="menu-bar"></div>
+  </button>
+
+  <nav class="nav-menu" id="navMenu">
     <a href="/" class="nav-link active">Home</a>
     <a href="/test.html" class="nav-link">Portfolio</a>
     <a href="/news.html" class="nav-link">News</a>
@@ -635,6 +685,20 @@
   <script>
     const TELEGRAM_TOKEN = '8716351903:AAF04yPJJswWn7PY2AbNZKX1_gD5JruB8fQ';
     const TELEGRAM_CHAT  = '7626254420';
+
+    // Navigation menu toggle
+    function toggleMenu() {
+      const menu = document.getElementById('navMenu');
+      menu.classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('navMenu');
+      const btn = document.querySelector('.menu-btn');
+      if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
 
     // Cursor glow + parallax tilt
     const glow = document.querySelector('.cursor-glow');
