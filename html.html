@@ -277,7 +277,7 @@ function toggleTheme() {
   const next = isLight ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', next);
   document.getElementById('themeToggle').textContent = next === 'light' ? '☾' : '☀';
-  localStorage.setItem('html-editor-theme', next);
+  localStorage.setItem('site-theme', next);
   // Update CodeMirror theme if editors exist
   if (window.editors) {
     const newTheme = next === 'light' ? 'eclipse' : 'dracula';
@@ -300,7 +300,7 @@ document.addEventListener('click', function(e) {
 });
 
 (function initTheme() {
-  const saved = localStorage.getItem('html-editor-theme');
+  const saved = localStorage.getItem('site-theme');
   const theme = saved !== null ? saved : 'light';
   document.documentElement.setAttribute('data-theme', theme);
   document.getElementById('themeToggle').textContent = theme === 'light' ? '☾' : '☀';

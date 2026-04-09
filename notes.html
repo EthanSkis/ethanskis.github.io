@@ -1016,7 +1016,7 @@
     const next = isLight ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     setThemeIcon(next);
-    localStorage.setItem('notes-theme', next);
+    localStorage.setItem('site-theme', next);
   }
 
   function toggleMenu(e) {
@@ -1034,7 +1034,7 @@
   });
 
   (function initTheme() {
-    const saved = localStorage.getItem('notes-theme');
+    const saved = localStorage.getItem('site-theme');
     const theme = saved !== null ? saved : 'light';
     document.documentElement.setAttribute('data-theme', theme);
     setThemeIcon(theme);
