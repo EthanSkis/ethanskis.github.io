@@ -139,33 +139,9 @@
     /* APP */
     #appBox { display: none; flex: 1; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; }
 
-    /* TOPBAR */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 2rem;
-      min-height: 52px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bar-bg);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .topbar-left { display: flex; align-items: center; gap: .6rem; }
-    .topbar-title { font-family: var(--mono); font-size: .8rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
-    .topbar-user {
-      font-family: var(--mono);
-      font-size: .68rem;
-      color: var(--muted2);
-      background: var(--surface2);
-      padding: .2rem .55rem;
-      border-radius: 20px;
-      border: 1px solid var(--border2);
-      letter-spacing: .04em;
-    }
-    .topbar-right { display: flex; align-items: center; gap: .5rem; }
+    /* HEADER */
+    header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;min-height:52px;gap:16px}
+    .hdr-r{display:flex;align-items:center;gap:20px}
     #saveMsg { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em; transition: color 0.3s; }
     .save-btn {
       background: var(--accent);
@@ -531,10 +507,9 @@
     @media (max-width: 600px) {
       #appBox { max-width: 100%; }
 
-      .topbar { padding: 0 1rem; height: 48px; }
+      header { padding: 0 1rem; height: 48px; }
       .hdr-nav { display: none; }
       .menu-btn { display: flex; }
-      .topbar-title { font-size: .72rem; }
       #saveMsg { font-size: .65rem; }
       .logout-btn { padding: .32rem .5rem; font-size: .65rem; }
 
@@ -572,32 +547,33 @@
 
 <button id="authThemeToggle" onclick="toggleTheme()" title="Toggle light/dark mode"> </button>
 
-<div class="topbar">
+<header>
   <div class="wm"><div class="dot"></div>NOTES</div>
-  <div style="flex:1"></div>
-  <nav class="hdr-nav">
-    <a href="/" class="nav-link">Portfolio</a>
-    <a href="/news.html" class="nav-link">News</a>
-    <a href="/notes.html" class="nav-link active">Notes</a>
-    <a href="/snake.html" class="nav-link">Snake</a>
-    <a href="/html.html" class="nav-link">Editor</a>
-  </nav>
-  <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
-  <div style="position:relative;display:inline-flex">
-    <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
-      <div class="menu-bar"></div>
-      <div class="menu-bar"></div>
-      <div class="menu-bar"></div>
-    </button>
-    <nav class="nav-menu" id="navMenu">
+  <div class="hdr-r">
+    <nav class="hdr-nav">
       <a href="/" class="nav-link">Portfolio</a>
       <a href="/news" class="nav-link">News</a>
       <a href="/notes" class="nav-link active">Notes</a>
       <a href="/snake" class="nav-link">Snake</a>
       <a href="/html" class="nav-link">Editor</a>
     </nav>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+    <div style="position:relative;display:inline-flex">
+      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="/" class="nav-link">Portfolio</a>
+        <a href="/news" class="nav-link">News</a>
+        <a href="/notes" class="nav-link active">Notes</a>
+        <a href="/snake" class="nav-link">Snake</a>
+        <a href="/html" class="nav-link">Editor</a>
+      </nav>
+    </div>
   </div>
-</div>
+</header>
 
 <div id="authBox">
   <h1>Notes</h1>
