@@ -327,11 +327,11 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     const next = isLight ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     document.getElementById('themeToggle').textContent = next === 'light' ? '☾' : '☀';
-    localStorage.setItem('portfolio-theme', next);
+    localStorage.setItem('site-theme', next);
   }
 
   (function initTheme() {
-    const saved = localStorage.getItem('portfolio-theme');
+    const saved = localStorage.getItem('site-theme');
     const theme = saved !== null ? saved : 'light';
     document.documentElement.setAttribute('data-theme', theme);
     document.getElementById('themeToggle').textContent = theme === 'light' ? '☾' : '☀';
