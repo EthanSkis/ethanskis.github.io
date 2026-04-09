@@ -712,11 +712,12 @@ const DATA = {
 
   const isMobile = window.innerWidth <= 600;
 
-  // Assign vertical tiers to avoid label overlap (greedy: min 1.2 x-units between same-tier labels)
+  // Assign vertical tiers to avoid label overlap.
+  // Threshold 1.4 x-units (~one label width) before reusing a tier; 32px between tiers > 30px label box height.
   const tierLast = [];
   const evTiers = C.gasEvents.map(ev => {
     for (let t = 0; ; t++) {
-      if (tierLast[t] === undefined || ev.index - tierLast[t] >= 1.2) {
+      if (tierLast[t] === undefined || ev.index - tierLast[t] >= 1.4) {
         tierLast[t] = ev.index;
         return t;
       }
@@ -728,10 +729,10 @@ const DATA = {
     annotations['vl'+i] = { type:'line', xMin:ev.index, xMax:ev.index, borderColor:ev.color, borderWidth:1.5, borderDash:[4,3] };
     if(!isMobile) annotations['lb'+i] = {
       type:'label', xValue:ev.index, yValue:C.gasYMax,
-      yAdjust: -(26 + evTiers[i] * 18),
+      yAdjust: -(20 + evTiers[i] * 32),
       content:ev.label, color:ev.color,
       font:{ size:9, weight:'500', family:"'DM Mono',monospace" },
-      textAlign:'center', position:'start'
+      textAlign:'center'
     };
   });
 
@@ -756,7 +757,7 @@ const DATA = {
     }]},
     options:{
       responsive:true, maintainAspectRatio:false,
-      layout:{ padding:{ top: isMobile ? 16 : 80 } },
+      layout:{ padding:{ top: isMobile ? 16 : 110 } },
       plugins:{
         legend:{ display:false },
         tooltip:{
