@@ -344,21 +344,6 @@
       transition: color .2s;
     }
     #themeToggle:hover { color: var(--accent); }
-    #authThemeToggle {
-      position: fixed;
-      bottom: .6rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: .85rem;
-      cursor: pointer;
-      font-family: var(--mono);
-      z-index: 50;
-      transition: color .2s;
-    }
-    #authThemeToggle:hover { color: var(--accent); }
-
     /* NAVIGATION */
     .hdr-nav {
       display: flex;
@@ -564,8 +549,6 @@
 </head>
 <body>
 
-<button id="authThemeToggle" onclick="toggleTheme()" title="Toggle light/dark mode"> </button>
-
 <header>
   <div class="wm"><div class="dot"></div>NOTES</div>
   <div class="hdr-r">
@@ -768,7 +751,6 @@
 
   async function showApp(u) {
     document.getElementById('authBox').style.display = 'none';
-    document.getElementById('authThemeToggle').style.display = 'none';
     const app = document.getElementById('appBox');
     app.style.display = 'flex';
     app.style.flexDirection = 'column';
@@ -793,7 +775,6 @@
     lastSavedAt = null;
     document.getElementById('appBox').style.display = 'none';
     document.getElementById('authBox').style.display = 'flex';
-    document.getElementById('authThemeToggle').style.display = '';
     document.getElementById('u').value = '';
   }
 
@@ -1028,7 +1009,6 @@
   function setThemeIcon(theme) {
     const icon = theme === 'light' ? '☾' : '☀';
     document.getElementById('themeToggle').textContent = icon;
-    document.getElementById('authThemeToggle').textContent = icon;
   }
   function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
