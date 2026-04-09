@@ -821,24 +821,30 @@ const DATA = {
 
     const isMobile = W <= 600;
 
-    // custom label
-    if(C.mapLabel){
-      const[lx,ly]=proj([C.mapLabel.lon,C.mapLabel.lat]);
-      const clFs = isMobile ? 7 : 9;
-      C.mapLabel.lines.forEach((line,i)=>{
-        svg.append('text').attr('x',lx-(isMobile?20:32)).attr('y',ly-12+(i*(clFs+1)))
-          .attr('font-size',clFs+'px').attr('font-family',"'DM Mono',monospace")
-          .attr('font-weight','500').attr('fill',C.mapLabel.color).attr('pointer-events','none')
-          .text(line);
-      });
-    }
     const fontSize = isMobile ? 7 : 9;
     const charW = fontSize * 0.55;
     const labelH = fontSize + 2;
     const pad = 2;
 
-    // first pass: draw circles and collect label candidates
+    // seed reserved rects with custom label so marker labels avoid it
     const labels = [];
+    if(C.mapLabel){
+      const[lx,ly]=proj([C.mapLabel.lon,C.mapLabel.lat]);
+      const clFs = isMobile ? 7 : 9;
+      const clCharW = clFs * 0.6; // mono font is wider
+      C.mapLabel.lines.forEach((line,i)=>{
+        const tx = lx-(isMobile?20:32);
+        const ty = ly-12+(i*(clFs+1));
+        svg.append('text').attr('x',tx).attr('y',ty)
+          .attr('font-size',clFs+'px').attr('font-family',"'DM Mono',monospace")
+          .attr('font-weight','500').attr('fill',C.mapLabel.color).attr('pointer-events','none')
+          .text(line);
+        // reserve this rect so marker labels avoid it
+        labels.push({ x:tx, y:ty, w:line.length*clCharW, h:clFs+2, ox:tx, oy:ty, text:null });
+      });
+    }
+
+    // first pass: draw circles and collect label candidates
     C.markers.forEach(m=>{
       const[x,y]=proj([m.lon,m.lat]);
       if(!x||!y)return;
@@ -891,8 +897,9 @@ const DATA = {
       }
     }
 
-    // draw labels at resolved positions
+    // draw labels at resolved positions (skip reserved rects from custom label)
     labels.forEach(l=>{
+      if(!l.text) return;
       svg.append('text').attr('x',l.x).attr('y',l.y).attr('font-size',fontSize+'px')
         .attr('class','map-label').attr('pointer-events','none')
         .attr('font-family',"'Geist',sans-serif")
