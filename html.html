@@ -108,6 +108,7 @@
   .nav-link.active{color:var(--blue);background:rgba(74,158,255,0.15)}
   #themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
   #themeToggle:hover{color:var(--purple)}
+  .hdr-nav{display:flex;gap:16px;align-items:center}
   /* ── Split ── */
   .split{position:relative;z-index:1;display:flex;flex:1;overflow:hidden}
   /* ── Editor pane ── */
@@ -161,6 +162,7 @@
   .console-entry.error{color:var(--red);background:rgba(226,75,74,0.06)}
   /* ── Mobile ── */
   @media(max-width:735px){
+    .hdr-nav{display:none}
     .split{flex-direction:column}
     .editor-pane{width:100% !important;height:45%;min-width:unset;flex-shrink:0}
     .divider{width:100%;height:4px;cursor:row-resize;border-left:none;border-right:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -182,9 +184,16 @@
 <!-- Top bar -->
 <div class="topbar">
   <a href="/" class="back-btn">&#8592; Home</a>
-  <span class="title">HTML Editor</span>
-
-  <div style="position:relative">
+  <nav class="hdr-nav">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/test.html" class="nav-link">Portfolio</a>
+    <a href="/news.html" class="nav-link">News</a>
+    <a href="/notes.html" class="nav-link">Notes</a>
+    <a href="/snake.html" class="nav-link">Snake</a>
+    <a href="/html.html" class="nav-link">Editor</a>
+  </nav>
+  <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+  <div style="position:relative;display:inline-flex">
     <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
       <div class="menu-bar"></div>
       <div class="menu-bar"></div>
@@ -199,7 +208,9 @@
       <a href="/html.html" class="nav-link active">Editor</a>
     </nav>
   </div>
+</div>
 
+<div style="display:flex;align-items:center;gap:12px;padding:0 1.25rem;height:48px;background:rgba(12,13,15,0.95);border-bottom:1px solid var(--border);flex-shrink:0">
   <div class="tabs">
     <button class="tab active" data-lang="html">HTML</button>
     <button class="tab" data-lang="css">CSS</button>
@@ -218,7 +229,6 @@
     </label>
     <button class="btn btn-run" id="runBtn">&#9654; Run</button>
     <button class="btn" id="dlBtn">&#8595; Export</button>
-    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
   </div>
 </div>
 
