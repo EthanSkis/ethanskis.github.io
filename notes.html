@@ -358,6 +358,20 @@
       transition: color .2s;
     }
     #themeToggle:hover { color: var(--accent); }
+    #authThemeToggle {
+      position: fixed;
+      bottom: .6rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: .85rem;
+      cursor: pointer;
+      font-family: var(--mono);
+      z-index: 50;
+      transition: color .2s;
+    }
+    #authThemeToggle:hover { color: var(--accent); }
 
     /* NAVIGATION */
     .hdr-nav {
@@ -538,6 +552,8 @@
   </style>
 </head>
 <body>
+
+<button id="authThemeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
 
 <div class="topbar">
   <div class="wm"><div class="dot"></div>NOTES</div>
