@@ -340,70 +340,74 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-document.getElementById('inquiry-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
+const formElement = document.getElementById('inquiry-form');
+const formContent = document.getElementById('modal-form-content');
+const successMsg = document.getElementById('modal-success');
 
-  const data = {
-    name: document.getElementById('f-name').value.trim(),
-    email: document.getElementById('f-email').value.trim(),
-    message: document.getElementById('f-message').value.trim(),
-  };
+if (formElement) {
+  formElement.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-  const meta = {
-    timestamp: new Date().toISOString(),
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    language: navigator.language,
-    userAgent: navigator.userAgent,
-    screen: `${screen.width}×${screen.height}`,
-    viewport: `${window.innerWidth}×${window.innerHeight}`,
-    pixelRatio: window.devicePixelRatio,
-    platform: navigator.platform,
-    url: window.location.href,
-    touch: 'ontouchstart' in window,
-  };
+    const data = {
+      name: document.getElementById('f-name').value.trim(),
+      email: document.getElementById('f-email').value.trim(),
+      message: document.getElementById('f-message').value.trim(),
+    };
 
-  const esc = s => String(s).replace(/[_*[\]`]/g, '\\$&');
+    const meta = {
+      timestamp: new Date().toISOString(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      userAgent: navigator.userAgent,
+      screen: `${screen.width}×${screen.height}`,
+      viewport: `${window.innerWidth}×${window.innerHeight}`,
+      pixelRatio: window.devicePixelRatio,
+      platform: navigator.platform,
+      url: window.location.href,
+      touch: 'ontouchstart' in window,
+    };
 
-  const lines = [
-    '📩 *Portfolio Inquiry*',
-    '',
-    `*Name:* ${esc(data.name)}`,
-    `*Email:* ${esc(data.email)}`,
-    `*Message:*\n${esc(data.message)}`,
-    '',
-    '────',
-    `*Time:* ${meta.timestamp}`,
-    `*Timezone:* ${esc(meta.timezone)}`,
-    `*Language:* ${meta.language}`,
-    `*Screen:* ${meta.screen} @ ${meta.pixelRatio}x`,
-    `*Viewport:* ${meta.viewport}`,
-    `*Platform:* ${esc(meta.platform)}`,
-    `*Touch:* ${meta.touch}`,
-    `*URL:* ${esc(meta.url)}`,
-  ].filter(Boolean).join('\n');
+    const esc = s => String(s).replace(/[_*[\]`]/g, '\\$&');
 
-  if (TELEGRAM_TOKEN && TELEGRAM_TOKEN.includes(':')) {
-    fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT, text: lines, parse_mode: 'Markdown' }),
-    }).catch(() => {});
-  }
+    const lines = [
+      '📩 *Portfolio Inquiry*',
+      '',
+      `*Name:* ${esc(data.name)}`,
+      `*Email:* ${esc(data.email)}`,
+      `*Message:*\n${esc(data.message)}`,
+      '',
+      '────',
+      `*Time:* ${meta.timestamp}`,
+      `*Timezone:* ${esc(meta.timezone)}`,
+      `*Language:* ${meta.language}`,
+      `*Screen:* ${meta.screen} @ ${meta.pixelRatio}x`,
+      `*Viewport:* ${meta.viewport}`,
+      `*Platform:* ${esc(meta.platform)}`,
+      `*Touch:* ${meta.touch}`,
+      `*URL:* ${esc(meta.url)}`,
+    ].filter(Boolean).join('\n');
 
-  // Show success message
-  document.getElementById('modal-form-content').style.display = 'none';
-  document.getElementById('modal-success').style.display = 'flex';
+    if (TELEGRAM_TOKEN && TELEGRAM_TOKEN.includes(':')) {
+      fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT, text: lines, parse_mode: 'Markdown' }),
+      }).catch(() => {});
+    }
 
-  // Reset after 2 seconds and close
-  setTimeout(() => {
-    closeInquireModal();
+    formContent.style.display = 'none';
+    successMsg.style.display = 'flex';
+
     setTimeout(() => {
-      document.getElementById('modal-form-content').style.display = '';
-      document.getElementById('modal-success').style.display = 'none';
-      document.getElementById('inquiry-form').reset();
-    }, 300);
-  }, 2000);
-});
+      closeInquireModal();
+      setTimeout(() => {
+        formContent.style.display = '';
+        successMsg.style.display = 'none';
+        formElement.reset();
+      }, 300);
+    }, 2200);
+  });
+}
 </script>
 
 </body>
