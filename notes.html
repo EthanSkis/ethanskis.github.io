@@ -447,6 +447,25 @@
       background: var(--accent-dim);
     }
 
+    .wm {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .15em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+
     /* LINK MODAL */
     .modal-bg {
       display: none;
@@ -546,7 +565,7 @@
 <div id="appBox">
 
   <div class="topbar">
-    <div class="wm"><div class="dot" style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;flex-shrink:0"></div>NOTES</div>
+    <div class="wm"><div class="dot"></div>NOTES</div>
     <div style="flex:1"></div>
     <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
     <div style="position:relative;display:inline-flex;margin-left:12px">
