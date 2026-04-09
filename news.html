@@ -149,9 +149,9 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
 /* ── MOBILE (≤600px) ── */
 @media(max-width:600px){
-  /* header — hide clock, shrink pill */
+  /* header — hide nav, show menu */
   header{padding:0 1rem;height:48px}
-  .hdr-time{display:none}
+  .hdr-nav{display:none}
   .pill{font-size:9px;padding:3px 8px;letter-spacing:0}
 
   /* alert */
@@ -218,6 +218,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 }
 
 /* NAVIGATION */
+.hdr-nav{display:flex;gap:16px;align-items:center}
 .menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease;font-size:0;position:relative}
 .menu-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
 .menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
@@ -241,8 +242,14 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 <header>
   <div class="wm"><div class="dot"></div>NEWS</div>
   <div class="hdr-r">
-    <span class="hdr-time" id="live-time"></span>
-    <span class="pill" id="hdr-pill"></span>
+    <nav class="hdr-nav">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/test.html" class="nav-link">Portfolio</a>
+      <a href="/news.html" class="nav-link">News</a>
+      <a href="/notes.html" class="nav-link">Notes</a>
+      <a href="/snake.html" class="nav-link">Snake</a>
+      <a href="/html.html" class="nav-link">Editor</a>
+    </nav>
     <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
     <div style="position:relative;display:inline-flex">
       <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
@@ -261,6 +268,11 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     </div>
   </div>
 </header>
+
+<div style="display:flex;align-items:center;gap:16px;padding:0 2rem;height:44px;background:var(--bar-bg);border-bottom:1px solid var(--border)">
+  <span class="hdr-time" id="live-time"></span>
+  <span class="pill" id="hdr-pill"></span>
+</div>
 
 <div class="alert"><div class="dot"></div><div id="alert-text"></div></div>
 
