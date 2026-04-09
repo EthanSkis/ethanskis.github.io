@@ -217,11 +217,18 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   footer{flex-direction:column;align-items:flex-start;padding:12px 1rem;gap:10px}
 }
 
+/* NAVIGATION */
+.nav-links{display:flex;gap:6px;align-items:center}
+.nav-link{padding:4px 10px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.04em;text-decoration:none;color:var(--muted);border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s ease;white-space:nowrap}
+.nav-link:hover{color:var(--text);border-color:var(--border2);background:var(--surface2)}
+.nav-link.active{color:var(--red);border-color:var(--red);background:var(--red-dim)}
+
 /* ── VERY SMALL (≤380px) ── */
 @media(max-width:380px){
   .hhed{font-size:22px}
   .pill{max-width:130px}
   .metrics{grid-template-columns:repeat(5,120px)}
+  .nav-links{display:none}
 }
 </style>
 </head>
@@ -229,6 +236,14 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
 <header>
   <div class="wm"><div class="dot"></div>NEWS</div>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/test.html" class="nav-link">Portfolio</a>
+    <a href="/news.html" class="nav-link active">News</a>
+    <a href="/notes.html" class="nav-link">Notes</a>
+    <a href="/snake.html" class="nav-link">Snake</a>
+    <a href="/html.html" class="nav-link">Editor</a>
+  </div>
   <div class="hdr-r">
     <span class="hdr-time" id="live-time"></span>
     <span class="pill" id="hdr-pill"></span>
