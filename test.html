@@ -46,11 +46,15 @@ header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filte
 .hero{padding:2rem 0 1.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border)}
 .hero-title{font-family:var(--serif);font-size:48px;line-height:1.05;color:var(--text);letter-spacing:-.02em;margin-bottom:12px}
 .hero-desc{font-size:14px;color:var(--muted2);max-width:600px;line-height:1.6}
-.projects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:2rem}
+.projects-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:2rem}
+.projects-secondary{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:2rem}
 .project-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .2s;cursor:pointer}
+.project-card.featured{grid-column:1/-1;padding:28px;border:1px solid var(--purple);background:rgba(155,140,247,0.08)}
+.project-card.featured:hover{border-color:var(--purple);background:rgba(155,140,247,0.12)}
 .project-card:hover{border-color:var(--purple);background:rgba(155,140,247,0.05)}
 .project-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
 .project-title{font-family:var(--serif);font-size:18px;color:var(--text);letter-spacing:-.01em;line-height:1.2}
+.project-card.featured .project-title{font-size:28px}
 .project-link{color:var(--purple);text-decoration:none;font-size:18px;transition:opacity .2s}
 .project-link:hover{opacity:.7}
 .project-desc{font-size:13px;color:var(--muted2);line-height:1.5;margin-bottom:12px}
@@ -82,6 +86,8 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   .hero-desc{font-size:12px}
   .projects-grid{gap:12px}
   .project-card{padding:16px}
+  .project-card.featured{padding:20px}
+  .project-card.featured .project-title{font-size:22px}
   .project-title{font-size:16px}
   .project-link{font-size:16px}
   .project-stats{grid-template-columns:repeat(3,1fr)}
@@ -109,6 +115,33 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   <div class="hero">
     <h1 class="hero-title">Ethan Gardner's Work</h1>
     <p class="hero-desc">A selection of projects spanning photography, digital art, web development, and interactive experiences. Each project represents a unique approach to visual storytelling and technical craftsmanship.</p>
+  </div>
+
+  <div class="project-card featured">
+    <div class="project-header">
+      <h2 class="project-title">News Dashboard</h2>
+      <a href="/news.html" class="project-link">→</a>
+    </div>
+    <p class="project-desc">Real-time news and analytics dashboard featuring interactive maps, charts, and data visualization. Displays current metrics, market data, and global information with a professional editorial layout.</p>
+    <div class="project-tech">
+      <span class="tech-tag">D3.js</span>
+      <span class="tech-tag">Chart.js</span>
+      <span class="tech-tag">Maps</span>
+    </div>
+    <div class="project-stats">
+      <div class="stat-item">
+        <div class="stat-label">Status</div>
+        <div class="stat-value">Live</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Year</div>
+        <div class="stat-value">2025</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Type</div>
+        <div class="stat-value">Dashboard</div>
+      </div>
+    </div>
   </div>
 
   <div class="projects-grid">
@@ -162,33 +195,6 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
         <div class="stat-item">
           <div class="stat-label">Type</div>
           <div class="stat-value">Tool</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-card">
-      <div class="project-header">
-        <h2 class="project-title">News Dashboard</h2>
-        <a href="/news.html" class="project-link">→</a>
-      </div>
-      <p class="project-desc">Real-time news and analytics dashboard featuring interactive maps, charts, and data visualization. Displays current metrics, market data, and global information with a professional editorial layout.</p>
-      <div class="project-tech">
-        <span class="tech-tag">D3.js</span>
-        <span class="tech-tag">Chart.js</span>
-        <span class="tech-tag">Maps</span>
-      </div>
-      <div class="project-stats">
-        <div class="stat-item">
-          <div class="stat-label">Status</div>
-          <div class="stat-value">Live</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Year</div>
-          <div class="stat-value">2025</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Type</div>
-          <div class="stat-value">Dashboard</div>
         </div>
       </div>
     </div>
