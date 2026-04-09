@@ -137,6 +137,15 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 #themeToggle:hover{color:var(--red)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-family:var(--mono);font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 8px;color:var(--muted2)}
+.hdr-nav{display:flex;gap:16px;align-items:center}
+.menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease;font-size:0;position:relative}
+.menu-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
+.menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
+.nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:none;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100}
+.nav-menu.open{display:flex}
+.nav-link{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.05em;transition:color .2s;border:none;border-radius:4px;background:transparent;padding:6px 10px;text-align:left}
+.nav-link:hover{color:var(--text);background:var(--surface2)}
+.nav-link.active{color:var(--red);background:rgba(226,75,74,0.15)}
 
 /* ── TABLET (≤900px) ── */
 @media(max-width:900px){
@@ -151,6 +160,8 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 @media(max-width:600px){
   /* header */
   header{padding:0 1rem;height:48px}
+  .hdr-nav{display:none}
+  .menu-btn{display:flex}
   .pill{font-size:9px;padding:3px 8px;letter-spacing:0}
 
   /* alert */
@@ -240,6 +251,13 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 <header>
   <div class="wm"><div class="dot"></div>NEWS</div>
   <div class="hdr-r">
+    <nav class="hdr-nav">
+      <a href="/" class="nav-link">Portfolio</a>
+      <a href="/news.html" class="nav-link active">News</a>
+      <a href="/notes.html" class="nav-link">Notes</a>
+      <a href="/snake.html" class="nav-link">Snake</a>
+      <a href="/html.html" class="nav-link">Editor</a>
+    </nav>
     <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
     <div style="position:relative;display:inline-flex">
       <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
