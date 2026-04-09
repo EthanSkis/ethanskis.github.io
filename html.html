@@ -98,10 +98,14 @@
   .btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
   .btn-run{background:rgba(155,140,247,0.12);border-color:rgba(155,140,247,0.3);color:var(--purple)}
   .btn-run:hover{background:rgba(155,140,247,0.22);border-color:rgba(155,140,247,0.5);color:#c4b8ff}
-  .nav-links{display:flex;gap:6px;align-items:center}
-  .nav-link{padding:4px 10px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.04em;text-decoration:none;color:var(--muted);border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s ease;white-space:nowrap}
-  .nav-link:hover{color:var(--text);border-color:var(--border2);background:var(--surface)}
-  .nav-link.active{color:var(--blue);border-color:var(--blue);background:rgba(74,158,255,0.1)}
+  .menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease}
+  .menu-btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
+  .menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
+  .nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:none;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100}
+  .nav-menu.open{display:flex}
+  .nav-link{padding:6px 10px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.04em;text-decoration:none;color:var(--muted);border:none;border-radius:4px;background:transparent;transition:all 0.15s ease;white-space:nowrap;text-align:left}
+  .nav-link:hover{color:var(--text);background:var(--surface2)}
+  .nav-link.active{color:var(--blue);background:rgba(74,158,255,0.15)}
   #themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
   #themeToggle:hover{color:var(--purple)}
   /* ── Split ── */
@@ -180,13 +184,20 @@
   <a href="/" class="back-btn">&#8592; Home</a>
   <span class="title">HTML Editor</span>
 
-  <div class="nav-links">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/test.html" class="nav-link">Portfolio</a>
-    <a href="/news.html" class="nav-link">News</a>
-    <a href="/notes.html" class="nav-link">Notes</a>
-    <a href="/snake.html" class="nav-link">Snake</a>
-    <a href="/html.html" class="nav-link active">Editor</a>
+  <div style="position:relative">
+    <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+      <div class="menu-bar"></div>
+      <div class="menu-bar"></div>
+      <div class="menu-bar"></div>
+    </button>
+    <nav class="nav-menu" id="navMenu">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/test.html" class="nav-link">Portfolio</a>
+      <a href="/news.html" class="nav-link">News</a>
+      <a href="/notes.html" class="nav-link">Notes</a>
+      <a href="/snake.html" class="nav-link">Snake</a>
+      <a href="/html.html" class="nav-link active">Editor</a>
+    </nav>
   </div>
 
   <div class="tabs">
@@ -264,6 +275,20 @@ function toggleTheme() {
     Object.values(window.editors).forEach(ed => ed.setOption('theme', newTheme));
   }
 }
+
+function toggleMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('navMenu');
+  menu.classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('navMenu');
+  const btn = document.querySelector('.menu-btn');
+  if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
 
 (function initTheme() {
   const saved = localStorage.getItem('html-editor-theme');
