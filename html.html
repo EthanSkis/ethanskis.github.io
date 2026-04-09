@@ -16,6 +16,7 @@
     --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
     --text:#e8e6e1;--muted:#6b6a66;--muted2:#9a9894;
     --red:#e24b4a;--amber:#ef9f27;--blue:#4a9eff;--purple:#9b8cf7;
+    --bar-bg:rgba(12,13,15,0.92);
     --serif:'Instrument Serif',Georgia,serif;
     --mono:'DM Mono',monospace;
     --sans:'Geist',system-ui,sans-serif;
@@ -25,6 +26,7 @@
     --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
     --text:#1a1a1a;--muted:#7a7a72;--muted2:#5a5a54;
     --red:#c43030;--amber:#c47f0a;--blue:#2a7de0;--purple:#7a6ad0;
+    --bar-bg:rgba(245,245,240,0.92);
   }
   body{
     font-family:var(--sans);background:var(--bg);color:var(--text);
@@ -32,29 +34,12 @@
     -webkit-font-smoothing:antialiased;
   }
   .cursor-glow{display:none}
-  /* ── Top bar ── */
-  .topbar{
-    position:relative;z-index:10;
-    display:flex;align-items:center;gap:12px;
-    padding:0 1.25rem;height:48px;
-    background:rgba(12,13,15,0.95);
-    border-bottom:1px solid var(--border);flex-shrink:0;
-  }
-  [data-theme="light"] .topbar{
-    background:rgba(245,245,240,0.95);
-  }
-  .back-btn{
-    display:flex;align-items:center;gap:6px;padding:4px 10px;
-    background:var(--surface);border:1px solid var(--border2);border-radius:6px;
-    color:var(--muted);text-decoration:none;
-    font-family:var(--mono);font-size:11px;letter-spacing:0.04em;
-    transition:all 0.15s;white-space:nowrap;
-  }
-  .back-btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
-  .title{
-    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;
-    color:var(--muted);text-transform:uppercase;white-space:nowrap;
-  }
+  /* ── Header ── */
+  header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;min-height:52px;gap:16px}
+  .wm{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.15em;color:var(--text);display:flex;align-items:center;gap:10px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .hdr-r{display:flex;align-items:center;gap:20px}
   .tabs{
     display:flex;gap:2px;background:var(--surface);
     border:1px solid var(--border);border-radius:8px;padding:3px;
@@ -98,16 +83,16 @@
   .btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
   .btn-run{background:rgba(155,140,247,0.12);border-color:rgba(155,140,247,0.3);color:var(--purple)}
   .btn-run:hover{background:rgba(155,140,247,0.22);border-color:rgba(155,140,247,0.5);color:#c4b8ff}
-  .menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease}
-  .menu-btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
+  .menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease;font-size:0;position:relative}
+  .menu-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
   .menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
   .nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:none;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100}
   .nav-menu.open{display:flex}
-  .nav-link{padding:6px 10px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.04em;text-decoration:none;color:var(--muted);border:none;border-radius:4px;background:transparent;transition:all 0.15s ease;white-space:nowrap;text-align:left}
+  .nav-link{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.05em;transition:color .2s;border:none;border-radius:4px;background:transparent;padding:6px 10px;text-align:left}
   .nav-link:hover{color:var(--text);background:var(--surface2)}
-  .nav-link.active{color:var(--blue);background:rgba(74,158,255,0.15)}
+  .nav-link.active{color:var(--red);background:rgba(226,75,74,0.15)}
   #themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
-  #themeToggle:hover{color:var(--purple)}
+  #themeToggle:hover{color:var(--red)}
   .hdr-nav{display:flex;gap:16px;align-items:center}
   /* ── Split ── */
   .split{position:relative;z-index:1;display:flex;flex:1;overflow:hidden}
@@ -161,17 +146,20 @@
   .console-entry.warn{color:var(--amber);background:rgba(239,159,39,0.06)}
   .console-entry.error{color:var(--red);background:rgba(226,75,74,0.06)}
   /* ── Mobile ── */
-  @media(max-width:735px){
+  @media(max-width:600px){
+    header{padding:0 1rem;height:48px}
     .hdr-nav{display:none}
+    .menu-btn{display:flex}
+  }
+  @media(max-width:735px){
     .split{flex-direction:column}
     .editor-pane{width:100% !important;height:45%;min-width:unset;flex-shrink:0}
     .divider{width:100%;height:4px;cursor:row-resize;border-left:none;border-right:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
     .preview-pane{flex:1;min-width:unset}
-    .title{display:none}
     .auto-label span{display:none}
   }
   @media(max-width:480px){
-    .topbar{gap:8px;padding:0 10px}
+    header{gap:8px;padding:0 10px}
     .btn{padding:4px 8px}
     .tab{padding:4px 8px}
   }
@@ -181,33 +169,33 @@
 
 <div class="cursor-glow" id="cursorGlow"></div>
 
-<!-- Top bar -->
-<div class="topbar">
-  <a href="/" class="back-btn">&#8592; Home</a>
-  <nav class="hdr-nav">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/" class="nav-link">Portfolio</a>
-    <a href="/news" class="nav-link">News</a>
-    <a href="/notes" class="nav-link">Notes</a>
-    <a href="/snake" class="nav-link">Snake</a>
-    <a href="/html" class="nav-link">Editor</a>
-  </nav>
-  <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
-  <div style="position:relative;display:inline-flex">
-    <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
-      <div class="menu-bar"></div>
-      <div class="menu-bar"></div>
-      <div class="menu-bar"></div>
-    </button>
-    <nav class="nav-menu" id="navMenu">
+<header>
+  <div class="wm"><div class="dot"></div>EDITOR</div>
+  <div class="hdr-r">
+    <nav class="hdr-nav">
       <a href="/" class="nav-link">Portfolio</a>
       <a href="/news" class="nav-link">News</a>
       <a href="/notes" class="nav-link">Notes</a>
       <a href="/snake" class="nav-link">Snake</a>
       <a href="/html" class="nav-link active">Editor</a>
     </nav>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+    <div style="position:relative;display:inline-flex">
+      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="/" class="nav-link">Portfolio</a>
+        <a href="/news" class="nav-link">News</a>
+        <a href="/notes" class="nav-link">Notes</a>
+        <a href="/snake" class="nav-link">Snake</a>
+        <a href="/html" class="nav-link active">Editor</a>
+      </nav>
+    </div>
   </div>
-</div>
+</header>
 
 <div style="display:flex;align-items:center;gap:12px;padding:0 1.25rem;height:48px;background:rgba(12,13,15,0.95);border-bottom:1px solid var(--border);flex-shrink:0">
   <div class="tabs">
