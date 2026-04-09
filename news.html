@@ -853,13 +853,30 @@ const DATA = {
         .attr('class','map-marker').attr('fill',col).attr('fill-opacity',0.85)
         .style('cursor','pointer')
         .on('mouseover',()=>tip.style('opacity',1).html('<strong>'+m.name+'</strong><br>'+m.note))
-        .on('mousemove',e=>tip.style('left',(e.clientX+12)+'px').style('top',(e.clientY-28)+'px'))
+        .on('mousemove',e=>{
+          const tn=tip.node(), tw=tn.offsetWidth, th=tn.offsetHeight;
+          const vw=window.innerWidth, vh=window.innerHeight;
+          let lx=e.clientX+12, ly=e.clientY-28;
+          if(lx+tw>vw-8) lx=e.clientX-tw-12;
+          if(ly<8) ly=8;
+          if(ly+th>vh-8) ly=vh-th-8;
+          tip.style('left',lx+'px').style('top',ly+'px');
+        })
         .on('mouseout',()=>tip.style('opacity',0))
         .on('touchstart',function(e){
           e.preventDefault();
           const t=e.touches[0];
-          tip.style('opacity',1).html('<strong>'+m.name+'</strong><br>'+m.note)
-            .style('left',(t.clientX+12)+'px').style('top',(t.clientY-28)+'px');
+          tip.style('opacity',1).html('<strong>'+m.name+'</strong><br>'+m.note);
+          requestAnimationFrame(()=>{
+            const tn=tip.node(), tw=tn.offsetWidth, th=tn.offsetHeight;
+            const vw=window.innerWidth, vh=window.innerHeight;
+            let lx=t.clientX+12, ly=t.clientY-28;
+            if(lx+tw>vw-8) lx=t.clientX-tw-12;
+            if(lx<8) lx=8;
+            if(ly<8) ly=8;
+            if(ly+th>vh-8) ly=vh-th-8;
+            tip.style('left',lx+'px').style('top',ly+'px');
+          });
           setTimeout(()=>tip.style('opacity',0),2800);
         });
       let lbl=m.name.split('/')[0].split(' ')[0];
@@ -885,6 +902,7 @@ const DATA = {
     }
 
     for(let i=0;i<labels.length;i++){
+      if(!labels[i].text) continue; // skip reserved rects
       for(let p=0;p<placements.length;p++){
         const pos = placements[p](labels[i].ox, labels[i].oy, labels[i].w);
         labels[i].x = pos.x;
@@ -895,6 +913,11 @@ const DATA = {
         }
         if(!collision) break;
       }
+      // clamp label within map bounds
+      if(labels[i].x < 2) labels[i].x = 2;
+      if(labels[i].x + labels[i].w > W - 2) labels[i].x = W - labels[i].w - 2;
+      if(labels[i].y - labels[i].h < 0) labels[i].y = labels[i].h;
+      if(labels[i].y > H - 2) labels[i].y = H - 2;
     }
 
     // draw labels at resolved positions (skip reserved rects from custom label)
