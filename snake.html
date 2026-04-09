@@ -460,7 +460,7 @@ function toggleTheme() {
   const next = isLight ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', next);
   document.getElementById('themeToggle').textContent = next === 'light' ? '☾' : '☀';
-  localStorage.setItem('snake-theme', next);
+  localStorage.setItem('site-theme', next);
 }
 
 function toggleMenu() {
@@ -477,7 +477,7 @@ document.addEventListener('click', function(e) {
 });
 
 (function initTheme() {
-  const saved = localStorage.getItem('snake-theme');
+  const saved = localStorage.getItem('site-theme');
   const theme = saved !== null ? saved : 'light';
   document.documentElement.setAttribute('data-theme', theme);
   document.getElementById('themeToggle').textContent = theme === 'light' ? '☾' : '☀';
