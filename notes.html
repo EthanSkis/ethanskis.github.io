@@ -555,6 +555,26 @@
 
 <button id="authThemeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
 
+<div class="topbar">
+  <div class="wm"><div class="dot"></div>NOTES</div>
+  <div style="flex:1"></div>
+  <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+  <div style="position:relative;display:inline-flex;margin-left:20px">
+    <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+      <div class="menu-bar"></div>
+      <div class="menu-bar"></div>
+      <div class="menu-bar"></div>
+    </button>
+    <nav class="nav-menu" id="navMenu">
+      <a href="/" class="nav-link">Portfolio</a>
+      <a href="/news.html" class="nav-link">News</a>
+      <a href="/notes.html" class="nav-link active">Notes</a>
+      <a href="/snake.html" class="nav-link">Snake</a>
+      <a href="/html.html" class="nav-link">Editor</a>
+    </nav>
+  </div>
+</div>
+
 <div id="authBox">
   <h1>Notes</h1>
   <p>Enter your username to continue.</p>
@@ -564,26 +584,6 @@
 </div>
 
 <div id="appBox">
-
-  <div class="topbar">
-    <div class="wm"><div class="dot"></div>NOTES</div>
-    <div style="flex:1"></div>
-    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
-    <div style="position:relative;display:inline-flex;margin-left:20px">
-      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
-        <div class="menu-bar"></div>
-        <div class="menu-bar"></div>
-        <div class="menu-bar"></div>
-      </button>
-      <nav class="nav-menu" id="navMenu">
-        <a href="/" class="nav-link">Portfolio</a>
-        <a href="/news.html" class="nav-link">News</a>
-        <a href="/notes.html" class="nav-link active">Notes</a>
-        <a href="/snake.html" class="nav-link">Snake</a>
-        <a href="/html.html" class="nav-link">Editor</a>
-      </nav>
-    </div>
-  </div>
 
   <div style="display:flex;align-items:center;gap:.6rem;padding:.5rem 1rem;background:var(--surface);border-bottom:1px solid var(--border)">
     <span class="topbar-user" id="topUser"></span>
