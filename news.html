@@ -618,7 +618,7 @@ const DATA = {
 
   // live clock
   function updateClock() {
-    $('live-time').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});
+    $('live-time').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   }
   updateClock(); setInterval(updateClock, 1000);
 
