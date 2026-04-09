@@ -142,8 +142,15 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 .menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease;font-size:0;position:relative}
 .menu-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
 .menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
-.nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:none;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100}
-.nav-menu.open{display:flex}
+.nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity 0.2s,transform 0.2s}
+.nav-menu.open{opacity:1;transform:translateY(0);pointer-events:auto}
+.nav-menu .nav-link{opacity:0;transform:translateY(-10px);transition:opacity 0.2s,transform 0.2s}
+.nav-menu.open .nav-link{opacity:1;transform:translateY(0)}
+.nav-menu.open .nav-link:nth-child(1){transition-delay:0.03s}
+.nav-menu.open .nav-link:nth-child(2){transition-delay:0.06s}
+.nav-menu.open .nav-link:nth-child(3){transition-delay:0.09s}
+.nav-menu.open .nav-link:nth-child(4){transition-delay:0.12s}
+.nav-menu.open .nav-link:nth-child(5){transition-delay:0.15s}
 .nav-link{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.05em;transition:color .2s;border:none;border-radius:4px;background:transparent;padding:6px 10px;text-align:left}
 .nav-link:hover{color:var(--text);background:var(--surface2)}
 .nav-link.active{color:var(--red);background:rgba(226,75,74,0.15)}
