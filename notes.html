@@ -563,6 +563,7 @@
 
 <div class="topbar">
   <div class="wm"><div class="dot"></div>NOTES</div>
+  <div style="flex:1"></div>
   <nav class="hdr-nav">
     <a href="/" class="nav-link">Portfolio</a>
     <a href="/news.html" class="nav-link">News</a>
@@ -570,7 +571,6 @@
     <a href="/snake.html" class="nav-link">Snake</a>
     <a href="/html.html" class="nav-link">Editor</a>
   </nav>
-  <div style="flex:1"></div>
   <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
   <div style="position:relative;display:inline-flex;margin-left:20px">
     <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
@@ -1042,6 +1042,9 @@
     const menu = document.getElementById('navMenu');
     const btn = document.querySelector('.menu-btn');
     if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+    if (menu && e.target.closest('.nav-menu .nav-link')) {
       menu.classList.remove('open');
     }
   });
