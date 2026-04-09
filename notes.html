@@ -71,6 +71,11 @@
       }
     }
 
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
@@ -541,17 +546,10 @@
 <div id="appBox">
 
   <div class="topbar">
-    <div class="wm" style="font-family:var(--mono);font-size:.8rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text);display:flex;align-items:center;gap:10px">NOTES</div>
-    <nav class="hdr-nav">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/test.html" class="nav-link">Portfolio</a>
-      <a href="/news.html" class="nav-link">News</a>
-      <a href="/notes.html" class="nav-link">Notes</a>
-      <a href="/snake.html" class="nav-link">Snake</a>
-      <a href="/html.html" class="nav-link">Editor</a>
-    </nav>
+    <div class="wm"><div class="dot" style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;flex-shrink:0"></div>NOTES</div>
+    <div style="flex:1"></div>
     <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
-    <div style="position:relative;display:inline-flex">
+    <div style="position:relative;display:inline-flex;margin-left:12px">
       <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
         <div class="menu-bar"></div>
         <div class="menu-bar"></div>
