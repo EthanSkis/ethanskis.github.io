@@ -344,6 +344,13 @@
       transition: color .2s;
     }
     #themeToggle:hover { color: var(--accent); }
+    #theme-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      will-change: transform;
+    }
     /* NAVIGATION */
     .hdr-nav {
       display: flex;
@@ -1015,9 +1022,29 @@
   function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     const next = isLight ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    setThemeIcon(next);
-    localStorage.setItem('site-theme', next);
+    const newBg = next === 'light' ? '#f5f5f0' : '#0c0d0f';
+    const DURATION = 350;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'theme-overlay';
+    overlay.style.cssText = `background:${newBg};transform:translateY(-100%);transition:transform ${DURATION}ms cubic-bezier(0.4,0,0.2,1);`;
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      overlay.style.transform = 'translateY(0)';
+    }));
+
+    setTimeout(() => {
+      document.documentElement.setAttribute('data-theme', next);
+      setThemeIcon(next);
+      localStorage.setItem('site-theme', next);
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        overlay.style.transform = 'translateY(-100%)';
+      }));
+
+      setTimeout(() => overlay.remove(), DURATION);
+    }, DURATION);
   }
 
   function toggleMenu(e) {
