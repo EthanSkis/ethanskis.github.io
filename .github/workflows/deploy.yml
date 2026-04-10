@@ -15,11 +15,13 @@ jobs:
 
       - name: Inject Telegram secrets
         env:
-          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          AI_BOT_TOKEN: ${{ secrets.AI_TELEGRAM_BOT_TOKEN }}
+          CHAT_ID:      ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           sed -i "s|__TELEGRAM_BOT_TOKEN__|${BOT_TOKEN}|g" index.html html.html
-          sed -i "s|__TELEGRAM_CHAT_ID__|${CHAT_ID}|g"     index.html html.html
+          sed -i "s|__TELEGRAM_CHAT_ID__|${CHAT_ID}|g"     index.html html.html ai.html
+          sed -i "s|__AI_TELEGRAM_BOT_TOKEN__|${AI_BOT_TOKEN}|g" ai.html
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
