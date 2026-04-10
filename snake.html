@@ -4,200 +4,184 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Snake</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 20 50 L 35 40 L 50 45 L 65 35 L 80 45' stroke='%233dba7f' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/><circle cx='80' cy='45' r='4' fill='%233dba7f'/></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><path d='M 36 90 L 63 72 L 90 81 L 117 63 L 144 81' stroke='%233dba7f' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><circle cx='144' cy='81' r='8' fill='%233dba7f'/></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="header.css">
 <style>
-  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, fill 0.4s ease; }
+  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&display=swap');
 
-  :root {
-    --bg: #0c0d0f;
-    --surface: #111214;
-    --surface2: #17191c;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #e8e6e1;
-    --muted: #6b6a66;
-    --muted2: #9a9894;
-    --red: #e24b4a;
-    --red-dim: rgba(226,75,74,0.12);
-    --blue: #4a9eff;
-    --blue-dim: rgba(74,158,255,0.10);
-    --green: #3dba7f;
-    --green-dim: rgba(61,186,127,0.10);
-    --purple: #9b8cf7;
-    --bar-bg: rgba(12,13,15,0.92);
-    --header-accent: #3dba7f;
-    --header-accent-dim: rgba(61,186,127,0.15);
-    --serif: 'Instrument Serif', Georgia, serif;
-    --mono: 'DM Mono', monospace;
-    --sans: 'Geist', system-ui, sans-serif;
-  }
-
-  [data-theme="light"] {
-    --bg: #f5f5f0;
-    --surface: #eaeae5;
-    --surface2: #deded9;
-    --border: rgba(0,0,0,0.10);
-    --border2: rgba(0,0,0,0.16);
-    --text: #1a1a1a;
-    --muted: #7a7a72;
-    --muted2: #5a5a54;
-    --red: #c43030;
-    --red-dim: rgba(196,48,48,0.12);
-    --blue: #2a7de0;
-    --blue-dim: rgba(42,125,224,0.10);
-    --green: #2a8f5e;
-    --green-dim: rgba(42,143,94,0.10);
-    --purple: #7a6ad0;
-    --bar-bg: rgba(245,245,240,0.92);
-    --header-accent: #2a8f5e;
-    --header-accent-dim: rgba(42,143,94,0.15);
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: var(--sans);
-    height: 100svh;
-    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    background: var(--bg);
-    color: var(--text);
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #533483 100%);
+    overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
   }
 
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(120, 80, 255, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 100, 150, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(80, 200, 255, 0.08) 0%, transparent 60%);
+    animation: bgFloat 20s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  @keyframes bgFloat {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(2%, -2%) rotate(1deg); }
+    66% { transform: translate(-1%, 1%) rotate(-0.5deg); }
+  }
+
   .container {
-    flex: 1;
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 1rem;
+    gap: 20px;
+  }
+
+  .header {
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 20px rgba(120, 80, 255, 0.3);
   }
 
   .ai-toggle {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    color: var(--muted);
-    font-size: 1rem;
+    right: 0;
+    width: 44px; height: 44px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 1.25rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
   }
 
   .ai-toggle:hover {
-    background: var(--surface2);
-    color: var(--muted2);
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.7);
   }
 
   .ai-toggle.active {
-    background: rgba(155,140,247,0.15);
-    border-color: rgba(155,140,247,0.4);
-    color: var(--purple);
+    background: rgba(120, 80, 255, 0.25);
+    border-color: rgba(120, 80, 255, 0.5);
+    color: rgba(200, 170, 255, 0.95);
+    box-shadow: 0 4px 20px rgba(120, 80, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
   .ai-toggle svg {
-    width: 16px; height: 16px;
+    width: 22px; height: 22px;
     fill: currentColor;
   }
 
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
   .scoreboard {
-    position: relative;
     display: flex;
-    gap: 0;
-    align-items: stretch;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    width: 100%;
+    gap: 32px;
+    padding: 16px 36px;
+    align-items: center;
   }
 
   .score-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1px;
-    padding: 8px 24px;
-    flex: 1;
-  }
-
-  .score-item + .score-item {
-    border-left: 1px solid var(--border);
+    gap: 2px;
   }
 
   .score-label {
-    font-family: var(--mono);
-    font-size: 9px;
-    font-weight: 500;
+    font-size: 0.7rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.45);
   }
 
   .score-value {
-    font-family: var(--serif);
-    font-size: 1.5rem;
-    line-height: 1;
-    color: var(--text);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
     font-variant-numeric: tabular-nums;
   }
 
+  .divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
   .game-wrapper {
-    /* 56px = 2×container-padding(16) + 2×wrapper-padding(12) + 2×border(1) */
-    --canvas-size: min(calc(100vw - 58px), calc(100svh - 280px), 400px);
-    padding: 10px;
+    padding: 16px;
     position: relative;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    width: calc(var(--canvas-size) + 22px); /* canvas + 2×padding + 2×border */
-    flex-shrink: 0;
   }
 
   canvas {
     display: block;
-    border-radius: 6px;
-    background: var(--bg);
-    width: var(--canvas-size);
-    height: var(--canvas-size);
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
   }
 
   .controls {
     display: none;
-    gap: 6px;
-    padding: 2px 0;
-    width: 100%;
+    gap: 8px;
+    padding: 12px 16px;
   }
 
   .ctrl-row {
     display: flex;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
   }
 
   .ctrl-btn {
-    width: 52px; height: 52px;
-    border-radius: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    color: var(--muted2);
-    font-size: 1.1rem;
+    width: 56px; height: 56px;
+    border: none;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.4rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -207,11 +191,11 @@
   }
 
   .ctrl-btn:active {
-    background: var(--surface2);
+    background: rgba(255, 255, 255, 0.2);
     transform: scale(0.92);
   }
 
-  .ctrl-spacer { width: 52px; height: 52px; }
+  .ctrl-spacer { width: 56px; height: 56px; }
 
   @media (pointer: coarse) {
     .controls { display: grid; }
@@ -220,14 +204,16 @@
   /* Overlay */
   .overlay {
     position: absolute;
-    inset: 10px;
-    border-radius: 6px;
+    inset: 16px;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    background: var(--bar-bg);
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 10;
     transition: opacity 0.3s;
   }
@@ -238,99 +224,61 @@
   }
 
   .overlay-title {
-    font-family: var(--serif);
-    font-size: 1.6rem;
-    font-style: italic;
-    color: var(--text);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
   }
 
   .overlay-sub {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--muted);
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.5);
     text-align: center;
     line-height: 1.5;
-    letter-spacing: 0.04em;
   }
 
   .btn {
-    padding: 7px 24px;
-    border-radius: 6px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    font-weight: 500;
+    padding: 12px 36px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    letter-spacing: 0.06em;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
   }
 
-  .btn:hover { background: rgba(255,255,255,0.08); }
+  .btn:hover { background: rgba(255, 255, 255, 0.22); }
   .btn:active { transform: scale(0.96); }
-
-  /* Extra tight on very short screens */
-  @media (max-height: 600px) {
-    .container { gap: 8px; padding: 0.5rem 1rem; }
-    .score-item { padding: 6px 16px; }
-    .score-value { font-size: 1.2rem; }
-    .ctrl-btn, .ctrl-spacer { width: 44px; height: 44px; }
-    .controls { gap: 4px; }
-    .ctrl-row { gap: 4px; }
-  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wm"><div class="dot"></div>SNAKE</div>
-  <div class="hdr-r">
-    <nav class="hdr-nav">
-      <a href="/" class="nav-link">Portfolio</a>
-      <a href="/news" class="nav-link">News</a>
-      <a href="/notes" class="nav-link">Notes</a>
-      <a href="/snake" class="nav-link active">Snake</a>
-      <a href="/html" class="nav-link">Editor</a>
-      <a href="/ai" class="nav-link">AI</a>
-    </nav>
-    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
-    <div style="position:relative;display:inline-flex">
-      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
-        <div class="menu-bar"></div>
-        <div class="menu-bar"></div>
-        <div class="menu-bar"></div>
-      </button>
-      <nav class="nav-menu" id="navMenu">
-        <a href="/" class="nav-link">Portfolio</a>
-        <a href="/news" class="nav-link">News</a>
-        <a href="/notes" class="nav-link">Notes</a>
-        <a href="/snake" class="nav-link active">Snake</a>
-        <a href="/html" class="nav-link">Editor</a>
-        <a href="/ai" class="nav-link">AI</a>
-      </nav>
-    </div>
-  </div>
-</header>
-<script src="header.js"></script>
-
 <div class="container">
-
-  <div class="scoreboard">
-    <div class="score-item">
-      <span class="score-label">Score</span>
-      <span class="score-value" id="score">0</span>
-    </div>
-    <div class="score-item">
-      <span class="score-label">Best</span>
-      <span class="score-value" id="best">0</span>
-    </div>
+  <div class="header">
+    <h1>Snake</h1>
     <button class="ai-toggle" id="aiToggle" title="AI Autopilot">
       <svg viewBox="0 0 512 512"><g transform="translate(64,64)" fill="currentColor"><path d="M320,64 L320,320 L64,320 L64,64 L320,64 Z M171.749388,128 L146.817842,128 L99.4840387,256 L121.976629,256 L130.913039,230.977 L187.575039,230.977 L196.319607,256 L220.167172,256 L171.749388,128 Z M260.093778,128 L237.691519,128 L237.691519,256 L260.093778,256 L260.093778,128 Z M159.094727,149.47526 L181.409039,213.333 L137.135039,213.333 L159.094727,149.47526 Z M341.333333,256 L384,256 L384,298.666667 L341.333333,298.666667 L341.333333,256 Z M85.3333333,341.333333 L128,341.333333 L128,384 L85.3333333,384 L85.3333333,341.333333 Z M170.666667,341.333333 L213.333333,341.333333 L213.333333,384 L170.666667,384 L170.666667,341.333333 Z M85.3333333,0 L128,0 L128,42.6666667 L85.3333333,42.6666667 L85.3333333,0 Z M256,341.333333 L298.666667,341.333333 L298.666667,384 L256,384 L256,341.333333 Z M170.666667,0 L213.333333,0 L213.333333,42.6666667 L170.666667,42.6666667 L170.666667,0 Z M256,0 L298.666667,0 L298.666667,42.6666667 L256,42.6666667 L256,0 Z M341.333333,170.666667 L384,170.666667 L384,213.333333 L341.333333,213.333333 L341.333333,170.666667 Z M0,256 L42.6666667,256 L42.6666667,298.666667 L0,298.666667 L0,256 Z M341.333333,85.3333333 L384,85.3333333 L384,128 L341.333333,128 L341.333333,85.3333333 Z M0,170.666667 L42.6666667,170.666667 L42.6666667,213.333333 L0,213.333333 L0,170.666667 Z M0,85.3333333 L42.6666667,85.3333333 L42.6666667,128 L0,128 L0,85.3333333 Z"/></g></svg>
     </button>
   </div>
 
-  <div class="game-wrapper">
+  <div class="scoreboard glass">
+    <div class="score-item">
+      <span class="score-label">Score</span>
+      <span class="score-value" id="score">0</span>
+    </div>
+    <div class="divider"></div>
+    <div class="score-item">
+      <span class="score-label">Best</span>
+      <span class="score-value" id="best">0</span>
+    </div>
+  </div>
+
+  <div class="game-wrapper glass">
     <canvas id="game" width="400" height="400"></canvas>
     <div class="overlay" id="overlay">
       <div class="overlay-title" id="overlayTitle">Snake</div>
@@ -339,7 +287,7 @@
     </div>
   </div>
 
-  <div class="controls" id="controls">
+  <div class="controls glass" id="controls">
     <div class="ctrl-row">
       <div class="ctrl-spacer"></div>
       <button class="ctrl-btn" data-dir="up">&#9650;</button>
@@ -553,8 +501,7 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Grid lines
-    const isLightTheme = document.documentElement.getAttribute('data-theme') === 'light';
-    ctx.strokeStyle = isLightTheme ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.04)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
     ctx.lineWidth = 0.5;
     for (let i = 1; i < GRID; i++) {
       ctx.beginPath();
@@ -572,37 +519,50 @@
       const fx = food.x * CELL + CELL / 2;
       const fy = food.y * CELL + CELL / 2;
       const glow = ctx.createRadialGradient(fx, fy, 2, fx, fy, CELL * 1.8);
-      glow.addColorStop(0, 'rgba(226,75,74,0.2)');
+      glow.addColorStop(0, 'rgba(255,100,130,0.25)');
       glow.addColorStop(1, 'transparent');
       ctx.fillStyle = glow;
       ctx.fillRect(food.x * CELL - CELL, food.y * CELL - CELL, CELL * 3, CELL * 3);
 
       // Food
-      ctx.fillStyle = 'rgba(226,75,74,0.9)';
-      ctx.shadowColor = 'rgba(226,75,74,0.5)';
-      ctx.shadowBlur = 8;
+      ctx.fillStyle = 'rgba(255,100,130,0.9)';
+      ctx.shadowColor = 'rgba(255,100,130,0.6)';
+      ctx.shadowBlur = 10;
       roundRect(food.x * CELL + 2, food.y * CELL + 2, CELL - 4, CELL - 4, 5);
       ctx.shadowBlur = 0;
     }
 
     // Snake
+    const snakeR = aiActive ? 130 : 130;
+    const snakeG = aiActive ? 180 : 220;
+    const snakeB = aiActive ? 255 : 255;
+    const bodyR = aiActive ? 110 : 100;
+    const bodyG = aiActive ? 140 : 200;
+    const bodyB = aiActive ? 255 : 240;
+
     snake.forEach((seg, i) => {
       const t = i / snake.length;
       const alpha = 1 - t * 0.5;
       if (i === 0) {
         ctx.fillStyle = aiActive
-          ? `rgba(155,140,247,${alpha})`
-          : `rgba(74,158,255,${alpha})`;
-        ctx.shadowColor = aiActive ? 'rgba(155,140,247,0.5)' : 'rgba(74,158,255,0.4)';
-        ctx.shadowBlur = 10;
+          ? `rgba(160,120,255,${alpha})`
+          : `rgba(${snakeR},${snakeG},${snakeB},${alpha})`;
+        ctx.shadowColor = aiActive ? 'rgba(160,120,255,0.6)' : 'rgba(130,220,255,0.5)';
+        ctx.shadowBlur = 12;
       } else {
         ctx.fillStyle = aiActive
-          ? `rgba(130,115,220,${alpha * 0.85})`
-          : `rgba(61,130,220,${alpha * 0.85})`;
+          ? `rgba(130,100,240,${alpha * 0.85})`
+          : `rgba(${bodyR},${bodyG},${bodyB},${alpha * 0.85})`;
         ctx.shadowBlur = 0;
       }
       roundRect(seg.x * CELL + 1.5, seg.y * CELL + 1.5, CELL - 3, CELL - 3, 5);
       ctx.shadowBlur = 0;
+
+      // Gloss on head
+      if (i === 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        roundRect(seg.x * CELL + 3, seg.y * CELL + 3, CELL - 6, (CELL - 6) / 2, 3);
+      }
     });
   }
 
