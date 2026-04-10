@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notes</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='20' y='15' width='60' height='70' rx='3' fill='none' stroke='%23ef9f27' stroke-width='2'/><line x1='28' y1='28' x2='72' y2='28' stroke='%23ef9f27' stroke-width='1.5'/><line x1='28' y1='38' x2='72' y2='38' stroke='%23ef9f27' stroke-width='1.5'/><line x1='28' y1='48' x2='60' y2='48' stroke='%23ef9f27' stroke-width='1.5'/><line x1='28' y1='58' x2='65' y2='58' stroke='%23ef9f27' stroke-width='1.5'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect x='36' y='27' width='108' height='126' rx='5' fill='none' stroke='%23ef9f27' stroke-width='4'/><line x1='50' y1='50' x2='130' y2='50' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='68' x2='130' y2='68' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='86' x2='108' y2='86' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='104' x2='117' y2='104' stroke='%23ef9f27' stroke-width='3'/></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="header.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/morphdom@2/dist/morphdom-umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, fill 0.4s ease; }
+
+    :root {
+      --bg: #0c0d0f;
+      --surface: #111214;
+      --surface2: #17191c;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --text: #e8e6e1;
+      --muted: #6b6a66;
+      --muted2: #9a9894;
+      --accent: #ef9f27;
+      --accent-dim: rgba(239,159,39,0.12);
+      --danger: #e24b4a;
+      --success: #3dba7f;
+      --blue: #4a9eff;
+      --purple: #9b8cf7;
+      --bar-bg: rgba(12,13,15,0.92);
+      --header-accent: #ef9f27;
+      --header-accent-dim: rgba(239,159,39,0.12);
+      --serif: 'Instrument Serif', Georgia, serif;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Geist', system-ui, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg: #f5f5f0;
+      --surface: #eaeae5;
+      --surface2: #deded9;
+      --border: rgba(0,0,0,0.10);
+      --border2: rgba(0,0,0,0.16);
+      --text: #1a1a1a;
+      --muted: #7a7a72;
+      --muted2: #5a5a54;
+      --accent: #c47f0a;
+      --accent-dim: rgba(196,127,10,0.12);
+      --danger: #c43030;
+      --success: #2a8f5e;
+      --blue: #2a7de0;
+      --purple: #7a6ad0;
+      --bar-bg: rgba(245,245,240,0.92);
+      --header-accent: #c47f0a;
+      --header-accent-dim: rgba(196,127,10,0.12);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* AUTH */
+    #authBox {
+      flex: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 2rem;
+    }
+    #authBox h1 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; margin-bottom: .25rem; }
+    #authBox p { font-family: var(--mono); font-size: .78rem; color: var(--muted); letter-spacing: .04em; }
+    #authBox input {
+      width: 280px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: .95rem;
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      outline: none;
+    }
+    #authBox input:focus { border-color: var(--border2); }
+    #authBox button {
+      width: 280px;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: .85rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      cursor: pointer;
+    }
+    #authBox button:hover { opacity: .9; }
+    .auth-err { font-family: var(--mono); font-size: .75rem; color: var(--danger); min-height: 1em; }
+
+    /* APP */
+    #appBox { display: none; flex: 1; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; }
+
+    /* HEADER */
+    #saveMsg { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em; transition: color 0.3s; }
+    .save-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: .38rem .85rem;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      cursor: pointer;
+    }
+    .save-btn:hover { opacity: .85; }
+    .logout-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border2);
+      padding: .38rem .7rem;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .04em;
+      cursor: pointer;
+    }
+    .logout-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* TOOLBAR */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1px;
+      padding: .4rem .75rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bar-bg);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 47px;
+      z-index: 9;
+    }
+    .tb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 3px; }
+    .tb {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+    }
+    .tb:hover { background: var(--surface2); color: var(--text); }
+    .tb svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .heading-sel, .font-sel {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: .68rem;
+      padding: .18rem .35rem;
+      border-radius: 5px;
+      cursor: pointer;
+      outline: none;
+      letter-spacing: .04em;
+    }
+    .color-dot {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .color-dot:hover { border-color: #fff; }
+    .hl-dot {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .hl-dot:hover { border-color: rgba(255,255,255,0.5); }
+
+    /* EDITOR */
+    #editor {
+      flex: 1;
+      outline: none;
+      padding: 2.5rem 3rem 3.5rem 3rem;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--text);
+      min-height: 500px;
+      caret-color: var(--accent);
+    }
+    #editor > * {
+      opacity: 0;
+    }
+    #editor.loaded > * {
+      opacity: 1;
+    }
+    #editor.animate-in > * {
+      animation: fadeInDown 0.5s ease-out forwards;
+    }
+    #editor.animate-in > :nth-child(1) { animation-delay: 0ms; }
+    #editor.animate-in > :nth-child(2) { animation-delay: 50ms; }
+    #editor.animate-in > :nth-child(3) { animation-delay: 100ms; }
+    #editor.animate-in > :nth-child(4) { animation-delay: 150ms; }
+    #editor.animate-in > :nth-child(5) { animation-delay: 200ms; }
+    #editor.animate-in > :nth-child(6) { animation-delay: 250ms; }
+    #editor.animate-in > :nth-child(7) { animation-delay: 300ms; }
+    #editor.animate-in > :nth-child(8) { animation-delay: 350ms; }
+    #editor.animate-in > :nth-child(9) { animation-delay: 400ms; }
+    #editor.animate-in > :nth-child(10) { animation-delay: 450ms; }
+    #editor.animate-in > :nth-child(n+11) { animation-delay: 500ms; }
+    #editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--muted);
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeIn 0.4s ease-in forwards 3s;
+    }
+    #editor h1 { font-family: var(--serif); font-size: 2.2rem; font-weight: 400; margin: .4rem 0 .2rem; line-height: 1.1; letter-spacing: -.02em; }
+    #editor h2 { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin: .6rem 0 .2rem; line-height: 1.15; }
+    #editor h3 { font-size: 1.05rem; font-weight: 500; margin: .4rem 0 .15rem; letter-spacing: .01em; }
+    #editor p { margin: .1rem 0; }
+    #editor ul, #editor ol { padding-left: 1.6rem; margin: .2rem 0; }
+    #editor li { margin: .1rem 0; }
+    #editor blockquote {
+      border-left: 2px solid var(--accent);
+      padding: .2rem 0 .2rem 1rem;
+      margin: .4rem 0;
+      color: var(--muted2);
+      font-style: italic;
+    }
+    #editor code {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      padding: .1em .4em;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: .85em;
+      color: var(--accent);
+    }
+    #editor pre {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: .5rem 0;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: .85rem;
+      line-height: 1.6;
+    }
+    #editor pre code { background: none; border: none; padding: 0; color: var(--text); }
+    #editor hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+    #editor a { color: var(--accent); }
+    #editor mark { background: rgba(239,159,39,0.25); color: var(--text); border-radius: 2px; padding: 0 2px; }
+    #editor mark.hl-blue { background: rgba(74,158,255,0.2); }
+    #editor mark.hl-green { background: rgba(61,186,127,0.2); }
+    #editor mark.hl-red { background: rgba(226,75,74,0.2); }
+    #editor mark.hl-purple { background: rgba(155,140,247,0.2); }
+    #editor table { border-collapse: collapse; width: 100%; margin: .5rem 0; font-size: .9rem; }
+    #editor th, #editor td { border: 1px solid var(--border2); padding: .45rem .75rem; text-align: left; }
+    #editor th { background: var(--surface2); font-family: var(--mono); font-size: .8rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted2); }
+    #editor ul[data-type="checklist"] { list-style: none; padding-left: 0; }
+    #editor ul[data-type="checklist"] li { display: flex; align-items: flex-start; gap: .5rem; }
+    #editor ul[data-type="checklist"] li input[type="checkbox"] { margin-top: .35rem; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+    #editor ul[data-type="checklist"] li.checked > span { text-decoration: line-through; color: var(--muted); }
+
+    /* STATUS BAR */
+    .statusbar {
+      padding: .3rem 1.5rem;
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--muted);
+      letter-spacing: .04em;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      gap: 1.25rem;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 8;
+    }
+
+    /* LINK MODAL */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      width: 310px;
+    }
+    .modal h3 { font-family: var(--mono); font-size: .82rem; margin-bottom: .75rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+    .modal input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: .55rem .75rem;
+      border-radius: 6px;
+      font-family: var(--sans);
+      font-size: .85rem;
+      outline: none;
+      margin-bottom: .5rem;
+    }
+    .modal-row { display: flex; gap: .5rem; justify-content: flex-end; margin-top: .5rem; }
+    .modal-row button {
+      padding: .38rem .85rem;
+      border-radius: 6px;
+      font-size: .78rem;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .modal-row button.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      #appBox { max-width: 100%; }
+
+      #saveMsg { font-size: .65rem; }
+      .logout-btn { padding: .32rem .5rem; font-size: .65rem; }
+
+      .toolbar {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: .35rem .5rem;
+        top: 43px;
+        gap: 0;
+      }
+      .toolbar::-webkit-scrollbar { display: none; }
+      .tb { width: 32px; height: 32px; flex-shrink: 0; }
+      .heading-sel, .font-sel { flex-shrink: 0; }
+
+      #editor {
+        padding: 1.25rem 1rem;
+        font-size: .95rem;
+      }
+
+      .statusbar {
+        padding: .3rem .9rem;
+        font-size: .6rem;
+        gap: .75rem;
+      }
+
+      #authBox input, #authBox button { width: 100%; max-width: 320px; }
+
+      #authBox { max-height: calc(100vh - 52px); overflow: hidden; }
+
+      .modal { width: calc(100vw - 2rem); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wm"><div class="dot"></div>NOTES</div>
+  <div class="hdr-r">
+    <nav class="hdr-nav">
+      <a href="/" class="nav-link">Portfolio</a>
+      <a href="/news" class="nav-link">News</a>
+      <a href="/notes" class="nav-link active">Notes</a>
+      <a href="/snake" class="nav-link">Snake</a>
+      <a href="/html" class="nav-link">Editor</a>
+      <a href="/ai" class="nav-link">AI</a>
+    </nav>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+    <div style="position:relative;display:inline-flex">
+      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="/" class="nav-link">Portfolio</a>
+        <a href="/news" class="nav-link">News</a>
+        <a href="/notes" class="nav-link active">Notes</a>
+        <a href="/snake" class="nav-link">Snake</a>
+        <a href="/html" class="nav-link">Editor</a>
+        <a href="/ai" class="nav-link">AI</a>
+      </nav>
+    </div>
+  </div>
+</header>
+<script src="header.js"></script>
+
+<div id="authBox">
+  <h1>Notes</h1>
+  <p>Enter your username to continue.</p>
+  <input id="u" placeholder="username" autocomplete="off" onkeydown="if(event.key==='Enter')enter()" />
+  <button onclick="enter()">Continue</button>
+  <div class="auth-err" id="authErr"></div>
+</div>
+
+<div id="appBox">
+
+  <div style="display:flex;align-items:center;gap:.6rem;padding:.5rem 1rem;background:var(--surface);border-bottom:1px solid var(--border)">
+    <span class="topbar-user" id="topUser"></span>
+    <span id="saveMsg" style="flex:1;text-align:center;">Auto-save on</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="toolbar">
+    <!-- Block format -->
+    <select class="heading-sel" id="headingSel" onchange="setBlock(this.value)">
+      <option value="p">Body</option>
+      <option value="h1">Title</option>
+      <option value="h2">Heading</option>
+      <option value="h3">Subheading</option>
+      <option value="pre">Code block</option>
+    </select>
+
+    <div class="tb-sep"></div>
+
+    <!-- Bold / Italic / Underline / Strike -->
+    <button class="tb" title="Bold (⌘B)" onmousedown="e=>e.preventDefault()" onclick="fmt('bold')">
+      <svg viewBox="0 0 24 24"><path d="M6 4h8a4 4 0 0 1 0 8H6z"/><path d="M6 12h9a4 4 0 0 1 0 8H6z"/></svg>
+    </button>
+    <button class="tb" title="Italic (⌘I)" onclick="fmt('italic')">
+      <svg viewBox="0 0 24 24"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+    </button>
+    <button class="tb" title="Underline (⌘U)" onclick="fmt('underline')">
+      <svg viewBox="0 0 24 24"><path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+    </button>
+    <button class="tb" title="Strikethrough" onclick="fmt('strikeThrough')">
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6C16 6 14.5 4 12 4s-5 1.5-5 4c0 5 9 4 9 8s-2.5 4-5 4-5-2-5-2"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Lists -->
+    <button class="tb" title="Bullet list" onclick="fmt('insertUnorderedList')">
+      <svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <button class="tb" title="Numbered list" onclick="fmt('insertOrderedList')">
+      <svg viewBox="0 0 24 24"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+    </button>
+    <button class="tb" title="Checklist" onclick="insertChecklist()">
+      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Indent / Align -->
+    <button class="tb" title="Indent (Tab)" onclick="fmt('indent')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="7 14 11 12 7 10"/><line x1="3" y1="12" x2="11" y2="12"/></svg>
+    </button>
+    <button class="tb" title="Outdent (Shift+Tab)" onclick="fmt('outdent')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="11 14 7 12 11 10"/><line x1="7" y1="12" x2="21" y2="12"/></svg>
+    </button>
+    <button class="tb" title="Align left" onclick="fmt('justifyLeft')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+    </button>
+    <button class="tb" title="Align center" onclick="fmt('justifyCenter')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    </button>
+    <button class="tb" title="Align right" onclick="fmt('justifyRight')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Extras -->
+    <button class="tb" title="Blockquote" onclick="fmt('formatBlock',false,'blockquote')">
+      <svg viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+    </button>
+    <button class="tb" title="Inline code" onclick="insertInlineCode()">
+      <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    </button>
+    <button class="tb" title="Divider" onclick="insertHR()">
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="tb" title="Insert link" onclick="openLinkModal()">
+      <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </button>
+    <button class="tb" title="Insert table" onclick="insertTable()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+    </button>
+
+    <div class="tb-sep"></div>
+
+    <!-- Highlight colors -->
+    <button class="tb" title="Toggle highlight" onmousedown="event.preventDefault()" onclick="toggleHighlight()">
+      <svg viewBox="0 0 24 24"><path d="m9 11-6 6v3h3l6-6"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+    </button>
+    <span class="color-dot hl-dot" style="background:rgba(239,159,39,0.55)" onmousedown="event.preventDefault()" onclick="applyHL('')" title="Amber highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(74,158,255,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-blue')" title="Blue highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(61,186,127,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-green')" title="Green highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(226,75,74,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-red')" title="Red highlight"></span>
+    <span class="color-dot hl-dot" style="background:rgba(155,140,247,0.5)" onmousedown="event.preventDefault()" onclick="applyHL('hl-purple')" title="Purple highlight"></span>
+
+    <div class="tb-sep"></div>
+
+    <!-- Text colors -->
+    <span class="color-dot" style="background:#e8e6e1" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#e8e6e1')" title="White"></span>
+    <span class="color-dot" style="background:#ef9f27" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#ef9f27')" title="Amber"></span>
+    <span class="color-dot" style="background:#e24b4a" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#e24b4a')" title="Red"></span>
+    <span class="color-dot" style="background:#4a9eff" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#4a9eff')" title="Blue"></span>
+    <span class="color-dot" style="background:#3dba7f" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#3dba7f')" title="Green"></span>
+    <span class="color-dot" style="background:#9b8cf7" onmousedown="event.preventDefault()" onclick="fmt('foreColor','#9b8cf7')" title="Purple"></span>
+
+    <div class="tb-sep"></div>
+    <button class="tb" title="Clear formatting" style="font-size:.6rem;width:auto;padding:0 5px" onclick="fmt('removeFormat')">clear</button>
+  </div>
+
+  <div id="editor" contenteditable="true" data-placeholder="Start writing..." spellcheck="true"></div>
+
+  <div class="statusbar">
+    <span id="wc">0 words</span>
+    <span id="cc">0 characters</span>
+    <span id="ls"></span>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+  </div>
+</div>
+
+<!-- LINK MODAL -->
+<div class="modal-bg" id="linkModal">
+  <div class="modal">
+    <h3>Insert link</h3>
+    <input id="linkText" placeholder="Display text" />
+    <input id="linkUrl" placeholder="https://" onkeydown="if(event.key==='Enter')confirmLink()" />
+    <div class="modal-row">
+      <button onclick="closeLinkModal()">Cancel</button>
+      <button class="primary" onclick="confirmLink()">Insert</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://wuczornurppubchayatb.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_nr34BwBdIY4fi3MW-PtsKw_EfjWUXo9';
+  const DOMAIN = 'notes-app.com';
+  const SECRET = 'shared-secret-xK9mP2';
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const editor = document.getElementById('editor');
+  let savedRange = null;
+  let isRemoteUpdate = false;
+  let currentUserId = null;
+  let realtimeChannel = null;
+  let isSaving = false;
+  let lastSavedAt = null;
+
+  // ── AUTH ────────────────────────────────────────────
+  async function enter() {
+    const u = document.getElementById('u').value.trim();
+    if (!u) return;
+    document.getElementById('authErr').textContent = '';
+    const em = `${u.toLowerCase()}@${DOMAIN}`;
+    const { error: e1 } = await sb.auth.signInWithPassword({ email: em, password: SECRET });
+    if (e1) {
+      const { error: e2 } = await sb.auth.signUp({ email: em, password: SECRET });
+      if (e2) { document.getElementById('authErr').textContent = e2.message; return; }
+      await sb.auth.signInWithPassword({ email: em, password: SECRET });
+    }
+    showApp(u);
+  }
+
+  async function showApp(u) {
+    document.getElementById('authBox').style.display = 'none';
+    const app = document.getElementById('appBox');
+    app.style.display = 'flex';
+    app.style.flexDirection = 'column';
+    document.getElementById('topUser').textContent = u;
+    const { data: { user } } = await sb.auth.getUser();
+    const { data } = await sb.from('notes').select('content,updated_at').eq('user_id', user.id).maybeSingle();
+    if (data?.content) editor.innerHTML = data.content;
+    if (data?.updated_at) setLS(data.updated_at);
+    updateCounts();
+    editor.classList.add('loaded', 'animate-in');
+    setTimeout(() => editor.classList.remove('animate-in'), 1000);
+    currentUserId = user.id;
+    subscribeRealtime(user.id);
+  }
+
+  async function logout() {
+    if (realtimeChannel) { sb.removeChannel(realtimeChannel); realtimeChannel = null; }
+    await sb.auth.signOut();
+    editor.innerHTML = '';
+    editor.classList.remove('loaded', 'animate-in');
+    currentUserId = null;
+    lastSavedAt = null;
+    document.getElementById('appBox').style.display = 'none';
+    document.getElementById('authBox').style.display = 'flex';
+    document.getElementById('u').value = '';
+  }
+
+  // ── SAVE ────────────────────────────────────────────
+  let pendingSave = false;
+
+  async function save() {
+    if (!currentUserId) return;
+    if (isSaving) { pendingSave = true; return; }
+    isSaving = true;
+    const msg = document.getElementById('saveMsg');
+    msg.style.color = 'var(--accent)'; msg.textContent = 'Saving...';
+    const now = new Date().toISOString();
+    lastSavedAt = now;
+    const { error } = await sb.from('notes').upsert(
+      { user_id: currentUserId, content: editor.innerHTML, updated_at: now },
+      { onConflict: 'user_id' }
+    );
+    isSaving = false;
+    if (error) { msg.style.color = 'var(--danger)'; msg.textContent = 'Save failed'; }
+    else {
+      msg.style.color = 'var(--success)'; msg.textContent = 'Saved';
+      setLS(now);
+      setTimeout(() => { if (msg.textContent === 'Saved') { msg.style.color = 'var(--muted)'; msg.textContent = 'Auto-save on'; } }, 2000);
+    }
+    if (pendingSave) { pendingSave = false; save(); }
+  }
+
+  function setLS(iso) {
+    document.getElementById('ls').textContent =
+      'Saved ' + new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function subscribeRealtime(userId) {
+    if (realtimeChannel) sb.removeChannel(realtimeChannel);
+    realtimeChannel = sb.channel('notes-sync')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'notes',
+        filter: `user_id=eq.${userId}`
+      }, (payload) => {
+        if (!payload.new) return;
+        const remote = payload.new.content;
+        if (remote == null) return;
+        if (remote === editor.innerHTML) return;
+        if (payload.new.updated_at && lastSavedAt && payload.new.updated_at <= lastSavedAt) return;
+        isRemoteUpdate = true;
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = remote;
+        morphdom(editor, tempContainer, { childrenOnly: true });
+        if (payload.new.updated_at) setLS(payload.new.updated_at);
+        updateCounts();
+        const msg = document.getElementById('saveMsg');
+        msg.style.color = 'var(--blue)'; msg.textContent = 'Synced';
+        setTimeout(() => { if (msg.textContent === 'Synced') { msg.style.color = 'var(--muted)'; msg.textContent = 'Auto-save on'; } }, 2000);
+        isRemoteUpdate = false;
+      })
+      .subscribe();
+  }
+
+  let lastSaveTime = 0;
+  let trailingTimer = null;
+  const THROTTLE_MS = 300;
+
+  editor.addEventListener('input', () => {
+    updateCounts();
+    if (isRemoteUpdate) return;
+    const now = Date.now();
+    clearTimeout(trailingTimer);
+    if (now - lastSaveTime >= THROTTLE_MS) {
+      lastSaveTime = now;
+      save();
+    } else {
+      trailingTimer = setTimeout(() => {
+        lastSaveTime = Date.now();
+        save();
+      }, THROTTLE_MS - (now - lastSaveTime));
+    }
+  });
+
+  // ── FORMAT HELPERS ──────────────────────────────────
+  function fmt(cmd, a, b) {
+    editor.focus();
+    if (b !== undefined) document.execCommand(cmd, a, b);
+    else document.execCommand(cmd, false, a ?? null);
+    syncToolbar();
+  }
+
+  function setBlock(tag) {
+    editor.focus();
+    document.execCommand('formatBlock', false, tag);
+    syncToolbar();
+  }
+
+  function insertHR() { document.execCommand('insertHTML', false, '<hr>'); }
+
+  // ── INLINE CODE (toggle) ───────────────────────────
+  function insertInlineCode() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    editor.focus();
+    const range = sel.getRangeAt(0);
+    const parentCode = closestTag(range.commonAncestorContainer, 'CODE');
+    // toggle off if inside inline code (not inside a pre block)
+    if (parentCode && parentCode !== editor && !parentCode.closest('pre')) {
+      unwrapEl(parentCode);
+      return;
+    }
+    const text = sel.toString() || 'code';
+    document.execCommand('insertHTML', false, `<code>${escapeHTML(text)}</code>`);
+  }
+
+  // ── HIGHLIGHT (mark-based) ─────────────────────────
+  function closestTag(node, tag) {
+    let cur = node;
+    while (cur && cur !== editor) {
+      if (cur.nodeType === 1 && cur.tagName === tag) return cur;
+      cur = cur.parentNode;
+    }
+    return null;
+  }
+
+  function unwrapEl(el) {
+    const parent = el.parentNode;
+    while (el.firstChild) parent.insertBefore(el.firstChild, el);
+    parent.removeChild(el);
+    parent.normalize();
+  }
+
+  function escapeHTML(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // toggle highlight: if inside a mark, remove it; otherwise apply default amber
+  function toggleHighlight() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    const parentMark = closestTag(range.commonAncestorContainer, 'MARK');
+    if (parentMark) {
+      unwrapEl(parentMark);
+    } else {
+      wrapInMark(range, sel, '');
+    }
+    syncToolbar();
+  }
+
+  // apply a specific highlight color (called by color dots)
+  function applyHL(colorClass) {
+    const sel = window.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    const parentMark = closestTag(range.commonAncestorContainer, 'MARK');
+    if (parentMark) {
+      // already highlighted — just change the color
+      parentMark.className = colorClass;
+    } else {
+      wrapInMark(range, sel, colorClass);
+    }
+    syncToolbar();
+  }
+
+  function wrapInMark(range, sel, colorClass) {
+    const mark = document.createElement('mark');
+    if (colorClass) mark.className = colorClass;
+    try {
+      range.surroundContents(mark);
+    } catch(e) {
+      // selection crosses element boundaries — use fragment approach
+      const frag = range.extractContents();
+      mark.appendChild(frag);
+      range.insertNode(mark);
+    }
+    sel.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(mark);
+    sel.addRange(newRange);
+  }
+
+  function insertTable() {
+    document.execCommand('insertHTML', false,
+      `<table><thead><tr><th>Col 1</th><th>Col 2</th><th>Col 3</th></tr></thead>`+
+      `<tbody><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`+
+      `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table><p><br></p>`);
+  }
+
+  function insertChecklist() {
+    document.execCommand('insertHTML', false,
+      `<ul data-type="checklist">`+
+      `<li><input type="checkbox" onchange="toggleCheck(this)"><span>&nbsp;Task item</span></li>`+
+      `</ul><p><br></p>`);
+  }
+
+  function toggleCheck(cb) {
+    cb.parentElement.classList.toggle('checked', cb.checked);
+    save();
+  }
+
+  // ── LINK MODAL ──────────────────────────────────────
+  function openLinkModal() {
+    const sel = window.getSelection();
+    if (sel.rangeCount) savedRange = sel.getRangeAt(0).cloneRange();
+    document.getElementById('linkText').value = sel.toString();
+    document.getElementById('linkUrl').value = '';
+    document.getElementById('linkModal').classList.add('open');
+    setTimeout(() => document.getElementById('linkUrl').focus(), 60);
+  }
+  function closeLinkModal() { document.getElementById('linkModal').classList.remove('open'); }
+  function confirmLink() {
+    const text = document.getElementById('linkText').value;
+    const url = document.getElementById('linkUrl').value;
+    if (!url) { closeLinkModal(); return; }
+    editor.focus();
+    if (savedRange) {
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(savedRange);
+    }
+    document.execCommand('insertHTML', false, `<a href="${url}" target="_blank">${text || url}</a>`);
+    closeLinkModal();
+  }
+
+  // ── KEYBOARD SHORTCUTS ──────────────────────────────
+  editor.addEventListener('keydown', e => {
+    const mod = e.metaKey || e.ctrlKey;
+    if (mod && e.key === 's') { e.preventDefault(); save(); return; }
+    if (e.key === 'Tab') { e.preventDefault(); fmt(e.shiftKey ? 'outdent' : 'indent'); return; }
+  });
+
+  // ── TOOLBAR SYNC ────────────────────────────────────
+  function syncToolbar() {
+    const block = document.queryCommandValue('formatBlock').toLowerCase();
+    const sel = document.getElementById('headingSel');
+    const map = { h1: 'h1', h2: 'h2', h3: 'h3', pre: 'pre' };
+    sel.value = map[block] || 'p';
+  }
+  editor.addEventListener('keyup', syncToolbar);
+  editor.addEventListener('mouseup', syncToolbar);
+
+  // ── WORD / CHAR COUNT ───────────────────────────────
+  function updateCounts() {
+    const t = editor.innerText.trim();
+    const w = t ? t.split(/\s+/).filter(Boolean).length : 0;
+    document.getElementById('wc').textContent = w + ' word' + (w !== 1 ? 's' : '');
+    document.getElementById('cc').textContent = t.length + ' char' + (t.length !== 1 ? 's' : '');
+  }
+
+  // ── SESSION RESTORE ─────────────────────────────────
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      showApp(session.user.email.replace(`@${DOMAIN}`, ''));
+    } else {
+      document.getElementById('authBox').style.display = 'flex';
+    }
+  })();
+</script>
+</body>
+</html>
