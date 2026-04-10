@@ -7,6 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='20' y='15' width='60' height='70' rx='3' fill='none' stroke='%23ef9f27' stroke-width='2'/><line x1='28' y1='28' x2='72' y2='28' stroke='%23ef9f27' stroke-width='1.5'/><line x1='28' y1='38' x2='72' y2='38' stroke='%23ef9f27' stroke-width='1.5'/><line x1='28' y1='48' x2='60' y2='48' stroke='%23ef9f27' stroke-width='1.5'/><line x1='28' y1='58' x2='65' y2='58' stroke='%23ef9f27' stroke-width='1.5'/></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect x='36' y='27' width='108' height='126' rx='5' fill='none' stroke='%23ef9f27' stroke-width='4'/><line x1='50' y1='50' x2='130' y2='50' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='68' x2='130' y2='68' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='86' x2='108' y2='86' stroke='%23ef9f27' stroke-width='3'/><line x1='50' y1='104' x2='117' y2='104' stroke='%23ef9f27' stroke-width='3'/></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="header.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/morphdom@2/dist/morphdom-umd.min.js"></script>
   <style>
@@ -140,8 +141,6 @@
     #appBox { display: none; flex: 1; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; }
 
     /* HEADER */
-    header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;min-height:52px;gap:16px}
-    .hdr-r{display:flex;align-items:center;gap:20px}
     #saveMsg { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em; transition: color 0.3s; }
     .save-btn {
       background: var(--accent);
@@ -332,138 +331,6 @@
       z-index: 8;
     }
 
-    #themeToggle {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: .85rem;
-      cursor: pointer;
-      padding: 0 .25rem;
-      font-family: var(--mono);
-      letter-spacing: .04em;
-      transition: color .2s;
-    }
-    #themeToggle:hover { color: var(--accent); }
-    /* NAVIGATION */
-    .hdr-nav {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-    .menu-btn {
-      background: var(--surface);
-      border: 1px solid var(--border2);
-      border-radius: 6px;
-      color: var(--muted);
-      cursor: pointer;
-      padding: 4px 8px;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 3px;
-      transition: all 0.2s ease;
-      font-size: 0;
-      position: relative;
-    }
-    .menu-btn:hover {
-      background: var(--surface2);
-      color: var(--text);
-      border-color: var(--border);
-    }
-    .menu-bar {
-      width: 14px;
-      height: 1.5px;
-      background: currentColor;
-      border-radius: 1px;
-    }
-    .nav-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      margin-top: 4px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      min-width: 150px;
-      z-index: 100;
-      opacity: 0;
-      transform: translateY(-8px);
-      pointer-events: none;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-    .nav-menu.open {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .nav-menu .nav-link {
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.2s, transform 0.2s;
-    }
-    .nav-menu.open .nav-link {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .nav-menu.open .nav-link:nth-child(1) { transition-delay: 0.03s; }
-    .nav-menu.open .nav-link:nth-child(2) { transition-delay: 0.06s; }
-    .nav-menu.open .nav-link:nth-child(3) { transition-delay: 0.09s; }
-    .nav-menu.open .nav-link:nth-child(4) { transition-delay: 0.12s; }
-    .nav-menu.open .nav-link:nth-child(5) { transition-delay: 0.15s; }
-    .nav-menu.open .nav-link:nth-child(6) { transition-delay: 0.18s; }
-    .nav-link {
-      padding: 6px 10px;
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      color: var(--muted);
-      border: none;
-      border-radius: 4px;
-      background: transparent;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-      text-align: left;
-    }
-    .nav-link:hover {
-      color: var(--text);
-      background: var(--surface2);
-    }
-    .nav-link.active {
-      color: var(--accent);
-      background: var(--accent-dim);
-    }
-    .nav-link.active {
-      color: var(--accent);
-      background: var(--accent-dim);
-    }
-
-    .wm {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: .15em;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
-      flex-shrink: 0;
-    }
-
     /* LINK MODAL */
     .modal-bg {
       display: none;
@@ -512,9 +379,6 @@
     @media (max-width: 600px) {
       #appBox { max-width: 100%; }
 
-      header { padding: 0 1rem; height: 48px; }
-      .hdr-nav { display: none; }
-      .menu-btn { display: flex; }
       #saveMsg { font-size: .65rem; }
       .logout-btn { padding: .32rem .5rem; font-size: .65rem; }
 
@@ -581,6 +445,7 @@
     </div>
   </div>
 </header>
+<script src="header.js"></script>
 
 <div id="authBox">
   <h1>Notes</h1>
@@ -1009,43 +874,6 @@
     if (mod && e.key === 's') { e.preventDefault(); save(); return; }
     if (e.key === 'Tab') { e.preventDefault(); fmt(e.shiftKey ? 'outdent' : 'indent'); return; }
   });
-
-  // ── THEME TOGGLE ────────────────────────────────────
-  function setThemeIcon(theme) {
-    const icon = theme === 'light' ? '☾' : '☀';
-    document.getElementById('themeToggle').textContent = icon;
-  }
-  function toggleTheme() {
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const next = isLight ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    setThemeIcon(next);
-    localStorage.setItem('site-theme', next);
-  }
-
-  function toggleMenu(e) {
-    e.stopPropagation();
-    const menu = document.getElementById('navMenu');
-    menu.classList.toggle('open');
-  }
-
-  document.addEventListener('click', function(e) {
-    const menu = document.getElementById('navMenu');
-    const btn = document.querySelector('.menu-btn');
-    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
-      menu.classList.remove('open');
-    }
-    if (menu && e.target.closest('.nav-menu .nav-link')) {
-      menu.classList.remove('open');
-    }
-  });
-
-  (function initTheme() {
-    const saved = localStorage.getItem('site-theme');
-    const theme = saved !== null ? saved : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    setThemeIcon(theme);
-  })();
 
   // ── TOOLBAR SYNC ────────────────────────────────────
   function syncToolbar() {

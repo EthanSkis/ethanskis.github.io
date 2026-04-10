@@ -7,6 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='30' fill='none' stroke='%23e24b4a' stroke-width='3'/><circle cx='50' cy='50' r='20' fill='none' stroke='%23e24b4a' stroke-width='2'/><circle cx='50' cy='50' r='8' fill='%23e24b4a'/></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><circle cx='90' cy='90' r='54' fill='none' stroke='%23e24b4a' stroke-width='6'/><circle cx='90' cy='90' r='36' fill='none' stroke='%23e24b4a' stroke-width='4'/><circle cx='90' cy='90' r='14' fill='%23e24b4a'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="header.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
@@ -40,11 +41,6 @@
 }
 html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
-header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;min-height:52px;gap:16px}
-.wm{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.15em;color:var(--text);display:flex;align-items:center;gap:10px}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hdr-r{display:flex;align-items:center;gap:20px}
 .hdr-time{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
 .pill{font-family:var(--mono);font-size:11px;background:var(--red-dim);border:1px solid rgba(226,75,74,.3);color:var(--red);padding:4px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
 .alert{background:var(--red-dim);border-bottom:1px solid rgba(226,75,74,.2);padding:9px 2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--red);font-family:var(--mono);overflow:hidden}
@@ -134,28 +130,8 @@ header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filte
 .tleg{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
 .tli{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
 footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px}
-#themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
-#themeToggle:hover{color:var(--red)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-family:var(--mono);font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 8px;color:var(--muted2)}
-.hdr-nav{display:flex;gap:16px;align-items:center}
-.menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease;font-size:0;position:relative}
-.menu-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
-.menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
-.nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity 0.2s,transform 0.2s}
-.nav-menu.open{opacity:1;transform:translateY(0);pointer-events:auto}
-.nav-menu .nav-link{opacity:0;transform:translateY(-10px);transition:opacity 0.2s,transform 0.2s}
-.nav-menu.open .nav-link{opacity:1;transform:translateY(0)}
-.nav-menu.open .nav-link:nth-child(1){transition-delay:0.03s}
-.nav-menu.open .nav-link:nth-child(2){transition-delay:0.06s}
-.nav-menu.open .nav-link:nth-child(3){transition-delay:0.09s}
-.nav-menu.open .nav-link:nth-child(4){transition-delay:0.12s}
-.nav-menu.open .nav-link:nth-child(5){transition-delay:0.15s}
-.nav-menu.open .nav-link:nth-child(6){transition-delay:0.18s}
-.nav-link{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.05em;transition:color .2s;border:none;border-radius:4px;background:transparent;padding:6px 10px;text-align:left}
-.nav-link:hover{color:var(--text);background:var(--surface2)}
-.nav-link.active{color:var(--red);background:rgba(226,75,74,0.15)}
-
 /* ── DESKTOP (>600px) ── */
 @media(min-width:601px){
   #alert-text{animation:marquee 30s linear infinite;white-space:nowrap}
@@ -172,10 +148,6 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
 /* ── MOBILE (≤600px) ── */
 @media(max-width:600px){
-  /* header */
-  header{padding:0 1rem;height:48px}
-  .hdr-nav{display:none}
-  .menu-btn{display:flex}
   .pill{font-size:9px;padding:3px 8px;letter-spacing:0}
 
   /* time bar */
@@ -284,6 +256,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     </div>
   </div>
 </header>
+<script src="header.js"></script>
 
 <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:0 2rem;height:44px;background:var(--bar-bg);border-bottom:1px solid var(--border);white-space:nowrap;flex-wrap:nowrap">
   <span class="hdr-time" id="live-time"></span>
@@ -368,37 +341,6 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   <div style="font-family:var(--mono);letter-spacing:.08em" id="footer-text"></div>
   <div class="chips" id="footer-chips"></div>
 </footer>
-
-<script>
-function toggleTheme(){
-  const isLight=document.documentElement.getAttribute('data-theme')==='light';
-  const next=isLight?'dark':'light';
-  document.documentElement.setAttribute('data-theme',next);
-  document.getElementById('themeToggle').textContent=next==='light'?'☾':'☀';
-  localStorage.setItem('site-theme',next);
-}
-function toggleMenu(e){
-  e.stopPropagation();
-  const menu=document.getElementById('navMenu');
-  menu.classList.toggle('open');
-}
-document.addEventListener('click',function(e){
-  const menu=document.getElementById('navMenu');
-  const btn=document.querySelector('.menu-btn');
-  if(menu&&btn&&!menu.contains(e.target)&&!btn.contains(e.target)){
-    menu.classList.remove('open');
-  }
-  if(menu&&e.target.closest('.nav-menu .nav-link')){
-    menu.classList.remove('open');
-  }
-});
-(function initTheme(){
-  const saved=localStorage.getItem('site-theme');
-  const theme=saved!==null?saved:'light';
-  document.documentElement.setAttribute('data-theme',theme);
-  document.getElementById('themeToggle').textContent=theme==='light'?'☾':'☀';
-})();
-</script>
 
 <!-- ═══════════════════════════════════════════════════════════
      DATA — EDIT ONLY THIS BLOCK TO UPDATE THE ENTIRE DASHBOARD
