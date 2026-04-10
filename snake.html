@@ -106,9 +106,19 @@
   }
 
   .ai-toggle.active {
-    background: rgba(155,140,247,0.30);
+    background: rgba(155,140,247,0.15);
     border-color: rgba(155,140,247,0.4);
     color: var(--purple);
+  }
+
+  .ai-toggle::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: -50px;
+    width: 100px;
+    height: 1px;
+    background: var(--surface);
   }
 
   .ai-toggle svg {
