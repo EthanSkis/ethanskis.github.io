@@ -111,16 +111,6 @@
     color: var(--purple);
   }
 
-  .ai-toggle::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: -50px;
-    width: 100px;
-    height: 1px;
-    background: var(--surface);
-  }
-
   .ai-toggle svg {
     width: 16px; height: 16px;
     fill: currentColor;
@@ -148,7 +138,20 @@
   }
 
   .score-item + .score-item {
-    border-left: 1px solid var(--border);
+    border-left: none;
+  }
+
+  .scoreboard::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+    transform: translateX(-50%);
+    z-index: 0;
+    clip-path: polygon(0 0, 100% 0, 100% calc(50% - 19px), 0 calc(50% - 19px), 0 calc(50% + 19px), 100% calc(50% + 19px), 100% 100%, 0 100%);
   }
 
   .score-label {
