@@ -157,7 +157,14 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       <p>Type a message to start chatting.</p>
     </div>
   </div>
-  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);pointer-events:none;font-size:clamp(60px,12vw,120px);font-weight:900;color:rgba(255,140,0,0.3);font-family:var(--sans);letter-spacing:0.1em;z-index:999;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden">UNDER CONSTRUCTION</div>
+  <!-- Coming Soon Overlay - Remove id="coming-soon-overlay" to disable -->
+  <div id="coming-soon-overlay" style="position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center">
+    <div style="text-align:center;color:var(--text)">
+      <div style="font-size:48px;margin-bottom:12px">🔒</div>
+      <h2 style="font-family:var(--serif);font-size:28px;margin-bottom:8px">Coming Soon</h2>
+      <p style="color:var(--muted);font-size:14px">This feature is under development</p>
+    </div>
+  </div>
 
   <div class="input-bar">
     <textarea id="chatInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
