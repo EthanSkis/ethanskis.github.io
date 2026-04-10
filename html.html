@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="header.css">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;transition:background-color 0.4s ease,color 0.4s ease,border-color 0.4s ease,fill 0.4s ease}
   :root{
@@ -34,12 +35,6 @@
     -webkit-font-smoothing:antialiased;
   }
   .cursor-glow{display:none}
-  /* ── Header ── */
-  header{position:sticky;top:0;z-index:100;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;min-height:52px;gap:16px}
-  .wm{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.15em;color:var(--text);display:flex;align-items:center;gap:10px}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .hdr-r{display:flex;align-items:center;gap:20px}
   .tabs{
     display:flex;gap:2px;background:var(--surface);
     border:1px solid var(--border);border-radius:8px;padding:3px;
@@ -83,25 +78,6 @@
   .btn:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,0.18)}
   .btn-run{background:rgba(155,140,247,0.12);border-color:rgba(155,140,247,0.3);color:var(--purple)}
   .btn-run:hover{background:rgba(155,140,247,0.22);border-color:rgba(155,140,247,0.5);color:#c4b8ff}
-  .menu-btn{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:3px;transition:all 0.2s ease;font-size:0;position:relative}
-  .menu-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
-  .menu-bar{width:14px;height:1.5px;background:currentColor;border-radius:1px}
-  .nav-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);min-width:150px;z-index:100;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity 0.2s,transform 0.2s}
-  .nav-menu.open{opacity:1;transform:translateY(0);pointer-events:auto}
-  .nav-menu .nav-link{opacity:0;transform:translateY(-10px);transition:opacity 0.2s,transform 0.2s}
-  .nav-menu.open .nav-link{opacity:1;transform:translateY(0)}
-  .nav-menu.open .nav-link:nth-child(1){transition-delay:0.03s}
-  .nav-menu.open .nav-link:nth-child(2){transition-delay:0.06s}
-  .nav-menu.open .nav-link:nth-child(3){transition-delay:0.09s}
-  .nav-menu.open .nav-link:nth-child(4){transition-delay:0.12s}
-  .nav-menu.open .nav-link:nth-child(5){transition-delay:0.15s}
-  .nav-menu.open .nav-link:nth-child(6){transition-delay:0.18s}
-  .nav-link{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.05em;transition:color .2s;border:none;border-radius:4px;background:transparent;padding:6px 10px;text-align:left}
-  .nav-link:hover{color:var(--text);background:var(--surface2)}
-  .nav-link.active{color:var(--red);background:rgba(226,75,74,0.15)}
-  #themeToggle{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0 .25rem}
-  #themeToggle:hover{color:var(--red)}
-  .hdr-nav{display:flex;gap:16px;align-items:center}
   /* ── Split ── */
   .split{position:relative;z-index:1;display:flex;flex:1;overflow:hidden}
   /* ── Editor pane ── */
@@ -155,9 +131,6 @@
   .console-entry.error{color:var(--red);background:rgba(226,75,74,0.06)}
   /* ── Mobile ── */
   @media(max-width:600px){
-    header{padding:0 1rem;height:48px}
-    .hdr-nav{display:none}
-    .menu-btn{display:flex}
     .editor-wrap .CodeMirror{font-size:16px}
   }
   @media(max-width:735px){
@@ -206,6 +179,7 @@
     </div>
   </div>
 </header>
+<script src="header.js"></script>
 
 <div style="display:flex;align-items:center;gap:12px;padding:0 2rem;height:48px;background:var(--bar-bg);border-bottom:1px solid var(--border);flex-shrink:0">
   <div class="tabs">
@@ -270,39 +244,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
 
 <script>
-function toggleTheme() {
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  const next = isLight ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', next);
-  document.getElementById('themeToggle').textContent = next === 'light' ? '☾' : '☀';
-  localStorage.setItem('site-theme', next);
-  // Update CodeMirror theme if editors exist
+document.addEventListener('themechange', function(e) {
   if (window.editors) {
-    const newTheme = next === 'light' ? 'eclipse' : 'dracula';
-    Object.values(window.editors).forEach(ed => ed.setOption('theme', newTheme));
-  }
-}
-
-function toggleMenu(e) {
-  e.stopPropagation();
-  const menu = document.getElementById('navMenu');
-  menu.classList.toggle('open');
-}
-
-document.addEventListener('click', function(e) {
-  const menu = document.getElementById('navMenu');
-  const btn = document.querySelector('.menu-btn');
-  if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
-    menu.classList.remove('open');
+    var newTheme = e.detail.theme === 'light' ? 'eclipse' : 'dracula';
+    Object.values(window.editors).forEach(function(ed) { ed.setOption('theme', newTheme); });
   }
 });
-
-(function initTheme() {
-  const saved = localStorage.getItem('site-theme');
-  const theme = saved !== null ? saved : 'light';
-  document.documentElement.setAttribute('data-theme', theme);
-  document.getElementById('themeToggle').textContent = theme === 'light' ? '☾' : '☀';
-})();
 
 (function () {
   // ── Starter code ────────────────────────────────────────
