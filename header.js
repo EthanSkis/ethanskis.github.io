@@ -24,7 +24,7 @@ document.addEventListener('click', function(e) {
 
 (function initTheme() {
   var saved = localStorage.getItem('site-theme');
-  var theme = saved !== null ? saved : 'light';
+  var theme = saved !== null ? saved : 'dark';
   document.documentElement.setAttribute('data-theme', theme);
   var icon = theme === 'light' ? '\u263E' : '\u2600';
   document.querySelectorAll('#themeToggle').forEach(function(el) { el.textContent = icon; });
