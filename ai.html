@@ -157,6 +157,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       <p>Type a message to start chatting.</p>
     </div>
   </div>
+  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);pointer-events:none;font-size:120px;font-weight:900;color:rgba(255,140,0,0.15);font-family:var(--sans);letter-spacing:0.1em;white-space:nowrap;z-index:1">UNDER CONSTRUCTION</div>
 
   <div class="input-bar">
     <textarea id="chatInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
@@ -360,7 +361,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   function clearChat() {
     conversationHistory = [];
     const container = document.getElementById('messages');
-    container.innerHTML = '<div class="welcome" id="welcome"><div class="welcome-icon">AI</div><h2>What can I help with?</h2><p>Connected to your local LM Studio server via Telegram bridge. Type a message to start chatting.</p></div>';
+    container.innerHTML = '<div class="welcome" id="welcome"><div class="welcome-icon">AI</div><h2>What can I help with?</h2><p>Type a message to start chatting.</p></div>';
   }
 </script>
 </body>
