@@ -40,7 +40,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px;flex-shrink:0}
 
 /* ── Chat Layout ── */
-.chat-wrap{flex:1;display:flex;flex-direction:column;max-width:800px;width:100%;margin:0 auto;padding:0 1rem;overflow:hidden}
+.chat-wrap{flex:1;display:flex;flex-direction:column;max-width:800px;width:100%;margin:0 auto;padding:0 1rem;overflow:hidden;position:relative}
 .chat-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0 .75rem;border-bottom:1px solid var(--border);margin-bottom:0;flex-shrink:0}
 .chat-title{font-family:var(--serif);font-size:28px;color:var(--text);letter-spacing:-.02em}
 .chat-actions{display:flex;gap:8px;align-items:center}
@@ -157,8 +157,8 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       <p>Type a message to start chatting.</p>
     </div>
   </div>
-  <!-- Coming Soon Overlay - Remove id="coming-soon-overlay" to disable -->
-  <div id="coming-soon-overlay" style="position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center">
+  <!-- Coming Soon Overlay - Remove this div to disable -->
+  <div id="coming-soon-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:999;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;pointer-events:auto;width:100%;height:100%">
     <div style="text-align:center;color:var(--text)">
       <div style="font-size:48px;margin-bottom:12px">🔒</div>
       <h2 style="font-family:var(--serif);font-size:28px;margin-bottom:8px">Coming Soon</h2>
@@ -166,7 +166,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     </div>
   </div>
 
-  <div class="input-bar">
+  <div class="input-bar" style="position:relative;z-index:1000">
     <textarea id="chatInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
     <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
