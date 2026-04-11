@@ -65,6 +65,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .msg.bot .msg-bubble code{font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px}
 .msg.bot .msg-bubble pre code{background:none;padding:0;border-radius:0}
 .msg.bot .msg-bubble hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+.msg.bot .msg-bubble h1,.msg.bot .msg-bubble h2,.msg.bot .msg-bubble h3{font-family:var(--serif);color:var(--text);font-weight:400;line-height:1.25;margin:18px 0 8px;letter-spacing:-.01em}
+.msg.bot .msg-bubble h1{font-size:26px}
+.msg.bot .msg-bubble h2{font-size:21px}
+.msg.bot .msg-bubble h3{font-size:17px}
+.msg.bot .msg-bubble h1:first-child,.msg.bot .msg-bubble h2:first-child,.msg.bot .msg-bubble h3:first-child{margin-top:0}
 .msg.bot .msg-bubble .tbl{margin:12px 0;width:100%;max-width:100%;overflow:hidden}
 .msg.bot .msg-bubble table{border-collapse:collapse;font-size:13px;width:100%;table-layout:fixed}
 .msg.bot .msg-bubble th,.msg.bot .msg-bubble td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top;overflow-wrap:break-word;word-wrap:break-word;word-break:break-word;hyphens:auto}
@@ -335,6 +340,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       // Horizontal rule: a line of 3+ dashes, asterisks, or underscores
       if (/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
         out.push(stash('<hr>'));
+        i++;
+        continue;
+      }
+
+      // ATX headings: # / ## / ### (h1–h3). Require a space after the hashes.
+      const h = line.match(/^\s*(#{1,3})\s+(.*?)\s*#*\s*$/);
+      if (h) {
+        const level = h[1].length;
+        out.push(stash('<h' + level + '>' + formatInline(h[2]) + '</h' + level + '>'));
         i++;
         continue;
       }
