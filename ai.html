@@ -94,6 +94,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .send-btn:active{transform:scale(.95)}
 .send-btn:disabled{opacity:.4;cursor:not-allowed}
 .send-btn svg{width:18px;height:18px}
+.send-btn .icon-stop{display:none}
+.send-btn.stop .icon-send{display:none}
+.send-btn.stop .icon-stop{display:block}
 
 /* ── Error Banner ── */
 .error-banner{background:var(--red-dim);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);font-family:var(--mono);display:none;margin-bottom:8px;line-height:1.5}
@@ -171,8 +174,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 <div class="chat-bottom-bar">
   <div class="chat-bottom-bar-inner">
     <textarea id="chatInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    <button class="send-btn" id="sendBtn" onclick="handleSendClick()" title="Send">
+      <svg class="icon-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <svg class="icon-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
     </button>
   </div>
 </div>
@@ -203,6 +207,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   const HISTORY_KEY = 'ethAI_chat_history';
   let conversationHistory = [];
   let isGenerating = false;
+  let currentAbortController = null;
+  let discardPartialResponse = false;
+
+  function setSendMode(generating) {
+    const btn = document.getElementById('sendBtn');
+    btn.classList.toggle('stop', generating);
+    btn.title = generating ? 'Stop' : 'Send';
+  }
+
+  function stopGeneration() {
+    if (currentAbortController) {
+      currentAbortController.abort();
+    }
+  }
+
+  function handleSendClick() {
+    if (isGenerating) stopGeneration();
+    else sendMessage();
+  }
 
   // ── Persistence ──
   function saveHistory() {
@@ -417,7 +440,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     if (!text || isGenerating) return;
 
     isGenerating = true;
-    document.getElementById('sendBtn').disabled = true;
+    setSendMode(true);
     input.value = '';
     input.style.height = 'auto';
 
@@ -427,11 +450,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 
     showTyping();
 
+    currentAbortController = new AbortController();
+    let bubble = null;
+    let fullResponse = '';
+
     try {
       const res = await fetch(getServerUrl() + '/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain', 'ngrok-skip-browser-warning': '1' },
-        body: JSON.stringify({ message: text, history: conversationHistory.slice(0, -1) })
+        body: JSON.stringify({ message: text, history: conversationHistory.slice(0, -1) }),
+        signal: currentAbortController.signal
       });
 
       if (!res.ok) {
@@ -441,10 +469,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 
       removeTyping();
 
-      const bubble = addMessage('bot', '');
+      bubble = addMessage('bot', '');
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let fullResponse = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -471,28 +498,38 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
         }
       }
 
-      if (fullResponse) {
-        conversationHistory.push({ role: 'assistant', content: fullResponse });
-        saveHistory();
-        scrollToBottom();
-      }
-
     } catch (err) {
       removeTyping();
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('fetch')) {
+      if (err.name === 'AbortError') {
+        // User stopped — keep whatever partial response arrived, no error banner
+      } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('fetch')) {
         showError('AI is currently offline. Please try again later.');
       } else {
         showError(err.message);
       }
     } finally {
+      if (fullResponse && !discardPartialResponse) {
+        conversationHistory.push({ role: 'assistant', content: fullResponse });
+        saveHistory();
+        scrollToBottom();
+      } else if (bubble && !fullResponse && bubble.parentElement) {
+        // Nothing streamed before abort — remove the empty bot bubble
+        bubble.parentElement.remove();
+      }
+      discardPartialResponse = false;
+      currentAbortController = null;
       isGenerating = false;
-      document.getElementById('sendBtn').disabled = false;
+      setSendMode(false);
       input.focus();
     }
   }
 
   // ── Clear Chat ──
   function clearChat() {
+    if (isGenerating) {
+      discardPartialResponse = true;
+      stopGeneration();
+    }
     conversationHistory = [];
     try { localStorage.removeItem(HISTORY_KEY); } catch {}
     const container = document.getElementById('messages');
