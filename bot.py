@@ -24,9 +24,19 @@ LM_STUDIO_URL = os.environ.get("LM_STUDIO_URL", "http://localhost:1234/v1/chat/c
 FLASK_PORT = int(os.environ.get("FLASK_PORT", 5000))
 SYSTEM_PROMPT = os.environ.get("SYSTEM_PROMPT", "You are a helpful AI assistant.")
 
+# Comma-separated extra origins (e.g. a Cloudflare tunnel or ngrok URL)
+_extra = os.environ.get("ALLOWED_ORIGINS", "")
+ALLOWED_ORIGINS = [
+    "https://ethanskis.github.io",
+    "https://ethgrd.com",
+    "https://www.ethgrd.com",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+] + [o.strip() for o in _extra.split(",") if o.strip()]
+
 # ── Flask App ──────────────────────────────────────────────────────────────────
 app = Flask(__name__)
-CORS(app, origins=["https://ethanskis.github.io", "http://localhost:*", "http://127.0.0.1:*"])
+CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=False)
 
 
 @app.route("/health", methods=["GET"])
