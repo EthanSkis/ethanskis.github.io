@@ -114,6 +114,11 @@ def chat():
                 timeout=120,
             )
             r.raise_for_status()
+            # LM Studio returns `Content-Type: text/event-stream` without a
+            # charset, which makes `requests` default to ISO-8859-1 and mangle
+            # multi-byte UTF-8 sequences (e.g. emojis) when decoding. Force
+            # UTF-8 so the incremental decoder reassembles them correctly.
+            r.encoding = "utf-8"
 
             for line in r.iter_lines(decode_unicode=True):
                 if not line or not line.startswith("data: "):
