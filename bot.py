@@ -37,23 +37,33 @@ ALLOWED_ORIGINS = {
 app = Flask(__name__)
 
 
+@app.before_request
+def handle_preflight():
+    """Intercept OPTIONS before routing so preflights can never 404."""
+    if request.method != "OPTIONS":
+        return
+    origin = request.headers.get("Origin", "")
+    resp = Response(status=204)
+    if origin in ALLOWED_ORIGINS:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+    resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    resp.headers["Access-Control-Max-Age"] = "3600"
+    return resp
+
+
 @app.after_request
 def add_cors(response):
-    """Manually attach CORS headers so OPTIONS preflights are never 404'd."""
+    """Add CORS headers to all non-OPTIONS responses."""
     origin = request.headers.get("Origin", "")
     if origin in ALLOWED_ORIGINS:
         response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-        response.headers["Access-Control-Max-Age"] = "3600"
     return response
 
 
-@app.route("/health", methods=["GET", "OPTIONS"])
+@app.route("/health", methods=["GET"])
 def health():
     """Health check endpoint for the web UI status indicator."""
-    if request.method == "OPTIONS":
-        return Response(status=204)
     try:
         r = requests.get(
             LM_STUDIO_URL.replace("/v1/chat/completions", "/v1/models"),
@@ -66,15 +76,13 @@ def health():
     return jsonify({"status": "ok", "lm_studio": lm_ok}), 200
 
 
-@app.route("/chat", methods=["POST", "OPTIONS"])
+@app.route("/chat", methods=["POST"])
 def chat():
     """
     Accepts { message: string, history: array } from ai.html.
     Streams the LM Studio response back as Server-Sent Events.
     Also logs the exchange to Telegram.
     """
-    if request.method == "OPTIONS":
-        return Response(status=204)
     data = request.get_json(force=True)
     user_msg = data.get("message", "").strip()
     history = data.get("history", [])
