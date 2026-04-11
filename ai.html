@@ -270,7 +270,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   async function checkServer() {
     const dot = document.getElementById('statusDot');
     try {
-      const r = await fetch(getServerUrl() + '/health', { signal: AbortSignal.timeout(4000) });
+      const r = await fetch(getServerUrl() + '/health', { signal: AbortSignal.timeout(4000), headers: { 'ngrok-skip-browser-warning': '1' } });
       if (r.ok) { dot.className = 'status-dot connected'; dot.title = 'AI online'; }
       else throw new Error();
     } catch {
@@ -383,7 +383,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     try {
       const res = await fetch(getServerUrl() + '/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
+        headers: { 'Content-Type': 'text/plain', 'ngrok-skip-browser-warning': '1' },
         body: JSON.stringify({ message: text, history: conversationHistory.slice(0, -1) })
       });
 
