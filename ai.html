@@ -36,12 +36,14 @@
   --header-accent:#2a7de0;--header-accent-dim:rgba(42,125,224,0.15);
 }
 html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
-footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px;flex-shrink:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;padding-top:124px;padding-bottom:88px}
 
 /* ── Chat Layout ── */
-.chat-wrap{flex:1;display:flex;flex-direction:column;max-width:800px;width:100%;margin:0 auto;padding:0 1rem;overflow:hidden;position:relative}
-.chat-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0 .75rem;border-bottom:1px solid var(--border);margin-bottom:0;flex-shrink:0}
+.chat-top-bar{position:fixed;top:52px;left:0;right:0;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:50}
+.chat-top-bar-inner{max-width:800px;margin:0 auto;padding:1rem;display:flex;align-items:center;justify-content:space-between}
+.chat-bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bar-bg);backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:50}
+.chat-bottom-bar-inner{max-width:800px;margin:0 auto;padding:.75rem 1rem 1rem;display:flex;gap:8px;align-items:flex-end}
+.chat-wrap{max-width:800px;width:100%;margin:0 auto;padding:0 1rem;position:relative}
 .chat-title{font-family:var(--serif);font-size:28px;color:var(--text);letter-spacing:-.02em}
 .chat-actions{display:flex;gap:8px;align-items:center}
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .3s}
@@ -51,8 +53,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 .clear-btn:hover{color:var(--text);border-color:var(--blue)}
 
 /* ── Messages ── */
-.messages{flex:1;overflow-y:auto;padding:1rem 0;display:flex;flex-direction:column;gap:12px;scrollbar-width:none;-ms-overflow-style:none}
-.messages::-webkit-scrollbar{display:none}
+.messages{padding:1rem 0;display:flex;flex-direction:column;gap:12px}
 .msg{display:flex;gap:10px;max-width:85%;animation:msgIn .25s ease}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
 .msg.bot{align-self:flex-start}
@@ -77,16 +78,15 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 
 /* ── Welcome ── */
-.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:2rem}
+.welcome{min-height:calc(100vh - 260px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:2rem}
 .welcome-icon{font-size:40px;opacity:.6}
 .welcome h2{font-family:var(--serif);font-size:24px;color:var(--text);font-weight:400}
 .welcome p{font-size:13px;color:var(--muted);max-width:400px;line-height:1.6}
 
 /* ── Input ── */
-.input-bar{padding:.75rem 0 1rem;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:8px;align-items:flex-end}
-.input-bar textarea{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);font-family:var(--sans);resize:none;outline:none;line-height:1.5;max-height:120px;min-height:42px;transition:border-color .15s}
-.input-bar textarea:focus{border-color:var(--blue)}
-.input-bar textarea::placeholder{color:var(--muted)}
+.chat-bottom-bar-inner textarea{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);font-family:var(--sans);resize:none;outline:none;line-height:1.5;max-height:120px;min-height:42px;transition:border-color .15s}
+.chat-bottom-bar-inner textarea:focus{border-color:var(--blue)}
+.chat-bottom-bar-inner textarea::placeholder{color:var(--muted)}
 .send-btn{width:42px;height:42px;border-radius:10px;border:none;background:var(--blue);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .15s;flex-shrink:0}
 .send-btn:hover{opacity:.85}
 .send-btn:active{transform:scale(.95)}
@@ -99,11 +99,14 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
 /* ── Mobile ── */
 @media(max-width:600px){
-  .chat-header{padding:.75rem 0 .5rem}
+  body{padding-top:108px;padding-bottom:84px}
+  .chat-top-bar{top:48px}
+  .chat-top-bar-inner{padding:.75rem 1rem}
+  .chat-bottom-bar-inner{padding:.5rem 1rem .75rem}
   .chat-title{font-size:22px}
   .msg{max-width:92%}
+  .welcome{min-height:calc(100vh - 220px)}
   .welcome h2{font-size:20px}
-  footer{padding:12px 1rem;font-size:10px}
 }
 </style>
 </head>
@@ -140,15 +143,17 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 </header>
 <script src="header.js"></script>
 
-<div class="chat-wrap">
-  <div class="chat-header">
+<div class="chat-top-bar">
+  <div class="chat-top-bar-inner">
     <h1 class="chat-title">ethAI</h1>
     <div class="chat-actions">
       <div class="status-dot" id="statusDot" title="Server status"></div>
       <button class="clear-btn" onclick="clearChat()">Clear</button>
     </div>
   </div>
+</div>
 
+<div class="chat-wrap">
   <div class="error-banner" id="errorBanner"></div>
 
   <div class="messages" id="messages">
@@ -158,20 +163,16 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       <p>Type a message to start chatting.</p>
     </div>
   </div>
+</div>
 
-  <div class="input-bar">
+<div class="chat-bottom-bar">
+  <div class="chat-bottom-bar-inner">
     <textarea id="chatInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
     <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
   </div>
 </div>
-
-
-<footer>
-  <span>AI Chat</span>
-  <span>&copy; 2025 Ethan Gardner</span>
-</footer>
 
 <script>
   const AI_BOT_TOKEN = '__AI_TELEGRAM_BOT_TOKEN__';
@@ -196,11 +197,37 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     _serverUrl = CI_URL;
   }
 
+  const HISTORY_KEY = 'ethAI_chat_history';
   let conversationHistory = [];
   let isGenerating = false;
 
+  // ── Persistence ──
+  function saveHistory() {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(conversationHistory)); } catch {}
+  }
+
+  function restoreHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (!Array.isArray(saved) || saved.length === 0) return;
+      conversationHistory = saved;
+      for (const msg of saved) {
+        const role = msg.role === 'assistant' ? 'bot' : 'user';
+        addMessage(role, msg.content, { skipPersist: true });
+      }
+      scrollToBottom();
+    } catch {}
+  }
+
+  function scrollToBottom() {
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' });
+  }
+
   // ── Boot ──
   (async () => {
+    restoreHistory();
     await initServerUrl();
     checkServer();
   })();
@@ -254,7 +281,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     return html;
   }
 
-  function addMessage(role, text) {
+  function addMessage(role, text, opts) {
     const welcome = document.getElementById('welcome');
     if (welcome) welcome.remove();
 
@@ -277,7 +304,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     div.appendChild(avatar);
     div.appendChild(bubble);
     container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+    if (!(opts && opts.skipPersist)) scrollToBottom();
     return bubble;
   }
 
@@ -288,7 +315,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     div.id = 'typingIndicator';
     div.innerHTML = '<div class="msg-avatar">AI</div><div class="typing-dots"><span></span><span></span><span></span></div>';
     container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+    scrollToBottom();
   }
 
   function removeTyping() {
@@ -316,6 +343,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
     addMessage('user', text);
     conversationHistory.push({ role: 'user', content: text });
+    saveHistory();
 
     showTyping();
 
@@ -353,7 +381,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
               if (parsed.token) {
                 fullResponse += parsed.token;
                 bubble.innerHTML = formatBotText(fullResponse);
-                document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+                scrollToBottom();
               }
               if (parsed.error) {
                 showError(parsed.error);
@@ -365,6 +393,8 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
       if (fullResponse) {
         conversationHistory.push({ role: 'assistant', content: fullResponse });
+        saveHistory();
+        scrollToBottom();
       }
 
     } catch (err) {
@@ -384,6 +414,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   // ── Clear Chat ──
   function clearChat() {
     conversationHistory = [];
+    try { localStorage.removeItem(HISTORY_KEY); } catch {}
     const container = document.getElementById('messages');
     container.innerHTML = '<div class="welcome" id="welcome"><div class="welcome-icon">AI</div><h2>What can I help with?</h2><p>Type a message to start chatting.</p></div>';
   }
