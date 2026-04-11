@@ -212,16 +212,36 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
   const AI_BOT_TOKEN = '__AI_TELEGRAM_BOT_TOKEN__';
   const CHAT_ID = '__TELEGRAM_CHAT_ID__';
 
-  // Built-in tunnel URL injected by CI; falls back to localhost for development.
-  const BUILT_IN_URL = '__TUNNEL_URL__';
+  // Resolved at startup: localStorage override → tunnel.json → CI-injected fallback
+  const CI_URL = '__TUNNEL_URL__';
+  let _serverUrl = CI_URL;
 
-  function getServerUrl() {
+  function getServerUrl() { return _serverUrl; }
+
+  async function initServerUrl() {
+    // 1. localStorage override (set via the gear modal)
     const override = localStorage.getItem('lm_server_url');
-    return (override && override.trim()) ? override.trim() : BUILT_IN_URL;
+    if (override && override.trim()) { _serverUrl = override.trim(); return; }
+    // 2. tunnel.json — update this file to change the active URL without redeploying
+    try {
+      const r = await fetch('/tunnel.json?_=' + Date.now());
+      if (r.ok) {
+        const d = await r.json();
+        if (d.url && d.url.trim()) { _serverUrl = d.url.trim(); return; }
+      }
+    } catch {}
+    // 3. Fall back to CI-injected URL
+    _serverUrl = CI_URL;
   }
 
   let conversationHistory = [];
   let isGenerating = false;
+
+  // ── Boot ──
+  (async () => {
+    await initServerUrl();
+    checkServer();
+  })();
 
   // ── Settings Modal ──
   function openSettings() {
@@ -258,7 +278,6 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       dot.title = 'AI offline';
     }
   }
-  checkServer();
   setInterval(checkServer, 15000);
 
   // ── Auto-resize textarea ──
