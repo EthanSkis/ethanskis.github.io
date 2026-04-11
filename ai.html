@@ -54,13 +54,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 
 /* ── Messages ── */
 .messages{padding:1rem 0;display:flex;flex-direction:column;gap:20px}
-.msg{display:flex;gap:10px;animation:msgIn .25s ease}
-.msg.user{align-self:flex-end;flex-direction:row-reverse;max-width:85%}
-.msg.bot{align-self:stretch;width:100%;max-width:100%;flex-direction:column;gap:8px}
+.msg{display:flex;animation:msgIn .25s ease}
+.msg.user{align-self:flex-end;max-width:85%}
+.msg.bot{align-self:stretch;width:100%;max-width:100%}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;font-family:var(--mono);font-weight:500}
-.msg.user .msg-avatar{background:var(--blue);color:#fff}
-.msg.bot .msg-avatar{background:var(--surface2);color:var(--blue);border:1px solid var(--border)}
 .msg-bubble{font-size:13.5px;line-height:1.65;word-break:break-word}
 .msg.user .msg-bubble{padding:10px 14px;border-radius:12px;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
 .msg.bot .msg-bubble{color:var(--text);width:100%}
@@ -75,8 +72,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .msg.bot .msg-bubble tbody tr:nth-child(even) td{background:var(--surface)}
 
 /* ── Typing Indicator ── */
-.typing{display:flex;flex-direction:column;gap:8px;align-self:stretch;width:100%;animation:msgIn .25s ease}
-.typing .msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;font-family:var(--mono);font-weight:500;background:var(--surface2);color:var(--blue);border:1px solid var(--border)}
+.typing{display:flex;align-self:stretch;width:100%;animation:msgIn .25s ease}
 .typing-dots{display:inline-flex;gap:4px;padding:6px 0;align-self:flex-start}
 .typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bounce 1.4s infinite}
 .typing-dots span:nth-child(2){animation-delay:.2s}
@@ -378,10 +374,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     const div = document.createElement('div');
     div.className = 'msg ' + role;
 
-    const avatar = document.createElement('div');
-    avatar.className = 'msg-avatar';
-    avatar.textContent = role === 'user' ? 'U' : 'AI';
-
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
     if (role === 'user') {
@@ -390,7 +382,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       bubble.innerHTML = formatBotText(text);
     }
 
-    div.appendChild(avatar);
     div.appendChild(bubble);
     container.appendChild(div);
     if (!(opts && opts.skipPersist)) scrollToBottom();
@@ -402,7 +393,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     const div = document.createElement('div');
     div.className = 'typing';
     div.id = 'typingIndicator';
-    div.innerHTML = '<div class="msg-avatar">AI</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+    div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
     container.appendChild(div);
     scrollToBottom();
   }
