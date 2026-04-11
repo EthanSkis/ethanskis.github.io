@@ -56,16 +56,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .messages{padding:1rem 0;display:flex;flex-direction:column;gap:20px}
 .msg{display:flex;animation:msgIn .25s ease}
 .msg.user{align-self:flex-end;max-width:85%}
-.msg.bot{align-self:stretch;width:100%;max-width:100%}
+.msg.bot{align-self:stretch;width:100%;max-width:100%;min-width:0}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .msg-bubble{font-size:13.5px;line-height:1.65;word-break:break-word}
 .msg.user .msg-bubble{padding:10px 14px;border-radius:12px;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
-.msg.bot .msg-bubble{color:var(--text);width:100%}
+.msg.bot .msg-bubble{color:var(--text);width:100%;min-width:0;max-width:100%}
 .msg.bot .msg-bubble pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:8px 0;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.5}
 .msg.bot .msg-bubble code{font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px}
 .msg.bot .msg-bubble pre code{background:none;padding:0;border-radius:0}
 .msg.bot .msg-bubble hr{border:none;border-top:1px solid var(--border);margin:16px 0}
-.msg.bot .msg-bubble .tbl{margin:12px 0;max-width:100%;overflow-x:auto}
+.msg.bot .msg-bubble .tbl{margin:12px 0;width:100%;max-width:100%;overflow:hidden}
 .msg.bot .msg-bubble table{border-collapse:collapse;font-size:13px;width:100%;table-layout:fixed}
 .msg.bot .msg-bubble th,.msg.bot .msg-bubble td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top;overflow-wrap:break-word;word-wrap:break-word;word-break:break-word;hyphens:auto}
 .msg.bot .msg-bubble th{background:var(--surface2);font-weight:500;color:var(--text)}
