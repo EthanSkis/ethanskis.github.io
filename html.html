@@ -286,10 +286,17 @@ document.addEventListener('themechange', function(e) {
     value,
   });
 
+  const STORAGE_KEY = 'html-editor-code';
+  const getSavedCode = () => localStorage.getItem(STORAGE_KEY) || STARTER_HTML;
+
   const editors = window.editors = {
-    html: CodeMirror.fromTextArea(document.getElementById('cm-html'), cmOpts('htmlmixed', STARTER_HTML)),
+    html: CodeMirror.fromTextArea(document.getElementById('cm-html'), cmOpts('htmlmixed', getSavedCode())),
   };
 
+  // ── Auto-save to localStorage ──────────────────────────────
+  const saveCode = () => {
+    localStorage.setItem(STORAGE_KEY, editors.html.getValue());
+  };
 
   // ── Compile / preview ────────────────────────────────────
   const preview = document.getElementById('preview');
@@ -313,7 +320,10 @@ document.addEventListener('themechange', function(e) {
     debounceTimer = setTimeout(compile, 500);
   }
 
-  editors.html.on('change', scheduleRun);
+  editors.html.on('change', () => {
+    scheduleRun();
+    saveCode();
+  });
 
   document.getElementById('runBtn').addEventListener('click', compile);
 
