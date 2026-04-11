@@ -47,6 +47,8 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .3s}
 .status-dot.connected{background:var(--green)}
 .status-dot.error{background:var(--red)}
+.icon-btn{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;height:30px;width:30px}
+.icon-btn:hover{color:var(--text);border-color:var(--blue)}
 .clear-btn{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;letter-spacing:.04em;transition:all .2s}
 .clear-btn:hover{color:var(--text);border-color:var(--blue)}
 
@@ -95,6 +97,23 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
 /* ── Error Banner ── */
 .error-banner{background:var(--red-dim);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);font-family:var(--mono);display:none;margin-bottom:8px;line-height:1.5}
+
+/* ── Settings Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:1.5rem;width:100%;max-width:440px}
+.modal h3{font-family:var(--serif);font-size:20px;margin-bottom:.25rem;color:var(--text);font-weight:400}
+.modal .modal-sub{font-size:12px;color:var(--muted);margin-bottom:1.25rem;line-height:1.5}
+.modal label{display:block;font-size:10px;color:var(--muted2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.09em;margin-bottom:5px}
+.modal input[type="url"]{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);font-family:var(--mono);outline:none;transition:border-color .15s}
+.modal input[type="url"]:focus{border-color:var(--blue)}
+.modal input[type="url"]::placeholder{color:var(--muted)}
+.modal-hint{font-size:11px;color:var(--muted);margin-top:6px;margin-bottom:1.25rem;line-height:1.5}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:.25rem}
+.btn-primary{font-family:var(--mono);font-size:12px;background:var(--blue);color:#fff;border:none;border-radius:6px;padding:7px 18px;cursor:pointer;transition:opacity .15s;letter-spacing:.02em}
+.btn-primary:hover{opacity:.85}
+.btn-secondary{font-family:var(--mono);font-size:12px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:7px 14px;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{color:var(--text);border-color:var(--border2)}
 
 /* ── Mobile ── */
 @media(max-width:600px){
@@ -145,6 +164,9 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     <div class="chat-actions">
       <div class="status-dot" id="statusDot" title="Server status"></div>
       <button class="clear-btn" onclick="clearChat()">Clear</button>
+      <button class="icon-btn" onclick="openSettings()" title="Configure server endpoint" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
   </div>
 
@@ -157,20 +179,27 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       <p>Type a message to start chatting.</p>
     </div>
   </div>
-  <!-- Coming Soon Overlay - Remove this div to disable -->
-  <div id="coming-soon-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:10;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;pointer-events:auto;width:100%;height:100%">
-    <div style="text-align:center;color:var(--text)">
-      <div style="font-size:48px;margin-bottom:12px">🔒</div>
-      <h2 style="font-family:var(--serif);font-size:28px;margin-bottom:8px;color:#fff">Coming Soon</h2>
-      <p style="color:#fff;font-size:14px">This feature is under development</p>
-    </div>
-  </div>
 
   <div class="input-bar">
     <textarea id="chatInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
     <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal" onclick="closeSettingsOnBg(event)">
+  <div class="modal">
+    <h3>Server Settings</h3>
+    <p class="modal-sub">Override the API endpoint for this browser session. Useful for local development or when the default tunnel changes.</p>
+    <label for="serverUrlInput">API Endpoint URL</label>
+    <input type="url" id="serverUrlInput" placeholder="https://your-tunnel.ngrok-free.app" autocomplete="off" spellcheck="false" />
+    <p class="modal-hint">Point this to your tunnel URL (ngrok, Cloudflare, etc.) that forwards to <code style="font-family:var(--mono);font-size:11px">localhost:5000</code>. Clear to restore the built-in default.</p>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeSettings()">Cancel</button>
+      <button class="btn-primary" onclick="saveSettings()">Save & reconnect</button>
+    </div>
   </div>
 </div>
 
@@ -182,21 +211,51 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 <script>
   const AI_BOT_TOKEN = '__AI_TELEGRAM_BOT_TOKEN__';
   const CHAT_ID = '__TELEGRAM_CHAT_ID__';
-  const SERVER_URL = 'http://localhost:5000';
+
+  // Built-in tunnel URL injected by CI; falls back to localhost for development.
+  const BUILT_IN_URL = '__TUNNEL_URL__';
+
+  function getServerUrl() {
+    const override = localStorage.getItem('lm_server_url');
+    return (override && override.trim()) ? override.trim() : BUILT_IN_URL;
+  }
 
   let conversationHistory = [];
   let isGenerating = false;
+
+  // ── Settings Modal ──
+  function openSettings() {
+    document.getElementById('serverUrlInput').value = localStorage.getItem('lm_server_url') || '';
+    document.getElementById('settingsModal').classList.add('open');
+    setTimeout(() => document.getElementById('serverUrlInput').focus(), 50);
+  }
+  function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('open');
+  }
+  function closeSettingsOnBg(e) {
+    if (e.target === document.getElementById('settingsModal')) closeSettings();
+  }
+  function saveSettings() {
+    const url = document.getElementById('serverUrlInput').value.trim();
+    if (url) {
+      localStorage.setItem('lm_server_url', url);
+    } else {
+      localStorage.removeItem('lm_server_url');
+    }
+    closeSettings();
+    checkServer();
+  }
 
   // ── Health Check ──
   async function checkServer() {
     const dot = document.getElementById('statusDot');
     try {
-      const r = await fetch(SERVER_URL + '/health', { signal: AbortSignal.timeout(3000) });
-      if (r.ok) { dot.className = 'status-dot connected'; dot.title = 'Server connected'; }
+      const r = await fetch(getServerUrl() + '/health', { signal: AbortSignal.timeout(4000) });
+      if (r.ok) { dot.className = 'status-dot connected'; dot.title = 'AI online'; }
       else throw new Error();
     } catch {
       dot.className = 'status-dot error';
-      dot.title = 'Server offline — run bot.py locally';
+      dot.title = 'AI offline';
     }
   }
   checkServer();
@@ -303,7 +362,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     showTyping();
 
     try {
-      const res = await fetch(SERVER_URL + '/chat', {
+      const res = await fetch(getServerUrl() + '/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, history: conversationHistory.slice(0, -1) })
@@ -352,8 +411,8 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 
     } catch (err) {
       removeTyping();
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-        showError('Cannot reach server. Make sure bot.py is running on localhost:5000');
+      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('fetch')) {
+        showError('AI is currently offline. Please try again later.');
       } else {
         showError(err.message);
       }
