@@ -221,9 +221,15 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 /* ── VERY SMALL (≤380px) ── */
 @media(max-width:380px){
   .hhed{font-size:22px}
-  .pill{max-width:130px}
+  .pill{max-width:none}
   .metrics{grid-template-columns:repeat(5,120px)}
   .nav-links{display:none}
+  /* header bar adjustments */
+  body > div[style*="display:flex"] {
+    padding:0 1rem !important;
+    gap:8px !important;
+    flex-wrap:wrap !important;
+  }
 }
 </style>
 </head>
