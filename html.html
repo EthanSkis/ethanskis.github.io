@@ -188,8 +188,6 @@
 <div style="display:flex;align-items:center;gap:12px;padding:0 2rem;height:48px;background:var(--bar-bg);border-bottom:1px solid var(--border);flex-shrink:0">
   <div class="tabs">
     <button class="tab active" data-lang="html">HTML</button>
-    <button class="tab" data-lang="css">CSS</button>
-    <button class="tab" data-lang="js">JS</button>
   </div>
 
   <div class="spacer"></div>
@@ -214,12 +212,6 @@
   <div class="editor-pane" id="editorPane">
     <div class="editor-wrap active" id="wrap-html">
       <textarea id="cm-html"></textarea>
-    </div>
-    <div class="editor-wrap" id="wrap-css">
-      <textarea id="cm-css"></textarea>
-    </div>
-    <div class="editor-wrap" id="wrap-js">
-      <textarea id="cm-js"></textarea>
     </div>
   </div>
 
@@ -257,52 +249,25 @@ document.addEventListener('themechange', function(e) {
 
 (function () {
   // ── Starter code ────────────────────────────────────────
-  const STARTER_HTML = `<h1>Hello, World!</h1>
-<p>Edit the <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JS</strong> tabs — the preview updates live.</p>
-<button onclick="greet()">Click me</button>`;
-
-  const STARTER_CSS = `body {
-  font-family: system-ui, sans-serif;
-  background: #0d0d1a;
-  color: #f0eeff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  gap: 18px;
-  margin: 0;
-}
-
-h1 {
-  font-size: 2.2rem;
-  color: #a78bfa;
-  letter-spacing: -0.5px;
-}
-
-p { color: rgba(240, 238, 255, 0.65); max-width: 360px; text-align: center; }
-
-button {
-  padding: 10px 28px;
-  background: linear-gradient(135deg, #7c3aed, #a78bfa);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-button:hover { opacity: 0.85; transform: translateY(-1px); }
-button:active { transform: translateY(0); }`;
-
-  const STARTER_JS = `function greet() {
-  const names = ['World', 'Developer', 'Creator', 'Builder'];
-  const name = names[Math.floor(Math.random() * names.length)];
-  document.querySelector('h1').textContent = \`Hello, \${name}!\`;
-  console.log('Greeted:', name);
-}`;
+  const STARTER_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Page</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+<h1>Hello, World!</h1>
+<p>Edit the HTML — the preview updates live.</p>
+</body>
+</html>`;
 
   // ── CodeMirror instances ─────────────────────────────────
   const getTheme = () => {
@@ -323,64 +288,14 @@ button:active { transform: translateY(0); }`;
 
   const editors = window.editors = {
     html: CodeMirror.fromTextArea(document.getElementById('cm-html'), cmOpts('htmlmixed', STARTER_HTML)),
-    css:  CodeMirror.fromTextArea(document.getElementById('cm-css'),  cmOpts('css', STARTER_CSS)),
-    js:   CodeMirror.fromTextArea(document.getElementById('cm-js'),   cmOpts('javascript', STARTER_JS)),
   };
 
-  // ── Tab switching ────────────────────────────────────────
-  let activeTab = 'html';
-
-  function setActiveTab(lang) {
-    activeTab = lang;
-    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.lang === lang));
-    ['html', 'css', 'js'].forEach(l => {
-      document.getElementById('wrap-' + l).classList.toggle('active', l === lang);
-    });
-    editors[lang].refresh();
-  }
-
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => setActiveTab(btn.dataset.lang));
-  });
 
   // ── Compile / preview ────────────────────────────────────
   const preview = document.getElementById('preview');
 
   function buildDoc() {
-    const html = editors.html.getValue();
-    const css  = editors.css.getValue();
-    const js   = editors.js.getValue();
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>${css}</style>
-</head>
-<body>
-${html}
-<script>
-(function(){
-  var _oe = window.onerror;
-  window.onerror = function(msg, src, line, col, err) {
-    parent.postMessage({_cm:'error', msg: String(msg), line: line, col: col}, '*');
-    return true;
-  };
-  ['log','warn','error','info'].forEach(function(m){
-    var orig = console[m].bind(console);
-    console[m] = function(){
-      var args = Array.prototype.slice.call(arguments);
-      parent.postMessage({_cm: m, msg: args.map(function(a){ return typeof a === 'object' ? JSON.stringify(a) : String(a); }).join(' ')}, '*');
-      orig.apply(console, args);
-    };
-  });
-})();
-<\/script>
-<script>
-${js}
-<\/script>
-</body>
-</html>`;
+    return editors.html.getValue();
   }
 
   function compile() {
@@ -398,7 +313,7 @@ ${js}
     debounceTimer = setTimeout(compile, 500);
   }
 
-  Object.values(editors).forEach(ed => ed.on('change', scheduleRun));
+  editors.html.on('change', scheduleRun);
 
   document.getElementById('runBtn').addEventListener('click', compile);
 
@@ -472,7 +387,7 @@ ${js}
       const pct = Math.min(Math.max(((e.clientX - rect.left) / rect.width) * 100, 15), 80);
       editorPane.style.width = pct + '%';
     }
-    Object.values(editors).forEach(ed => ed.refresh());
+    editors.html.refresh();
   });
 
   window.addEventListener('mouseup', function () {
@@ -500,7 +415,7 @@ ${js}
       const pct = Math.min(Math.max(((touch.clientX - rect.left) / rect.width) * 100, 15), 80);
       editorPane.style.width = pct + '%';
     }
-    Object.values(editors).forEach(ed => ed.refresh());
+    editors.html.refresh();
   }, { passive: true });
 
   window.addEventListener('touchend', function () {
