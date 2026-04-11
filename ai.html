@@ -67,6 +67,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .msg.bot .msg-bubble pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:8px 0;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.5}
 .msg.bot .msg-bubble code{font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px}
 .msg.bot .msg-bubble pre code{background:none;padding:0;border-radius:0}
+.msg.bot .msg-bubble hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+.msg.bot .msg-bubble .tbl{overflow-x:auto;margin:12px 0}
+.msg.bot .msg-bubble table{border-collapse:collapse;font-size:13px}
+.msg.bot .msg-bubble th,.msg.bot .msg-bubble td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top}
+.msg.bot .msg-bubble th{background:var(--surface2);font-weight:500;color:var(--text)}
+.msg.bot .msg-bubble tbody tr:nth-child(even) td{background:var(--surface)}
 
 /* ── Typing Indicator ── */
 .typing{display:flex;flex-direction:column;gap:8px;align-self:stretch;width:100%;animation:msgIn .25s ease}
@@ -267,18 +273,100 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   }
 
   function formatBotText(text) {
-    // Code blocks
-    let html = text.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_, lang, code) {
-      return '<pre><code>' + escapeHtml(code.trim()) + '</code></pre>';
+    // Block-level elements are stashed behind opaque placeholders so
+    // later inline/line-break passes can't mangle their HTML.
+    const blocks = [];
+    const stash = (html) => {
+      const i = blocks.length;
+      blocks.push(html);
+      return '\u0000BLK' + i + '\u0000';
+    };
+
+    // 1. Fenced code blocks
+    text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_, lang, code) {
+      return stash('<pre><code>' + escapeHtml(code.trim()) + '</code></pre>');
     });
-    // Inline code
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    // Bold
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    // Italic
-    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    // Line breaks
+
+    // Inline formatter (reused for table cells and the main pass)
+    const formatInline = (s) =>
+      s.replace(/`([^`]+)`/g, '<code>$1</code>')
+       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+       .replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+    // 2. Line-based pass: horizontal rules + GFM pipe tables
+    const parseRow = (line) => {
+      let s = line.trim();
+      if (s.startsWith('|')) s = s.slice(1);
+      if (s.endsWith('|')) s = s.slice(0, -1);
+      return s.split('|').map(c => c.trim());
+    };
+    const parseAligns = (line) => parseRow(line).map(cell => {
+      const l = cell.startsWith(':'), r = cell.endsWith(':');
+      if (l && r) return 'center';
+      if (r) return 'right';
+      if (l) return 'left';
+      return null;
+    });
+
+    const lines = text.split('\n');
+    const out = [];
+    for (let i = 0; i < lines.length;) {
+      const line = lines[i];
+
+      // Horizontal rule: a line of 3+ dashes, asterisks, or underscores
+      if (/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+        out.push(stash('<hr>'));
+        i++;
+        continue;
+      }
+
+      // GFM pipe table: header row followed by a separator row
+      if (
+        /^\s*\|/.test(line) &&
+        i + 1 < lines.length &&
+        /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$/.test(lines[i + 1])
+      ) {
+        const header = parseRow(line);
+        const aligns = parseAligns(lines[i + 1]);
+        i += 2;
+        const rows = [];
+        while (i < lines.length && /^\s*\|/.test(lines[i])) {
+          rows.push(parseRow(lines[i]));
+          i++;
+        }
+        const cellStyle = (idx) => aligns[idx] ? ' style="text-align:' + aligns[idx] + '"' : '';
+        let t = '<div class="tbl"><table><thead><tr>';
+        header.forEach((h, idx) => { t += '<th' + cellStyle(idx) + '>' + formatInline(h) + '</th>'; });
+        t += '</tr></thead><tbody>';
+        rows.forEach(row => {
+          t += '<tr>';
+          row.forEach((c, idx) => { t += '<td' + cellStyle(idx) + '>' + formatInline(c) + '</td>'; });
+          t += '</tr>';
+        });
+        t += '</tbody></table></div>';
+        out.push(stash(t));
+        continue;
+      }
+
+      out.push(line);
+      i++;
+    }
+
+    let html = out.join('\n');
+
+    // 3. Inline formatting on remaining text
+    html = formatInline(html);
+
+    // 4. Line breaks
     html = html.replace(/\n/g, '<br>');
+
+    // 5. Strip <br> adjacent to block placeholders — their own margins handle spacing
+    html = html.replace(/(?:<br>\s*)+(\u0000BLK\d+\u0000)/g, '$1');
+    html = html.replace(/(\u0000BLK\d+\u0000)(?:\s*<br>)+/g, '$1');
+
+    // 6. Restore stashed block HTML
+    html = html.replace(/\u0000BLK(\d+)\u0000/g, (_, idx) => blocks[idx]);
+
     return html;
   }
 
