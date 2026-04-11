@@ -15,7 +15,6 @@ import json
 import threading
 import requests
 from flask import Flask, request, Response, jsonify
-from flask_cors import CORS
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 TELEGRAM_BOT_TOKEN = os.environ.get("AI_TELEGRAM_BOT_TOKEN", "")
@@ -24,24 +23,37 @@ LM_STUDIO_URL = os.environ.get("LM_STUDIO_URL", "http://localhost:1234/v1/chat/c
 FLASK_PORT = int(os.environ.get("FLASK_PORT", 5000))
 SYSTEM_PROMPT = os.environ.get("SYSTEM_PROMPT", "You are a helpful AI assistant.")
 
-# Comma-separated extra origins (e.g. a Cloudflare tunnel or ngrok URL)
+# Comma-separated extra origins via env var
 _extra = os.environ.get("ALLOWED_ORIGINS", "")
-ALLOWED_ORIGINS = [
+ALLOWED_ORIGINS = {
     "https://ethanskis.github.io",
     "https://ethgrd.com",
     "https://www.ethgrd.com",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
-] + [o.strip() for o in _extra.split(",") if o.strip()]
+} | {o.strip() for o in _extra.split(",") if o.strip()}
 
 # ── Flask App ──────────────────────────────────────────────────────────────────
 app = Flask(__name__)
-CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=False)
 
 
-@app.route("/health", methods=["GET"])
+@app.after_request
+def add_cors(response):
+    """Manually attach CORS headers so OPTIONS preflights are never 404'd."""
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        response.headers["Access-Control-Max-Age"] = "3600"
+    return response
+
+
+@app.route("/health", methods=["GET", "OPTIONS"])
 def health():
     """Health check endpoint for the web UI status indicator."""
+    if request.method == "OPTIONS":
+        return Response(status=204)
     try:
         r = requests.get(
             LM_STUDIO_URL.replace("/v1/chat/completions", "/v1/models"),
@@ -54,13 +66,15 @@ def health():
     return jsonify({"status": "ok", "lm_studio": lm_ok}), 200
 
 
-@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
     """
     Accepts { message: string, history: array } from ai.html.
     Streams the LM Studio response back as Server-Sent Events.
     Also logs the exchange to Telegram.
     """
+    if request.method == "OPTIONS":
+        return Response(status=204)
     data = request.get_json(force=True)
     user_msg = data.get("message", "").strip()
     history = data.get("history", [])
