@@ -43,7 +43,6 @@
 }
 html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
-.hdr-time{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
 .pill{font-family:var(--mono);font-size:11px;background:var(--red-dim);border:1px solid rgba(226,75,74,.3);color:var(--red);padding:4px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
 .alert{background:var(--red-dim);border-bottom:1px solid rgba(226,75,74,.2);padding:9px 2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--red);font-family:var(--mono);overflow:hidden}
 .alert strong{font-weight:500}
@@ -151,9 +150,6 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 /* ── MOBILE (≤600px) ── */
 @media(max-width:600px){
   .pill{font-size:9px;padding:3px 8px;letter-spacing:0;white-space:normal}
-
-  /* time bar */
-  .hdr-time{font-size:11px;white-space:normal}
 
   /* alert */
   .alert{padding:8px 1rem;font-size:11px}
@@ -268,7 +264,6 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 <script src="header.js"></script>
 
 <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:0 2rem;height:44px;background:var(--bar-bg);border-bottom:1px solid var(--border);white-space:nowrap;flex-wrap:nowrap">
-  <span class="hdr-time" id="live-time"></span>
   <span class="pill" id="hdr-pill"></span>
 </div>
 
@@ -582,12 +577,6 @@ const DATA = {
     }
     tick(); setInterval(tick, 1000);
   }
-
-  // live clock
-  function updateClock() {
-    $('live-time').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  }
-  updateClock(); setInterval(updateClock, 1000);
 
   // metrics
   $('metrics-row').innerHTML = C.metrics.map(m=>`
