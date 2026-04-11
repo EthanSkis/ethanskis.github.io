@@ -383,7 +383,7 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
     try {
       const res = await fetch(getServerUrl() + '/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ message: text, history: conversationHistory.slice(0, -1) })
       });
 
