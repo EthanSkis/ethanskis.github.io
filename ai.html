@@ -91,7 +91,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .welcome p{font-size:13px;color:var(--muted);max-width:400px;line-height:1.6}
 
 /* ── Input ── */
-.chat-bottom-bar-inner textarea{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);font-family:var(--sans);resize:none;outline:none;line-height:1.5;max-height:120px;min-height:42px;transition:border-color .15s}
+.chat-bottom-bar-inner textarea{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);font-family:var(--sans);resize:none;outline:none;line-height:1.5;min-height:42px;overflow:hidden;transition:border-color .15s}
 .chat-bottom-bar-inner textarea:focus{border-color:var(--blue)}
 .chat-bottom-bar-inner textarea::placeholder{color:var(--muted)}
 .send-btn{width:42px;height:42px;border-radius:10px;border:none;background:var(--blue);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .15s;flex-shrink:0}
@@ -286,7 +286,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   // ── Auto-resize textarea ──
   function autoResize(el) {
     el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    el.style.height = el.scrollHeight + 'px';
   }
 
   // ── Keyboard ──
