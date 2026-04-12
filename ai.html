@@ -124,7 +124,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .copy-btn svg{width:15px;height:15px}
 
 /* ── LaTeX / KaTeX ── */
-.msg.bot .msg-bubble .katex-display{margin:12px 0;overflow-x:auto;text-align:center}
+.msg.bot .msg-bubble .math-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:12px 0;padding-bottom:6px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.msg.bot .msg-bubble .math-scroll::-webkit-scrollbar{height:5px}
+.msg.bot .msg-bubble .math-scroll::-webkit-scrollbar-track{background:transparent}
+.msg.bot .msg-bubble .math-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.msg.bot .msg-bubble .katex-display{margin:0;overflow:visible;text-align:center}
 .msg.bot .msg-bubble .katex{font-size:1.05em}
 
 /* ── Streaming cursor ── */
@@ -343,7 +347,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     if (window.katex) {
       const renderMath = (math, display) => {
         try {
-          return katex.renderToString(math.trim(), { displayMode: display, throwOnError: false, output: 'html' });
+          const html = katex.renderToString(math.trim(), { displayMode: display, throwOnError: false, output: 'html' });
+          return display ? '<div class="math-scroll">' + html + '</div>' : html;
         } catch (e) {
           return '<code>' + escapeHtml((display ? '$$' : '$') + math + (display ? '$$' : '$')) + '</code>';
         }
