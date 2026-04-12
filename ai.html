@@ -286,7 +286,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   // ── Auto-resize textarea ──
   function autoResize(el) {
     el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 6 * 21 + 20) + 'px';
   }
 
   // ── Keyboard ──
