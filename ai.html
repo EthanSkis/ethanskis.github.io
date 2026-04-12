@@ -104,9 +104,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .send-btn.stop .icon-stop{display:block}
 
 /* ── Copy Button ── */
-.copy-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:8px}
-.copy-btn:hover{color:var(--text);border-color:var(--blue)}
-.copy-btn svg{width:13px;height:13px}
+.copy-btn{background:none;border:none;padding:2px;cursor:pointer;color:var(--muted);transition:color .2s;margin-top:6px;display:inline-flex}
+.copy-btn:hover{color:var(--text)}
+.copy-btn.copied{color:var(--green)}
+.copy-btn svg{width:15px;height:15px}
 
 /* ── Error Banner ── */
 .error-banner{background:var(--red-dim);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);font-family:var(--mono);display:none;margin-bottom:8px;line-height:1.5}
@@ -414,12 +415,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
-    btn.innerHTML = copyIcon + 'Copy';
+    btn.innerHTML = copyIcon;
     btn.onclick = function() {
       var text = bubble.innerText;
       function showCopied() {
-        btn.innerHTML = checkIcon + 'Copied!';
-        setTimeout(function() { btn.innerHTML = copyIcon + 'Copy'; }, 2000);
+        btn.innerHTML = checkIcon;
+        btn.classList.add('copied');
+        setTimeout(function() { btn.innerHTML = copyIcon; btn.classList.remove('copied'); }, 2000);
       }
       function fallbackCopy() {
         var ta = document.createElement('textarea');
