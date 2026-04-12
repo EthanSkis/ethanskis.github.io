@@ -353,6 +353,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
           return '<code>' + escapeHtml((display ? '$$' : '$') + math + (display ? '$$' : '$')) + '</code>';
         }
       };
+      // Display math environments: \begin{env}...\end{env} (KaTeX-supported set)
+      const mathEnvs = new Set([
+        'pmatrix','bmatrix','vmatrix','Vmatrix','matrix','smallmatrix',
+        'cases','rcases','dcases',
+        'align','align*','alignat','alignat*','aligned',
+        'gather','gather*','gathered',
+        'equation','equation*','multline','multline*',
+        'array','split','CD'
+      ]);
+      text = text.replace(/\\begin\{([a-zA-Z*]+)\}([\s\S]+?)\\end\{\1\}/g, (match, env) =>
+        mathEnvs.has(env) ? stash(renderMath(match, true)) : match
+      );
       // Display math: $$...$$ (consume first so single-$ pass won't re-match)
       text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, m) => stash(renderMath(m, true)));
       // Display math: \[...\]
