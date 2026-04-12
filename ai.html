@@ -7,6 +7,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='45' r='28' fill='none' stroke='%234a9eff' stroke-width='2.5'/><circle cx='40' cy='40' r='3' fill='%234a9eff'/><circle cx='60' cy='40' r='3' fill='%234a9eff'/><path d='M38 52 Q50 62 62 52' fill='none' stroke='%234a9eff' stroke-width='2' stroke-linecap='round'/><line x1='50' y1='73' x2='50' y2='80' stroke='%234a9eff' stroke-width='2'/><line x1='38' y1='70' x2='30' y2='78' stroke='%234a9eff' stroke-width='2'/><line x1='62' y1='70' x2='70' y2='78' stroke='%234a9eff' stroke-width='2'/></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><circle cx='90' cy='81' r='50' fill='none' stroke='%234a9eff' stroke-width='5'/><circle cx='72' cy='72' r='5' fill='%234a9eff'/><circle cx='108' cy='72' r='5' fill='%234a9eff'/><path d='M68 94 Q90 112 112 94' fill='none' stroke='%234a9eff' stroke-width='4' stroke-linecap='round'/><line x1='90' y1='131' x2='90' y2='144' stroke='%234a9eff' stroke-width='4'/><line x1='68' y1='126' x2='54' y2='140' stroke='%234a9eff' stroke-width='4'/><line x1='112' y1='126' x2='126' y2='140' stroke='%234a9eff' stroke-width='4'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <link rel="stylesheet" href="header.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;transition:background-color 0.4s ease,color 0.4s ease,border-color 0.4s ease,fill 0.4s ease}
@@ -120,6 +122,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .copy-btn:hover{color:var(--text)}
 .copy-btn.copied{color:var(--green)}
 .copy-btn svg{width:15px;height:15px}
+
+/* ── LaTeX / KaTeX ── */
+.msg.bot .msg-bubble .katex-display{margin:12px 0;overflow-x:auto;text-align:center}
+.msg.bot .msg-bubble .katex{font-size:1.05em}
 
 /* ── Error Banner ── */
 .error-banner{background:var(--red-dim);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);font-family:var(--mono);display:none;margin-top:16px;margin-bottom:8px;line-height:1.5}
@@ -328,6 +334,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_, lang, code) {
       return stash('<pre><code>' + escapeHtml(code.trim()) + '</code></pre>');
     });
+
+    // 1b. LaTeX math — stash before escapeHtml so the content reaches KaTeX raw
+    if (window.katex) {
+      const renderMath = (math, display) => {
+        try {
+          return katex.renderToString(math.trim(), { displayMode: display, throwOnError: false, output: 'html' });
+        } catch (e) {
+          return '<code>' + escapeHtml((display ? '$$' : '$') + math + (display ? '$$' : '$')) + '</code>';
+        }
+      };
+      // Display math: $$...$$ (consume first so single-$ pass won't re-match)
+      text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, m) => stash(renderMath(m, true)));
+      // Display math: \[...\]
+      text = text.replace(/\\\[([\s\S]+?)\\\]/g, (_, m) => stash(renderMath(m, true)));
+      // Inline math: \(...\)
+      text = text.replace(/\\\(([^\n]+?)\\\)/g, (_, m) => stash(renderMath(m, false)));
+      // Inline math: $...$ (single dollar, no newlines, not empty)
+      text = text.replace(/\$([^\$\n]+?)\$/g, (_, m) => m.trim() ? stash(renderMath(m, false)) : '$' + m + '$');
+    }
 
     // Treat all remaining assistant text as untrusted before applying
     // the lightweight markdown transforms below.
