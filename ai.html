@@ -67,11 +67,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .msg.bot .msg-bubble code{font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px}
 .msg.bot .msg-bubble pre code{background:none;padding:0;border-radius:0}
 .msg.bot .msg-bubble hr{border:none;border-top:1px solid var(--border);margin:16px 0}
-.msg.bot .msg-bubble h1,.msg.bot .msg-bubble h2,.msg.bot .msg-bubble h3{font-family:var(--serif);color:var(--text);font-weight:400;line-height:1.25;margin:18px 0 8px;letter-spacing:-.01em}
+.msg.bot .msg-bubble h1,.msg.bot .msg-bubble h2,.msg.bot .msg-bubble h3,.msg.bot .msg-bubble h4{font-family:var(--serif);color:var(--text);font-weight:400;line-height:1.25;margin:18px 0 8px;letter-spacing:-.01em}
 .msg.bot .msg-bubble h1{font-size:26px}
 .msg.bot .msg-bubble h2{font-size:21px}
 .msg.bot .msg-bubble h3{font-size:17px}
-.msg.bot .msg-bubble h1:first-child,.msg.bot .msg-bubble h2:first-child,.msg.bot .msg-bubble h3:first-child{margin-top:0}
+.msg.bot .msg-bubble h4{font-size:14px;font-style:italic}
+.msg.bot .msg-bubble h1:first-child,.msg.bot .msg-bubble h2:first-child,.msg.bot .msg-bubble h3:first-child,.msg.bot .msg-bubble h4:first-child{margin-top:0}
+.msg.bot .msg-bubble blockquote{border-left:3px solid var(--blue-dim);margin:10px 0;padding:4px 12px;color:var(--muted2)}
+.msg.bot .msg-bubble blockquote blockquote{margin:4px 0;border-left-color:var(--purple-dim)}
+.msg.bot .msg-bubble blockquote blockquote blockquote{border-left-color:var(--green-dim)}
+.msg.bot .msg-bubble a{color:var(--blue);text-decoration:none}
+.msg.bot .msg-bubble a:hover{text-decoration:underline}
+.msg.bot .msg-bubble img{max-width:100%;border-radius:4px;display:block;margin:8px 0}
+.msg.bot .msg-bubble sup,.msg.bot .msg-bubble sub{font-size:.75em;line-height:0}
+.msg.bot .msg-bubble .fn-ref{color:var(--blue);cursor:default}
+.msg.bot .msg-bubble .footnotes{margin-top:16px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--muted2)}
+.msg.bot .msg-bubble .footnotes p{margin:3px 0}
 .msg.bot .msg-bubble .tbl{margin:12px 0;width:100%;max-width:100%;overflow:hidden}
 .msg.bot .msg-bubble table{border-collapse:collapse;font-size:13px;width:100%;table-layout:fixed}
 .msg.bot .msg-bubble th,.msg.bot .msg-bubble td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top;overflow-wrap:break-word;word-wrap:break-word;word-break:break-word;hyphens:auto}
@@ -375,15 +386,62 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       text = text.replace(/\$([^\$\n]+?)\$/g, (_, m) => m.trim() ? stash(renderMath(m, false)) : '$' + m + '$');
     }
 
+    // 1c. Stash safe HTML tags before escapeHtml mangles them
+    // <img> — allow only https? src, preserve style attr
+    text = text.replace(/<img\b([^>]*?)>/gi, (_, attrs) => {
+      const src  = (attrs.match(/src=["']([^"']*?)["']/)   || [])[1] || '';
+      const alt  = (attrs.match(/alt=["']([^"']*?)["']/)   || [])[1] || '';
+      const styl = (attrs.match(/style=["']([^"']*?)["']/) || [])[1] || '';
+      if (!/^https?:\/\//i.test(src)) return '';
+      const sa = styl ? ' style="' + escapeHtml(styl) + '"' : '';
+      return stash('<img src="' + escapeHtml(src) + '" alt="' + escapeHtml(alt) + '" class="md-img"' + sa + '>');
+    });
+    // <a href> — allow https? and root-relative hrefs
+    text = text.replace(/<a\b[^>]*?href=["']([^"']*?)["'][^>]*?>([\s\S]*?)<\/a>/gi, (_, href, inner) => {
+      if (!/^(https?:\/\/|\/)/i.test(href)) return escapeHtml(inner);
+      return stash('<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(inner) + '</a>');
+    });
+
     // Treat all remaining assistant text as untrusted before applying
     // the lightweight markdown transforms below.
     text = escapeHtml(text);
 
-    // Inline formatter (reused for table cells and the main pass)
+    // Collect reference-link definitions [id]: url  (strip lines from output)
+    const refDefs = Object.create(null);
+    text = text.replace(/^[ \t]*\[([^\]]+)\]:\s*(\S+)[^\n]*/gm, (_, id, url) => {
+      refDefs[id.toLowerCase()] = url;
+      return '';
+    });
+
+    // Collect footnote definitions [^id]: text  (strip lines from output)
+    const footnoteDefs = [];
+    text = text.replace(/^[ \t]*\[\^([^\]]+)\]:\s*(.+)/gm, (_, id, def) => {
+      footnoteDefs.push({ id, def: def.trim() });
+      return '';
+    });
+
+    // Inline formatter (reused for table cells, blockquotes, and the main pass)
     const formatInline = (s) =>
       s.replace(/`([^`]+)`/g, '<code>$1</code>')
        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-       .replace(/\*(.+?)\*/g, '<em>$1</em>');
+       .replace(/\*(.+?)\*/g, '<em>$1</em>')
+       // <u>, <sup>, <sub> — safe to restore after escaping
+       .replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>')
+       .replace(/&lt;sup&gt;(.+?)&lt;\/sup&gt;/g, '<sup>$1</sup>')
+       .replace(/&lt;sub&gt;(.+?)&lt;\/sub&gt;/g, '<sub>$1</sub>')
+       // Footnote references [^id]
+       .replace(/\[\^([^\]]+)\]/g, '<sup class="fn-ref">[$1]</sup>')
+       // Reference links [text][id]
+       .replace(/\[([^\]]+)\]\[([^\]]*)\]/g, (_, txt, ref) => {
+         const url = refDefs[(ref || txt).toLowerCase()];
+         if (!url || !/^https?:\/\//i.test(url)) return txt;
+         return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + txt + '</a>';
+       })
+       // Inline links [text](url)
+       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, txt, url) => {
+         if (!/^(https?:\/\/|\/|#)/i.test(url.trim())) return txt;
+         return '<a href="' + url.trim() + '" target="_blank" rel="noopener noreferrer">' + txt + '</a>';
+       });
 
     // 2. Line-based pass: horizontal rules + GFM pipe tables
     const parseRow = (line) => {
@@ -412,12 +470,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
         continue;
       }
 
-      // ATX headings: # / ## / ### (h1–h3). Require a space after the hashes.
-      const h = line.match(/^\s*(#{1,3})\s+(.*?)\s*#*\s*$/);
+      // ATX headings: # / ## / ### / #### (h1–h4). Require a space after the hashes.
+      const h = line.match(/^\s*(#{1,4})\s+(.*?)\s*#*\s*$/);
       if (h) {
         const level = h[1].length;
         out.push(stash('<h' + level + '>' + formatInline(h[2]) + '</h' + level + '>'));
         i++;
+        continue;
+      }
+
+      // Blockquotes: lines starting with &gt; (> was escaped to &gt; by escapeHtml)
+      if (/^&gt;/.test(line)) {
+        const bqLines = [];
+        while (i < lines.length && /^&gt;/.test(lines[i])) {
+          bqLines.push(lines[i].replace(/^&gt;\s?/, ''));
+          i++;
+        }
+        const buildBq = (bls) => {
+          const parts = [];
+          for (let j = 0; j < bls.length;) {
+            if (/^&gt;/.test(bls[j])) {
+              const nested = [];
+              while (j < bls.length && /^&gt;/.test(bls[j])) {
+                nested.push(bls[j].replace(/^&gt;\s?/, ''));
+                j++;
+              }
+              parts.push('<blockquote>' + buildBq(nested) + '</blockquote>');
+            } else {
+              if (bls[j].trim()) parts.push('<p>' + formatInline(bls[j]) + '</p>');
+              j++;
+            }
+          }
+          return parts.join('');
+        };
+        out.push(stash('<blockquote>' + buildBq(bqLines) + '</blockquote>'));
         continue;
       }
 
@@ -467,6 +553,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 
     // 6. Restore stashed block HTML
     html = html.replace(/\u0000BLK(\d+)\u0000/g, (_, idx) => blocks[idx]);
+
+    // 7. Render collected footnote definitions at the bottom
+    if (footnoteDefs.length > 0) {
+      let fn = '<div class="footnotes">';
+      footnoteDefs.forEach(({ id, def }) => {
+        fn += '<p><sup>[' + escapeHtml(id) + ']</sup> ' + formatInline(escapeHtml(def)) + '</p>';
+      });
+      fn += '</div>';
+      html += fn;
+    }
 
     return html;
   }
