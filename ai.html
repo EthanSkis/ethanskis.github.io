@@ -127,6 +127,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .msg.bot .msg-bubble .katex-display{margin:12px 0;overflow-x:auto;text-align:center}
 .msg.bot .msg-bubble .katex{font-size:1.05em}
 
+/* ── Streaming cursor ── */
+@keyframes blink{50%{opacity:0}}
+.msg.bot .msg-bubble.streaming::after{content:'▋';display:inline-block;animation:blink .8s step-end infinite;color:var(--blue);margin-left:1px;vertical-align:baseline}
+
 /* ── Error Banner ── */
 .error-banner{background:var(--red-dim);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);font-family:var(--mono);display:none;margin-top:16px;margin-bottom:8px;line-height:1.5}
 
@@ -566,9 +570,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       removeTyping();
 
       bubble = addMessage('bot', '');
+      bubble.classList.add('streaming');
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let wordBuffer = '';
+
+      // Throttled re-render: apply full markdown formatting as tokens arrive
+      let renderTimer = null;
+      const scheduleRender = () => {
+        if (renderTimer) return;
+        renderTimer = setTimeout(() => {
+          renderTimer = null;
+          if (fullResponse) bubble.innerHTML = formatBotText(fullResponse);
+          scrollToBottom();
+        }, 50);
+      };
 
       while (true) {
         const { done, value } = await reader.read();
@@ -584,30 +599,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
               const parsed = JSON.parse(data);
               if (parsed.token) {
                 fullResponse += parsed.token;
-                wordBuffer += parsed.token;
-                const parts = wordBuffer.split(/(\s+)/);
-                for (let pi = 0; pi < parts.length - 1; pi++) {
-                  const part = parts[pi];
-                  if (part === '') continue;
-                  if (/^\s+$/.test(part)) {
-                    if (part.includes('\n')) {
-                      const brs = part.split('\n');
-                      for (let bi = 0; bi < brs.length; bi++) {
-                        if (bi > 0) bubble.appendChild(document.createElement('br'));
-                        if (brs[bi]) bubble.appendChild(document.createTextNode(brs[bi]));
-                      }
-                    } else {
-                      bubble.appendChild(document.createTextNode(part));
-                    }
-                  } else {
-                    const span = document.createElement('span');
-                    span.className = 'depix-word';
-                    span.textContent = part;
-                    bubble.appendChild(span);
-                  }
-                }
-                wordBuffer = parts[parts.length - 1];
-                scrollToBottom();
+                scheduleRender();
               }
               if (parsed.error) {
                 showError(parsed.error);
@@ -617,14 +609,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
         }
       }
 
-      // Flush remaining word buffer with depixelation
-      if (wordBuffer) {
-        const span = document.createElement('span');
-        span.className = 'depix-word';
-        span.textContent = wordBuffer;
-        bubble.appendChild(span);
-        wordBuffer = '';
-      }
+      // Flush any pending throttled render before finalising
+      if (renderTimer) { clearTimeout(renderTimer); renderTimer = null; }
 
     } catch (err) {
       removeTyping();
@@ -636,8 +622,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
         showError(err.message);
       }
     } finally {
+      if (bubble) bubble.classList.remove('streaming');
       if (fullResponse && !discardPartialResponse) {
-        // Re-render with full markdown formatting now that streaming is done
+        // Final clean render now that the full response is available
         if (bubble) bubble.innerHTML = formatBotText(fullResponse);
         conversationHistory.push({ role: 'assistant', content: fullResponse });
         saveHistory();
