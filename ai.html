@@ -496,9 +496,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     if (el) el.remove();
   }
 
-  function showError(msg) {
+  function showError() {
     const banner = document.getElementById('errorBanner');
-    banner.textContent = msg;
+    banner.textContent = 'Currently offline.';
     banner.style.display = 'block';
     setTimeout(() => { banner.style.display = 'none'; }, 8000);
   }
