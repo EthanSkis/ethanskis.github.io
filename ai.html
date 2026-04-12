@@ -39,7 +39,7 @@ html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}html::-
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;padding-bottom:88px}
 
 /* ── Chat Layout ── */
-.chat-top-bar{position:sticky;top:52px;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:50}
+.chat-top-bar{position:sticky;top:52px;background:var(--bar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:50;will-change:transform}
 .chat-top-bar-inner{max-width:800px;margin:0 auto;padding:1rem;display:flex;align-items:center;justify-content:space-between}
 .chat-bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bar-bg);backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:50}
 .chat-bottom-bar-inner{max-width:800px;margin:0 auto;padding:.75rem 1rem 1rem;display:flex;gap:8px;align-items:flex-end}
