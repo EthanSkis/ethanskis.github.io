@@ -63,7 +63,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .msg-bubble{font-size:13.5px;line-height:1.65;word-break:break-word}
 .msg.user .msg-bubble{padding:10px 14px;border-radius:12px;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
 .msg.bot .msg-bubble{color:var(--text);width:100%;min-width:0;max-width:100%}
-.msg.bot .msg-bubble pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:8px 0;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.5}
+.msg.bot .msg-bubble pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:8px 0;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.5;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.msg.bot .msg-bubble pre::-webkit-scrollbar{height:5px}
+.msg.bot .msg-bubble pre::-webkit-scrollbar-track{background:transparent}
+.msg.bot .msg-bubble pre::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.msg.bot .msg-bubble pre::-webkit-scrollbar-thumb:hover{background:var(--muted)}
 .msg.bot .msg-bubble code{font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px}
 .msg.bot .msg-bubble pre code{background:none;padding:0;border-radius:0}
 .msg.bot .msg-bubble hr{border:none;border-top:1px solid var(--border);margin:16px 0}
