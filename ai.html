@@ -103,6 +103,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .send-btn.stop .icon-send{display:none}
 .send-btn.stop .icon-stop{display:block}
 
+/* ── Copy Button ── */
+.copy-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:8px}
+.copy-btn:hover{color:var(--text);border-color:var(--blue)}
+.copy-btn svg{width:13px;height:13px}
+
 /* ── Error Banner ── */
 .error-banner{background:var(--red-dim);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);font-family:var(--mono);display:none;margin-bottom:8px;line-height:1.5}
 
@@ -403,6 +408,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     return html;
   }
 
+  function addCopyButton(msgDiv) {
+    const bubble = msgDiv.querySelector('.msg-bubble');
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy';
+    btn.onclick = function() {
+      navigator.clipboard.writeText(bubble.innerText).then(function() {
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+        setTimeout(function() {
+          btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy';
+        }, 2000);
+      });
+    };
+    msgDiv.appendChild(btn);
+  }
+
   function addMessage(role, text, opts) {
     const welcome = document.getElementById('welcome');
     if (welcome) welcome.remove();
@@ -420,6 +441,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     }
 
     div.appendChild(bubble);
+    if (role === 'bot' && text) addCopyButton(div);
     container.appendChild(div);
     if (!(opts && opts.skipPersist)) scrollToBottom();
     return bubble;
@@ -525,6 +547,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       if (fullResponse && !discardPartialResponse) {
         conversationHistory.push({ role: 'assistant', content: fullResponse });
         saveHistory();
+        if (bubble) addCopyButton(bubble.parentElement);
         scrollToBottom();
       } else if (bubble && !fullResponse && bubble.parentElement) {
         // Nothing streamed before abort — remove the empty bot bubble
