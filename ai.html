@@ -332,6 +332,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       return stash('<pre><code>' + escapeHtml(code.trim()) + '</code></pre>');
     });
 
+    // Treat all remaining assistant text as untrusted before applying
+    // the lightweight markdown transforms below.
+    text = escapeHtml(text);
+
     // Inline formatter (reused for table cells and the main pass)
     const formatInline = (s) =>
       s.replace(/`([^`]+)`/g, '<code>$1</code>')
