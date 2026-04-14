@@ -8,7 +8,7 @@ Run locally:
     python stream_server.py /path/to/videos
 
 Then in another terminal:
-    ngrok http 5001
+    ngrok http 5002
 
 Put the ngrok URL into stream.json, e.g.:
     {"url": "https://abcd-1-2-3-4.ngrok-free.app"}
@@ -90,7 +90,7 @@ def create_app(video_dir: str) -> Flask:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("directory", help="Directory containing video files")
-    parser.add_argument("--port", type=int, default=5001, help="Port to listen on (default: 5001)")
+    parser.add_argument("--port", type=int, default=5002, help="Port to listen on (default: 5002)")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)")
     args = parser.parse_args()
 
