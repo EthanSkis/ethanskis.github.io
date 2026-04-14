@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Stream</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='15' y='25' width='70' height='50' rx='6' fill='none' stroke='%234a9eff' stroke-width='2.5'/><polygon points='42,40 42,60 60,50' fill='%234a9eff'/></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect x='27' y='45' width='126' height='90' rx='11' fill='none' stroke='%234a9eff' stroke-width='5'/><polygon points='76,72 76,108 108,90' fill='%234a9eff'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="header.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;transition:background-color 0.4s ease,color 0.4s ease,border-color 0.4s ease,fill 0.4s ease}
+:root{
+  --bg:#0c0d0f;--surface:#111214;--surface2:#17191c;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e8e6e1;--muted:#6b6a66;--muted2:#9a9894;
+  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.10);
+  --purple:#9b8cf7;--purple-dim:rgba(155,140,247,0.10);
+  --green:#3dba7f;--green-dim:rgba(61,186,127,0.10);
+  --red:#e24b4a;--red-dim:rgba(226,75,74,0.10);
+  --bar-bg:rgba(12,13,15,0.92);
+  --header-accent:#4a9eff;--header-accent-dim:rgba(74,158,255,0.15);
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'Geist',system-ui,sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f5f5f0;--surface:#eaeae5;--surface2:#deded9;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
+  --text:#1a1a1a;--muted:#7a7a72;--muted2:#5a5a54;
+  --blue:#2a7de0;--blue-dim:rgba(42,125,224,0.10);
+  --purple:#7a6ad0;--purple-dim:rgba(122,106,208,0.10);
+  --green:#2a8f5e;--green-dim:rgba(42,143,94,0.10);
+  --red:#c43030;--red-dim:rgba(196,48,48,0.10);
+  --bar-bg:rgba(245,245,240,0.92);
+  --header-accent:#2a7de0;--header-accent-dim:rgba(42,125,224,0.15);
+}
+html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+.page{padding:2rem;max-width:1000px;margin:0 auto}
+.hero{padding:2rem 0 1.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border)}
+.hero-title{font-family:var(--serif);font-size:48px;line-height:1.05;color:var(--text);letter-spacing:-.02em;margin-bottom:12px}
+.hero-desc{font-size:14px;color:var(--muted2);max-width:600px;line-height:1.6}
+
+/* ── Drop Zone ── */
+.drop-zone{position:relative;border:1px dashed var(--border2);border-radius:12px;background:var(--surface);padding:40px 24px;text-align:center;cursor:pointer;transition:all .2s}
+.drop-zone:hover{border-color:var(--blue);background:rgba(74,158,255,0.05)}
+.drop-zone.dragging{border-color:var(--blue);background:rgba(74,158,255,0.08);border-style:solid}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop-icon{font-size:32px;color:var(--muted);margin-bottom:10px;line-height:1}
+.drop-title{font-family:var(--serif);font-size:22px;color:var(--text);letter-spacing:-.01em;margin-bottom:6px}
+.drop-sub{font-size:13px;color:var(--muted2)}
+.drop-hint{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:14px}
+
+/* ── Player ── */
+.player-wrap{display:none;flex-direction:column;gap:16px}
+.player-wrap.active{display:flex}
+.video-shell{position:relative;background:#000;border:1px solid var(--border);border-radius:12px;overflow:hidden;aspect-ratio:16/9}
+.video-shell video{width:100%;height:100%;display:block;background:#000}
+
+/* ── Info card ── */
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.info-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.info-name{font-family:var(--serif);font-size:20px;color:var(--text);letter-spacing:-.01em;word-break:break-word;min-width:0;flex:1}
+.info-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 12px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.btn:hover{color:var(--text);border-color:var(--blue)}
+.btn.primary{color:var(--blue);border-color:rgba(74,158,255,0.3);background:var(--blue-dim)}
+.btn.primary:hover{color:#fff;background:var(--blue);border-color:var(--blue)}
+.btn.danger:hover{color:var(--red);border-color:var(--red)}
+
+.info-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding-top:14px;border-top:1px solid var(--border)}
+.stat-item{text-align:left}
+.stat-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.stat-value{font-family:var(--serif);font-size:16px;color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Settings ── */
+.settings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.setting{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.setting-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.setting-control{display:flex;align-items:center;gap:10px}
+.setting select,.setting input[type=range]{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:6px 8px;font-family:var(--sans);font-size:13px;color:var(--text);outline:none;transition:border-color .15s}
+.setting select:focus{border-color:var(--blue)}
+.setting input[type=range]{padding:0;height:4px;appearance:none;-webkit-appearance:none;background:var(--border2);border:none;border-radius:999px;cursor:pointer}
+.setting input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--blue);cursor:pointer;border:none}
+.setting input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--blue);cursor:pointer;border:none}
+.setting-value{font-family:var(--mono);font-size:11px;color:var(--muted2);min-width:44px;text-align:right}
+
+.error-banner{background:var(--red-dim);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);font-family:var(--mono);line-height:1.5;display:none}
+.error-banner.show{display:block}
+
+.privacy-note{font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em;text-align:center;padding:10px 0}
+
+footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px}
+
+/* ── TABLET ── */
+@media(max-width:900px){
+  .hero-title{font-size:36px}
+  .settings{grid-template-columns:1fr 1fr}
+  .info-stats{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .page{padding:1rem}
+  .hero{padding:1.25rem 0 1rem}
+  .hero-title{font-size:26px;line-height:1.1}
+  .hero-desc{font-size:12px}
+  .drop-zone{padding:28px 16px}
+  .drop-title{font-size:18px}
+  .settings{grid-template-columns:1fr}
+  .info-stats{grid-template-columns:1fr 1fr}
+  footer{padding:12px 1rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wm"><div class="dot"></div>STREAM</div>
+  <div class="hdr-r">
+    <nav class="hdr-nav">
+      <a href="/" class="nav-link">Portfolio</a>
+      <a href="/news" class="nav-link">News</a>
+      <a href="/notes" class="nav-link">Notes</a>
+      <a href="/snake" class="nav-link">Snake</a>
+      <a href="/html" class="nav-link">Editor</a>
+      <a href="/ai" class="nav-link">AI</a>
+      <a href="/stream" class="nav-link active">Stream</a>
+    </nav>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+    <div style="position:relative;display:inline-flex">
+      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+        <div class="menu-bar"></div>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="/" class="nav-link">Portfolio</a>
+        <a href="/news" class="nav-link">News</a>
+        <a href="/notes" class="nav-link">Notes</a>
+        <a href="/snake" class="nav-link">Snake</a>
+        <a href="/html" class="nav-link">Editor</a>
+        <a href="/ai" class="nav-link">AI</a>
+        <a href="/stream" class="nav-link active">Stream</a>
+      </nav>
+    </div>
+  </div>
+</header>
+<script src="header.js"></script>
+
+<div class="page">
+  <div class="hero">
+    <h1 class="hero-title">Video Stream</h1>
+    <p class="hero-desc">Play video files straight from your computer. Drop a file below and it streams locally in your browser — nothing is uploaded, nothing leaves your device.</p>
+  </div>
+
+  <div id="error-banner" class="error-banner"></div>
+
+  <!-- File Picker / Drop Zone -->
+  <label id="drop-zone" class="drop-zone" for="file-input">
+    <div class="drop-icon">▶</div>
+    <div class="drop-title">Choose a video file</div>
+    <div class="drop-sub">Click to browse, or drag & drop any video here</div>
+    <div class="drop-hint">mp4 · webm · mov · mkv · ogg</div>
+    <input id="file-input" type="file" accept="video/*" />
+  </label>
+
+  <!-- Player -->
+  <div id="player" class="player-wrap">
+    <div class="video-shell">
+      <video id="video" controls playsinline preload="metadata"></video>
+    </div>
+
+    <div class="info-card">
+      <div class="info-row">
+        <div class="info-name" id="file-name">—</div>
+        <div class="info-actions">
+          <button class="btn primary" id="pip-btn" title="Picture in picture">PiP</button>
+          <button class="btn" id="fullscreen-btn" title="Fullscreen">Fullscreen</button>
+          <button class="btn danger" id="clear-btn" title="Remove file">Remove</button>
+        </div>
+      </div>
+      <div class="info-stats">
+        <div class="stat-item">
+          <div class="stat-label">Size</div>
+          <div class="stat-value" id="stat-size">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Type</div>
+          <div class="stat-value" id="stat-type">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Duration</div>
+          <div class="stat-value" id="stat-duration">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Resolution</div>
+          <div class="stat-value" id="stat-res">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings">
+      <div class="setting">
+        <div class="setting-label">Playback speed</div>
+        <div class="setting-control">
+          <select id="speed-select">
+            <option value="0.25">0.25×</option>
+            <option value="0.5">0.5×</option>
+            <option value="0.75">0.75×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.25">1.25×</option>
+            <option value="1.5">1.5×</option>
+            <option value="1.75">1.75×</option>
+            <option value="2">2×</option>
+          </select>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-label">Volume</div>
+        <div class="setting-control">
+          <input id="volume" type="range" min="0" max="1" step="0.01" value="1" />
+          <div class="setting-value" id="volume-value">100%</div>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-label">Loop</div>
+        <div class="setting-control">
+          <select id="loop-select">
+            <option value="off" selected>Off</option>
+            <option value="on">On</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="privacy-note">Local playback — file stays on your device</div>
+  </div>
+</div>
+
+<footer>
+  <span>Local streaming</span>
+  <span>© 2025 Ethan Gardner</span>
+</footer>
+
+<script>
+  const dropZone   = document.getElementById('drop-zone');
+  const fileInput  = document.getElementById('file-input');
+  const player     = document.getElementById('player');
+  const video      = document.getElementById('video');
+  const fileName   = document.getElementById('file-name');
+  const statSize   = document.getElementById('stat-size');
+  const statType   = document.getElementById('stat-type');
+  const statDur    = document.getElementById('stat-duration');
+  const statRes    = document.getElementById('stat-res');
+  const speedSel   = document.getElementById('speed-select');
+  const volume     = document.getElementById('volume');
+  const volumeVal  = document.getElementById('volume-value');
+  const loopSel    = document.getElementById('loop-select');
+  const pipBtn     = document.getElementById('pip-btn');
+  const fsBtn      = document.getElementById('fullscreen-btn');
+  const clearBtn   = document.getElementById('clear-btn');
+  const errorBan   = document.getElementById('error-banner');
+
+  let currentUrl = null;
+
+  function showError(msg){
+    errorBan.textContent = msg;
+    errorBan.classList.add('show');
+  }
+  function hideError(){ errorBan.classList.remove('show'); }
+
+  function formatBytes(b){
+    if(!Number.isFinite(b)) return '—';
+    const u = ['B','KB','MB','GB','TB'];
+    let i = 0;
+    while(b >= 1024 && i < u.length-1){ b /= 1024; i++; }
+    return `${b.toFixed(b >= 10 || i === 0 ? 0 : 1)} ${u[i]}`;
+  }
+
+  function formatDuration(s){
+    if(!Number.isFinite(s)) return '—';
+    s = Math.floor(s);
+    const h = Math.floor(s/3600);
+    const m = Math.floor((s%3600)/60);
+    const sec = s%60;
+    const pad = n => String(n).padStart(2,'0');
+    return h ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+  }
+
+  function loadFile(file){
+    if(!file) return;
+    if(!file.type.startsWith('video/') && !/\.(mp4|webm|mov|mkv|ogg|ogv|m4v|avi)$/i.test(file.name)){
+      showError(`Unsupported file type: ${file.type || 'unknown'}`);
+      return;
+    }
+    hideError();
+
+    if(currentUrl){ URL.revokeObjectURL(currentUrl); }
+    currentUrl = URL.createObjectURL(file);
+
+    video.src = currentUrl;
+    fileName.textContent = file.name;
+    statSize.textContent = formatBytes(file.size);
+    statType.textContent = file.type || file.name.split('.').pop().toUpperCase();
+    statDur.textContent = '—';
+    statRes.textContent = '—';
+
+    player.classList.add('active');
+    dropZone.style.display = 'none';
+
+    video.play().catch(() => {/* autoplay may be blocked; user can press play */});
+  }
+
+  video.addEventListener('loadedmetadata', () => {
+    statDur.textContent = formatDuration(video.duration);
+    if(video.videoWidth && video.videoHeight){
+      statRes.textContent = `${video.videoWidth}×${video.videoHeight}`;
+    }
+  });
+
+  video.addEventListener('error', () => {
+    const err = video.error;
+    let msg = 'Could not play this file.';
+    if(err){
+      const codes = {1:'Playback was aborted.',2:'A network error occurred.',3:'The video could not be decoded — codec may be unsupported.',4:'This format is not supported by your browser.'};
+      msg = codes[err.code] || msg;
+    }
+    showError(msg);
+  });
+
+  // File input
+  fileInput.addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if(f) loadFile(f);
+  });
+
+  // Drag & drop
+  ['dragenter','dragover'].forEach(evt => {
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault(); e.stopPropagation();
+      dropZone.classList.add('dragging');
+    });
+  });
+  ['dragleave','drop'].forEach(evt => {
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault(); e.stopPropagation();
+      dropZone.classList.remove('dragging');
+    });
+  });
+  dropZone.addEventListener('drop', e => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) loadFile(f);
+  });
+  // Allow drop anywhere on the page once a video is loaded
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => {
+    e.preventDefault();
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) loadFile(f);
+  });
+
+  // Settings
+  speedSel.addEventListener('change', () => { video.playbackRate = parseFloat(speedSel.value); });
+  volume.addEventListener('input', () => {
+    video.volume = parseFloat(volume.value);
+    volumeVal.textContent = `${Math.round(video.volume * 100)}%`;
+  });
+  loopSel.addEventListener('change', () => { video.loop = loopSel.value === 'on'; });
+
+  // Actions
+  pipBtn.addEventListener('click', async () => {
+    try{
+      if(document.pictureInPictureElement){
+        await document.exitPictureInPicture();
+      } else if(document.pictureInPictureEnabled){
+        await video.requestPictureInPicture();
+      } else {
+        showError('Picture in picture is not supported in this browser.');
+      }
+    } catch(e){ showError('Could not toggle picture in picture.'); }
+  });
+
+  fsBtn.addEventListener('click', () => {
+    const el = video.closest('.video-shell');
+    if(document.fullscreenElement){ document.exitFullscreen(); return; }
+    if(el.requestFullscreen) el.requestFullscreen();
+    else if(video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+    if(currentUrl){ URL.revokeObjectURL(currentUrl); currentUrl = null; }
+    fileInput.value = '';
+    player.classList.remove('active');
+    dropZone.style.display = '';
+    hideError();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if(!player.classList.contains('active')) return;
+    if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+    switch(e.key){
+      case ' ': case 'k': e.preventDefault(); video.paused ? video.play() : video.pause(); break;
+      case 'ArrowLeft':  video.currentTime = Math.max(0, video.currentTime - 5); break;
+      case 'ArrowRight': video.currentTime = Math.min(video.duration || 0, video.currentTime + 5); break;
+      case 'm': video.muted = !video.muted; break;
+      case 'f': fsBtn.click(); break;
+    }
+  });
+
+  // Clean up on unload
+  window.addEventListener('beforeunload', () => {
+    if(currentUrl) URL.revokeObjectURL(currentUrl);
+  });
+</script>
+
+</body>
+</html>
