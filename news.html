@@ -361,7 +361,7 @@ const DATA = {
   headerPill: "TALKS COLLAPSED · NAVAL BLOCKADE ANNOUNCED · APR 22 DEADLINE",
 
   // ── ALERT ─────────────────────────────────────────────────
-  alert: "<strong>BREAKING:</strong> Islamabad talks collapsed Apr 12-13 with no agreement — Iran rejected US terms on nuclear, Hormuz, reparations; Trump announced naval blockade of Iranian ports Sunday; Lebanon reports 2,055+ total killed; Israel continues strikes violating ceasefire; WTI $96.57, Brent $98.05; US gas avg $4.125; ceasefire expires in 8 days.",
+  alert: "<strong>BREAKING:</strong> Islamabad talks collapsed Apr 12-13 with no agreement — Iran rejected US terms on nuclear, Hormuz, reparations; Trump announced naval blockade of Iranian ports (began Apr 14 morning); Lebanon reports 2,055+ total killed; Israel continues strikes violating ceasefire; WTI $96.37, Brent $98.34; US gas avg $4.125; ceasefire expires Apr 22 (8 days).",
 
   // ── HERO ──────────────────────────────────────────────────
   heroDate: "MONDAY, APRIL 14, 2026 · DAY 46 OF OPERATION EPIC FURY",
@@ -377,8 +377,8 @@ const DATA = {
 
   // ── METRICS (up to 5) ─────────────────────────────────────
   metrics: [
-    { color:"amber",  label:"WTI Crude",    value:"$96.57",        sub:"Apr 14 · down 0.8% · blockade impacts supply",             subClass:"dn" },
-    { color:"amber",  label:"Brent",        value:"$98.05",        sub:"Apr 14 · up 1.1% vs Apr 11 · Hormuz choke persists",     subClass:"up" },
+    { color:"amber",  label:"WTI Crude",    value:"$96.37",        sub:"Apr 14 · May futures · down 2.7% · blockade implementation delayed",             subClass:"dn" },
+    { color:"amber",  label:"Brent",        value:"$98.34",        sub:"Apr 14 · June futures · down 1.0% · pullback after $103 spike",     subClass:"dn" },
     { color:"amber",  label:"US Gas Avg",   value:"$4.125",        sub:"Apr 14 · AAA Monday · dn 0.3¢ · 4-yr high zone",           subClass:"dn" },
     { color:"red",    label:"Lebanon",      value:"2,055+ killed", sub:"total war dead · fresh strikes ongoing · Israel rejects ceasefire", subClass:"dn" },
     { color:"red",    label:"Talks",        value:"COLLAPSED",     sub:"Apr 12-13 · no agreement reached · blockade announced",    subClass:"dn" },
@@ -401,9 +401,9 @@ const DATA = {
     },
     {
       dot: "d-crit",
-      title: "IRAN NAVAL BLOCKADE — Trump orders complete US blockade of all Iranian ports; sea access threatened alongside Hormuz closure",
-      body: "In response to the Islamabad talks collapse, Trump announced Sunday that the US military would blockade all Iranian ports, compounding the existing Strait of Hormuz closure. This dual isolation of Iran—already facing blocked oil exports via Hormuz and Saudi Aramco's Abqaiq offline—signals a dramatic escalation. Iran warned the blockade poses dangerous consequences for regional and global peace; IRGC spokesman said Tehran could unveil new military tactics if the conflict continues.",
-      tags: [{ text:"BLOCKADE", cls:"t-red" },{ text:"new escalation", cls:"t-red" },{ text:"Iran threats", cls:"t-amber" }]
+      title: "IRAN NAVAL BLOCKADE — Trump announces complete US blockade of all Iranian ports; enforcement began Apr 14 at 10 a.m. EDT",
+      body: "In response to the Islamabad talks collapse, Trump announced Sunday that the US military would blockade all Iranian ports, with enforcement beginning Monday April 14 at 10 a.m. EDT. This dual isolation of Iran—already facing blocked oil exports via Hormuz and Saudi Aramco's Abqaiq offline—signals a dramatic escalation. Iran warned the blockade poses dangerous consequences and would be treated as 'piracy'; thousands rallied in Tehran in protest. Trump simultaneously signaled Iran wants to make a deal and Pakistan offered to host a second round of Islamabad talks this week.",
+      tags: [{ text:"BLOCKADE ACTIVE", cls:"t-red" },{ text:"new escalation", cls:"t-red" },{ text:"Trump opens door", cls:"t-amber" }]
     },
     {
       dot: "d-high",
@@ -413,9 +413,9 @@ const DATA = {
     },
     {
       dot: "d-high",
-      title: "GAS PRICE HOLDS STEADY — $4.125 AAA Monday; 4-year highs persist despite minor dips",
-      body: "The US national average gas price held nearly flat at $4.125 on Monday April 14, down just 0.3¢ from the prior week despite the blockade announcement. Prices remain in the 4-year high zone, having climbed over $1.15 in six weeks since the war began. Traders now fully price in the collapse of the April 22 ceasefire; any breakdown is expected to snap prices sharply higher, potentially back above $100 per barrel.",
-      tags: [{ text:"$4.125 AAA", cls:"t-amber" },{ text:"4-yr high zone", cls:"t-red" },{ text:"blockade impact pending", cls:"t-amber" }]
+      title: "GAS PRICE HOLDS AT $4.125 — AAA Monday; blockade impact takes weeks to reach pump",
+      body: "The US national average gas price stood at $4.125 on Monday April 14, holding steady from the prior week despite the naval blockade announcement at 10 a.m. that morning. Prices remain in the 4-year high zone, having climbed over $1.15 in six weeks since the war began. Crude oil markets initially spiked to $103+ on the blockade announcement but pulled back to $96.37 WTI and $98.34 Brent by day-end as traders assessed implementation timelines; full supply disruption will take weeks to manifest at retail pumps.",
+      tags: [{ text:"$4.125 AAA", cls:"t-amber" },{ text:"4-yr high zone", cls:"t-red" },{ text:"blockade lag", cls:"t-amber" }]
     },
     {
       dot: "d-mod",
@@ -437,7 +437,7 @@ const DATA = {
     { name:"Kharg Island",        lat:29.24, lon:50.32, type:"strike", note:"US struck 50+ military targets Apr 7 — handles 90% of Iran's crude exports — offline under blockade" },
     { name:"Mahshahr Petrochem",  lat:30.56, lon:49.20, type:"strike", note:"Israel struck Iran's largest petrochemical facility — Apr 6 — export disrupted by blockade" },
     { name:"Abqaiq",              lat:25.93, lon:49.69, type:"strike", note:"STRUCK Apr 8 — NASA confirmed 125MW fire; handles ~5% of global oil; offline with no restoration timeline as of Apr 14" },
-    { name:"Strait of Hormuz",    lat:26.55, lon:56.50, type:"airdef", note:"CLOSED Apr 11 — 400+ tankers anchored; blockade now expanded to all Iranian ports Apr 14 — major supply chokepoint fully compromised" },
+    { name:"Strait of Hormuz",    lat:26.55, lon:56.50, type:"airdef", note:"CLOSED Apr 11 — 400+ tankers anchored; US naval blockade of all Iranian ports enforced Apr 14 at 10 a.m. EDT — major supply chokepoint fully compromised; dual embargo now active" },
     { name:"Kuwait",              lat:29.37, lon:47.99, type:"airdef", note:"ACTIVE Apr 8 — intercepted 28 Iranian drones; Al-Ahmadi refinery and desalination plant hit Apr 3" },
     { name:"UAE",                 lat:24.50, lon:54.40, type:"airdef", note:"ACTIVE Apr 8 — air defenses engaged incoming missiles; Habshan gas complex suspended" },
     { name:"Bahrain",             lat:26.07, lon:50.55, type:"airdef", note:"ACTIVE Apr 8 — attacks reported despite ceasefire announcement" },
@@ -465,11 +465,11 @@ const DATA = {
 
   // ── WATCH LIST (up to 5) ──────────────────────────────────
   watchItems: [
-    { icon:"!!!", iconColor:"var(--red)",   text:"<strong>ISLAMABAD COLLAPSED — Naval blockade announced; ceasefire expected to shatter Apr 22</strong> — Talks between the US (led by VP Vance) and Iran (led by Parliament Speaker Ghalibaf) ended Saturday after 21 hours without agreement. Iran rejected US terms on its nuclear program, control of the Strait of Hormuz, and war reparations. Trump immediately announced a complete US naval blockade of all Iranian ports Sunday, escalating tensions dramatically. With 8 days to the April 22 ceasefire expiry, Polymarket odds on a permanent peace deal by then have collapsed to just 12%." },
+    { icon:"!!!", iconColor:"var(--red)",   text:"<strong>ISLAMABAD COLLAPSED — Naval blockade enforced Apr 14; Trump signals Iran wants deal; second talks offered</strong> — Talks between the US (led by VP Vance) and Iran (led by Parliament Speaker Ghalibaf) ended Saturday after 21 hours without agreement. Iran rejected US terms on its nuclear program, control of the Strait of Hormuz, and war reparations. Trump announced a complete US naval blockade of all Iranian ports Sunday, enforced Monday morning Apr 14. However, Trump then signaled that Iran wants to make a deal, and Pakistan offered to host a second round of Islamabad talks this week—suggesting room for negotiation despite the blockade. With 8 days to the April 22 ceasefire expiry, Polymarket odds on a permanent peace deal by then stand at just 12%." },
     { icon:"!!",  iconColor:"var(--red)",   text:"<strong>LEBANON 2,055+ KILLED — Fresh Israeli strikes Apr 14; ceasefire crumbling; State Dept talks continue Tue but outlook grim</strong> — Lebanese health ministry now reports 2,055+ total war dead, with fresh Israeli airstrikes on April 14 killing at least 5 more civilians. Hezbollah launched rocket barrages at northern Israel (Kiryat Shmona) in response, accusing Israel of ceasefire violations. US-mediated Israel-Lebanon-US trilateral talks scheduled for Tuesday at State Department, but Israel continues refusing any Hezbollah ceasefire discussion, dimming breakthrough prospects." },
-    { icon:"!!",  iconColor:"var(--red)",   text:"<strong>DUAL SUPPLY SQUEEZE — Blockade + Abqaiq + Hormuz closed; 5%+ global supply offline; WTI $96.57, may spike above $100</strong> — Trump's naval blockade of Iranian ports compounds the existing Hormuz closure and Abqaiq facility offline. Combined, roughly 5% of global crude supply plus a critical transit chokepoint remain compromised. WTI fell fractionally to $96.57 on Apr 14 but traders now fully price in an April 22 breakdown; any ceasefire collapse is expected to snap prices sharply higher, potentially back above $100 per barrel." },
+    { icon:"!!",  iconColor:"var(--red)",   text:"<strong>DUAL SUPPLY SQUEEZE — Blockade + Abqaiq + Hormuz closed; 5%+ global supply offline; crude spiked to $103, pulled back to $96</strong> — Trump's naval blockade of Iranian ports (enforced Apr 14 morning) compounds the existing Hormuz closure and Abqaiq facility offline. Crude oil initially spiked to $103+ on the announcement but pulled back to $96.37 WTI and $98.34 Brent by end of day as traders assessed realistic implementation timelines. Combined, roughly 5% of global crude supply plus a critical transit chokepoint remain compromised. Traders now fully price in an April 22 ceasefire breakdown; full blockade enforcement is expected to snap prices sharply higher in coming weeks." },
     { icon:"!",   iconColor:"var(--amber)", text:"<strong>GAS PRICES HOLD AT $4.125 — 4-year high zone; blockade impact takes weeks to manifest at pump</strong> — US national average gas held at $4.125 on Monday April 14, up $1.15 in just 6 weeks since the war began. Prices remain in four-year-high territory. The new naval blockade will take weeks to fully squeeze global markets; current retail prices already front-run expectations of April 22 ceasefire collapse and potential oil spike back above $100." },
-    { icon:"i",   iconColor:"var(--blue)",  text:"<strong>STATE DEPT TALKS TUESDAY APR 14 — Israel-Lebanon-US trilateral; historic direct contact but ceasefire odds poor</strong> — Israeli and Lebanese ambassadors held their first direct phone call of the war Friday, paving the way for US-mediated trilateral talks Tuesday at the State Department. Israel will not discuss a Hezbollah ceasefire but has signaled openness to 'a pathway to peace' with the Lebanese government. However, given Israel's continued strikes and Hezbollah's counterattacks, expectations for breakthrough have dimmed sharply." },
+    { icon:"i",   iconColor:"var(--blue)",  text:"<strong>STATE DEPT TALKS TUESDAY APR 15 — Israel-Lebanon-US trilateral; historic direct contact but ceasefire odds poor</strong> — Israeli and Lebanese ambassadors held their first direct phone call of the war Friday, paving the way for US-mediated trilateral talks Tuesday April 15 at the State Department. Israel continues refusing to discuss any Hezbollah ceasefire but has signaled openness to 'a pathway to peace' with the Lebanese government. However, with fresh Israeli strikes on April 14 killing 5+ civilians and Hezbollah counterattacks ongoing, expectations for breakthrough remain dim." },
   ],
 
   // ── THREAT LEVELS ─────────────────────────────────────────
