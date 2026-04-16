@@ -327,8 +327,11 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 </footer>
 
 <script>
-  const TELEGRAM_TOKEN = '__TELEGRAM_BOT_TOKEN__';
-  const TELEGRAM_CHAT  = '__TELEGRAM_CHAT_ID__';
+  // Server-side proxy endpoint for form submissions.
+  // The Telegram bot token is kept secret on the server — never exposed to the client.
+  // Deploy a serverless function (e.g. Cloudflare Worker, Netlify Function, Vercel Edge)
+  // that receives this POST and forwards it to the Telegram API with the token.
+  const FORM_PROXY_URL = '__FORM_PROXY_URL__';
 
   // Modal functions
   function openInquireModal() {
@@ -362,44 +365,19 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
       message: document.getElementById('f-message').value.trim(),
     };
 
-    const meta = {
-      timestamp: new Date().toISOString(),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: navigator.language,
-      userAgent: navigator.userAgent,
-      screen: `${screen.width}×${screen.height}`,
-      viewport: `${window.innerWidth}×${window.innerHeight}`,
-      pixelRatio: window.devicePixelRatio,
-      platform: navigator.platform,
-      url: window.location.href,
-      touch: 'ontouchstart' in window,
-    };
+    if (!data.name || !data.email || !data.message) return;
 
-    const esc = s => String(s).replace(/[_*[\]`]/g, '\\$&');
-
-    const lines = [
-      '📩 *Portfolio Inquiry*',
-      '',
-      `*Name:* ${esc(data.name)}`,
-      `*Email:* ${esc(data.email)}`,
-      `*Message:*\n${esc(data.message)}`,
-      '',
-      '────',
-      `*Time:* ${meta.timestamp}`,
-      `*Timezone:* ${esc(meta.timezone)}`,
-      `*Language:* ${meta.language}`,
-      `*Screen:* ${meta.screen} @ ${meta.pixelRatio}x`,
-      `*Viewport:* ${meta.viewport}`,
-      `*Platform:* ${esc(meta.platform)}`,
-      `*Touch:* ${meta.touch}`,
-      `*URL:* ${esc(meta.url)}`,
-    ].filter(Boolean).join('\n');
-
-    if (TELEGRAM_TOKEN && TELEGRAM_TOKEN.includes(':')) {
-      fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    if (FORM_PROXY_URL && !FORM_PROXY_URL.startsWith('__')) {
+      fetch(FORM_PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: TELEGRAM_CHAT, text: lines, parse_mode: 'Markdown' }),
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          message: data.message,
+          timestamp: new Date().toISOString(),
+          url: window.location.href,
+        }),
       }).catch(() => {});
     }
 
