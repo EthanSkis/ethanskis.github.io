@@ -353,140 +353,136 @@ footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify
 const DATA = {
 
   // ── META ──────────────────────────────────────────────────
-  date: "Apr 21, 2026",
-  title: "News — Apr 21, 2026",
-  footerText: "NEWS · Apr 21, 2026",
+  date: "Apr 22, 2026",
+  title: "News — Apr 22, 2026",
+  footerText: "NEWS · Apr 22, 2026",
 
   // ── HEADER ────────────────────────────────────────────────
-  headerPill: "APR 22 DEADLINE CRITICAL — IRAN REJECTS TALKS — VIOLATIONS EMERGE — CEASEFIRE FRAGILE",
+  headerPill: "CEASEFIRE EXTENDED — BLOCKADE PERSISTS — IRAN SEIZES SHIPS — OIL SPIKES TO $101.73 — TENSIONS ESCALATE",
 
   // ── ALERT ─────────────────────────────────────────────────
-  alert: "<strong>APRIL 22 CLIFF HOURS AWAY:</strong> Iran declares it will not send negotiators to second-round talks; Lebanon ceasefire violations reported by both sides; WTI $86.65, Brent $95.17 — oil stable but blockade ambiguity persists; US gas $4.022, down 54¢ from peak; 10-day Lebanon truce expires April 27 unless extended before tomorrow's diplomatic deadline; Polymarket odds: 83% Trump ends ops by June 30, 68% permanent peace by May 31.",
+  alert: "<strong>CEASEFIRE EXTENDED BUT ESCALATING:</strong> Trump extends ceasefire at last moment, but Iran seizes 3+ commercial ships in Strait of Hormuz hours later; blockade remains active despite Strait opening; oil spikes: WTI above $89, Brent $101.73 (+3.3%); Lebanon death toll rises to 2,454; second-round talks cancelled—Iran not attending; Trump says ship seizures don't violate ceasefire; uranium impasse unresolved; US gas at $4.022 down 54¢ but oil spike pressures prices April 23-24.",
 
   // ── HERO ──────────────────────────────────────────────────
-  heroDate: "MONDAY, APRIL 21, 2026 · DAY 54 OF OPERATION EPIC FURY · 24 HOURS TO DEADLINE",
-  heroHed: "<em>Diplomatic Brink —</em><br>Tehran Refuses Talks, Ceasefire Cracks.",
-  heroDek: "With less than 24 hours until the April 22 diplomatic deadline, Iran has announced it will not participate in a second round of nuclear negotiations, casting the entire ceasefire extension into doubt. Simultaneously, Lebanon and Israel are reporting mutual ceasefire violations—the first concrete breaches of the 10-day truce that began April 17. The violations include alleged Israeli incursions into southern Lebanon and reported Hezbollah rocket fire. Oil markets remain tense but stable: WTI at $86.65, Brent at $95.17, reflecting trader uncertainty on blockade sustainability. US gas prices have continued their week-long decline to $4.022, benefiting from the earlier oil crash and delayed pump transmission. The 49-nation Paris diplomatic summit convened April 17 failed to produce a breakthrough strategy. Pakistan continues mediation efforts but faces an April 22 midnight expiration of the current ceasefire framework—either it extends by negotiated agreement or reverts to active conflict.",
+  heroDate: "TUESDAY, APRIL 22, 2026 · DAY 55 OF OPERATION EPIC FURY · CEASEFIRE EXTENDED AMID ESCALATION",
+  heroHed: "<em>Reprieve or Trap?</em><br>Trump Extends Ceasefire as Iran Seizes Ships.",
+  heroDek: "President Trump extended the Iran-US ceasefire on April 22 at the midnight deadline, giving Tehran time to unify around a diplomatic proposal—but the reprieve immediately triggered Iranian retaliation. Within hours, Iran seized at least three commercial vessels in the Strait of Hormuz, declaring the US naval blockade incompatible with ceasefire terms. Trump dismissed the ship seizures as not violating the ceasefire agreement. The blockade remains intact despite Iran opening the Strait on April 17, creating fundamental tension over the ceasefire's meaning. Second-round nuclear talks in Islamabad collapsed: Iran refused to send negotiators, with President Pezeshkian stating the blockade and 'threats' are 'main obstacles to genuine negotiations.' Oil markets spiked in response: Brent rose to $101.73 USD/bbl (+3.3%), WTI above $89. Meanwhile, Lebanon's death toll has climbed to 2,454 killed and 7,658 injured. The ceasefire extension preserves the door to diplomacy, but Iran's ship seizures and Trump's blockade persistence suggest the conflict has entered a new phase of escalation-within-ceasefire rather than genuine de-escalation.",
 
   // ── COUNTDOWN ─────────────────────────────────────────────
-  countdown: {
-    label: "CRITICAL CEASEFIRE DEADLINE",
-    sub: "Iran refuses second-round talks — violations reported — Lebanon truce expires Apr 27 unless extended — 24 hours to decision",
-    target: "2026-04-22T00:00:00+00:00"
-  },
+  countdown: null,
 
   // ── METRICS (up to 5) ─────────────────────────────────────
   metrics: [
-    { color:"red",  label:"WTI Crude",    value:"$86.65",        sub:"Apr 21 · stable · blockade persists despite Strait opening",             subClass:"dn" },
-    { color:"red",  label:"Brent",        value:"$95.17",        sub:"Apr 21 · elevated · traders pricing blockade permanence",     subClass:"dn" },
-    { color:"green",  label:"US Gas Avg",   value:"$4.022",        sub:"Apr 21 · down 54¢ from peak · pump prices lagging oil recovery",           subClass:"dn" },
-    { color:"red",  label:"Lebanon Ceasefire",      value:"VIOLATIONS", sub:"Both sides report breaches April 21 — truce fragile — 6 days to April 27 expiry", subClass:"dn" },
-    { color:"red",  label:"Second-round Talks",  value:"REJECTED",     sub:"Iran refuses to send negotiators — diplomatic impasse — April 22 deadline critical",    subClass:"dn" },
+    { color:"red",  label:"Brent Crude",    value:"$101.73",        sub:"Apr 22 · surged +3.3% — blockade uncertainty — Iran ship seizures trigger spike",             subClass:"up" },
+    { color:"red",  label:"WTI Crude",        value:"$89+",        sub:"Apr 22 · above $89 — ceasefire extension shock — blockade persists",     subClass:"up" },
+    { color:"green",  label:"US Gas Avg",   value:"$4.022",        sub:"Apr 22 · still down 54¢ from peak — pump lag delays oil spike — expect pressure Apr 23-24",           subClass:"dn" },
+    { color:"red",  label:"Ceasefire Status",      value:"EXTENDED", sub:"Trump extends at deadline — Iran refuses talks — blockade remains active — ship seizures reported", subClass:"dn" },
+    { color:"red",  label:"Lebanon Escalation",  value:"2,454 DEAD",     sub:"Death toll rises — Israeli attacks continue — journalists killed — truce fragile through Apr 27",    subClass:"dn" },
   ],
 
   // ── STORIES (up to 6) ─────────────────────────────────────
-  storiesTitle: "Top Stories — Apr 21, 2026",
+  storiesTitle: "Top Stories — Apr 22, 2026",
   stories: [
     {
       dot: "d-crit",
-      title: "IRAN REJECTS SECOND-ROUND TALKS — Tehran declares it will not participate in US-Iran nuclear negotiations; Pakistan mediation effort collapses",
-      body: "Iran's government announced on April 21 that it will not send negotiators to the second round of US-Iran nuclear talks, effectively ending diplomatic efforts that were supposed to extend the ceasefire beyond April 22. VP JD Vance had been preparing a US delegation to arrive in Islamabad, but Iran's parliamentary speaker Mohammad Bagher Ghalibaf stated Tehran will not negotiate 'under the shadow of threats' and accused Trump of maintaining hostile posture despite the ceasefire window. Pakistan's mediation efforts—which had successfully brokered the April 17 ceasefire—have collapsed with no clear path forward. Trump told media on April 21 that second-round talks 'could happen over the next two days,' contradicting Iran's position and creating strategic confusion. The uranium enrichment impasse remains unresolved: the US demands complete restrictions, Iran insists its program is civilian and refuses indefinite bans. With 24 hours until the April 22 midnight deadline, no second-round date is scheduled and no framework exists for ceasefire extension.",
-      tags: [{ text:"Talks rejected", cls:"t-red" },{ text:"Iran refuses", cls:"t-red" },{ text:"Mediation fails", cls:"t-red" }]
+      title: "TRUMP EXTENDS CEASEFIRE AT MIDNIGHT CLIFF — Tehran gets time to unify proposal; blockade persists; second-round talks cancelled",
+      body: "President Donald Trump announced on April 22 that the United States is extending the ceasefire with Iran, preventing the conflict from restarting at the midnight deadline that had loomed for 24 hours. Trump stated the extension would give Tehran time to 'unify around a proposal' and allow negotiations to continue, maintaining diplomatic channels while preserving US military options. However, Trump emphasized that the US naval blockade on Iranian ports remains fully active and will persist 'until negotiations conclude.' VP JD Vance's planned second-round negotiations in Islamabad collapsed: Iran refused to send a delegation, with President Masoud Pezeshkian stating Tehran will not negotiate under 'shadow of threats' or while the blockade remains. Trump had claimed talks 'could happen in next two days,' but Iran's rejection left no pathway for immediate negotiations. The extension preserves the ceasefire framework originally brokered April 17 but fails to resolve the uranium enrichment impasse: US demands complete restrictions; Iran insists its program is civilian and refuses indefinite bans. Markets immediately repriced the extension as positive for conflict avoidance but uncertain on blockade trajectory.",
+      tags: [{ text:"Ceasefire extended", cls:"t-green" },{ text:"Blockade persists", cls:"t-red" },{ text:"Talks cancelled", cls:"t-red" }]
     },
     {
       dot: "d-crit",
-      title: "LEBANON CEASEFIRE VIOLATIONS EMERGE — Both Israel and Hezbollah report breaches; 10-day truce fragile as April 27 expiry approaches",
-      body: "Lebanon's military reported multiple ceasefire violations on April 21, including alleged Israeli incursions into southern Lebanon beyond the agreed security zone and reported Hezbollah rocket fire from Bekaa Valley positions. Israeli forces denied the violation allegations but confirmed their presence 'remains extensive' in southern Lebanon with a security buffer extending to the Syrian border. Hezbollah, for its part, stated they are 'monitoring Israeli compliance' and reserve the right to respond to 'any violations of the spirit of the ceasefire.' This marks the first concrete recorded breaches of the 10-day truce that began April 17 midnight. The violations, while limited in scale, signal escalating tensions on the northern front and suggest both sides are testing the ceasefire boundaries ahead of the April 22 deadline. The Lebanon ceasefire technically expires April 27 (10 days from April 17) unless explicitly extended. If the April 22 diplomatic deadline passes without a framework for extension, the violations could rapidly escalate to full-scale resumption of hostilities. Displaced Lebanese families who had begun returning home are now expressing fear of renewed conflict.",
-      tags: [{ text:"Violations reported", cls:"t-red" },{ text:"Israeli incursions", cls:"t-red" },{ text:"Hezbollah fire", cls:"t-red" }]
+      title: "IRAN SEIZES COMMERCIAL SHIPS IN STRAIT HOURS AFTER EXTENSION — At least 3 vessels detained; Trump says seizures don't violate ceasefire",
+      body: "Iran detained at least three commercial vessels in the Strait of Hormuz on April 22, just hours after Trump announced the ceasefire extension. The seizures were Iran's immediate response to Trump's statement that the US blockade would persist indefinitely. Trump told media that Iran's ship seizures do not constitute ceasefire violations and that he remains open to negotiations. However, the seizures escalate tensions dramatically: Iran views the blockade as incompatible with ceasefire terms and has declared it will use the Strait—which Iran opened on April 17 as a ceasefire gesture—to pressure the US toward blockade scaling. The detained vessels are non-US flagged commercial ships; international law and historical precedent support Iran's right to board foreign vessels in their own territorial waters, but the timing creates a crisis-within-ceasefire dynamic. The seized ships' cargo and routes remain unclear, but the seizures signal Iran's intent to match Trump's blockade pressure with its own counter-measures. Global shipping insurers immediately raised premiums for Strait transits. The seizures cast doubt on the ceasefire's long-term sustainability if both sides continue tit-for-tat escalation.",
+      tags: [{ text:"Ships seized", cls:"t-red" },{ text:"Iran retaliation", cls:"t-red" },{ text:"Blockade vs. Strait", cls:"t-red" }]
     },
     {
       dot: "d-crit",
-      title: "APRIL 22 CEASEFIRE DEADLINE — 24 hours to extend or default; diplomatic summit failed; no second-round talks; blockade persists",
-      body: "The April 22 midnight deadline represents the critical juncture for ceasefire extension and diplomatic breakthrough. The 49-nation Paris summit that convened April 17 produced no binding agreement on blockade scaling, uranium enrichment compromise, or post-ceasefire framework. With Iran refusing to participate in second-round talks and Israel-Lebanon violations emerging, the April 22 decision point faces unprecedented pressure. If negotiations fail: the Lebanon ceasefire expires April 27 (6 days later) and reverts to active conflict; the US naval blockade continues indefinitely on Iranian ports; uranium enrichment talks remain stalled; and Abqaiq oil facility stays offline, constraining global supply. If extended: talks resume under new framework; blockade scaling could be negotiated; and uranium enrichment compromise becomes possible. Trump retains ultimate decision authority with a razor-thin 214-213 Congressional margin that limits his ability to order new military strikes without facing potential mass defection. Markets are pricing low probability of full diplomatic breakthrough but expect ceasefire extension as 'softer' alternative to conflict resumption.",
-      tags: [{ text:"24 hours left", cls:"t-red" },{ text:"Iran refuses talks", cls:"t-red" },{ text:"Extension critical", cls:"t-amber" }]
+      title: "OIL SPIKES ON CEASEFIRE EXTENSION SHOCK — Brent surges to $101.73 (+3.3%), WTI above $89; blockade persistence drives uncertainty",
+      body: "Crude oil markets spiked sharply on April 22 in response to Trump's ceasefire extension announcement coupled with his declaration that the US naval blockade would remain in force. Brent crude surged to $101.73 USD/bbl, up 3.3% from the prior day's $95.17. WTI crude held above $89 per barrel, up ~2% from April 21's close. The rally reflects traders repricing the persistent blockade constraint on Iranian oil exports despite the Strait being open for transit. Markets interpreted the ceasefire extension as good for conflict avoidance but negative for oil supply: the blockade remains the binding constraint on global crude availability, with Kharg Island (90% of Iran's exports) and Abqaiq (5% of global output) both offline. If blockade scaling is negotiated in post-extension talks, oil could spike to $110+ from relief; if blockade persists indefinitely, expect $100+ baseline for crude through May-June. Iran's ship seizures added volatility: traders worry Iranian retaliation could trigger escalatory spiral and blockade tightening. The 3% Brent rally will transmit to US gas pumps over next 5-7 days, likely pushing national average from $4.022 toward $4.15–4.25 by April 28-29 unless ceasefire negotiations stabilize geopolitical risk premium.",
+      tags: [{ text:"Brent $101.73", cls:"t-red" },{ text:"WTI surges", cls:"t-amber" },{ text:"Blockade uncertain", cls:"t-red" }]
+    },
+    {
+      dot: "d-crit",
+      title: "LEBANON DEATH TOLL RISES TO 2,454 — Israeli attacks continue; journalists killed; ceasefire fragility increases as April 27 expiry looms",
+      body: "Lebanon's disaster management unit updated the death toll from the conflict to 2,454 killed and 7,658 injured, a significant increase from prior estimates. Israeli airstrikes continued on April 22, killing Lebanese journalist Amal Khalil and wounding her colleague Zeinab Faraj. The escalating casualty count reflects the intensity of Israel-Hezbollah operations despite the April 17 ceasefire framework. Lebanese authorities warned that the 10-day ceasefire expires April 27 (5 days from April 22) unless explicitly extended or renegotiated. If the April 22 Iran-US ceasefire extension fails to establish a post-ceasefire framework, the Lebanon truce will expire automatically and active conflict will resume. Both Israel and Hezbollah have reported mutual ceasefire violations in recent days, signaling ceasefire discipline is weakening. Displaced Lebanese families who began returning home April 17 are now expressing fear of renewed escalation. The spike in casualties and media attacks suggests Israel is intensifying operations ahead of potential ceasefire collapse. Any widening of Israel-Hezbollah conflict in early May would undermine regional stability and trigger new oil supply shocks.",
+      tags: [{ text:"2,454 dead", cls:"t-red" },{ text:"Israeli attacks ongoing", cls:"t-red" },{ text:"Expiry looms Apr 27", cls:"t-red" }]
     },
     {
       dot: "d-high",
-      title: "US GAS CONTINUES DECLINE TO $4.022 — Down 54¢ from April 9 peak; pump prices stable through April 22",
-      body: "The US national average regular gasoline price fell further to $4.022 on April 21, down 54¢ from the April 9 peak of $4.17 and continuing its steady week-long decline. The decrease reflects the earlier Strait opening announcement (April 17) and Trump's blockade persistence statement, which initially crashed oil 11% but has since stabilized as traders price the blockade ambiguity. Gas station pump prices typically lag crude price changes by 5-7 days, meaning April 17's oil volatility will fully manifest at the pump on April 22-24. If ceasefire extends beyond April 22 and blockade scaling is negotiated, prices could drop another 20-30¢ by late April. If blockade persists indefinitely and violations escalate, prices will stabilize around $3.95–4.05 by mid-May. Current price is $1.04 above pre-war baseline ($2.98 on Feb 26). The pump lag effect insulates consumers from April 22's diplomatic decision for another 24-48 hours, but post-deadline market moves will rapidly transmit to gas stations.",
-      tags: [{ text:"$4.022 ▼54¢", cls:"t-green" },{ text:"Stable through Apr 22", cls:"t-amber" },{ text:"Decision delayed at pump", cls:"t-amber" }]
+      title: "SECOND-ROUND TALKS CANCELLED — Iran refuses delegation; mediation collapses; uranium impasse unresolved",
+      body: "Vice President JD Vance's planned second-round nuclear negotiations in Islamabad on April 22 collapsed entirely after Iran declined to send a delegation. Pakistan's government announced that 'formal response from Iranian side about confirmation of delegation' was 'still awaited' as the deadline passed, effectively ending the diplomatic push. Iranian President Masoud Pezeshkian stated in an online statement that Tehran welcomes dialogue but will not negotiate while 'breach of commitments, blockade and threats are main obstacles to genuine negotiations.' An adviser to Iran's parliamentary speaker characterized the ceasefire extension as a potential 'ploy to buy time' for US military planning. With talks cancelled, the uranium enrichment impasse remains unresolved: the US demands Iran surrender its enriched uranium stockpile and cease further enrichment; Iran insists its program is civilian and refuses indefinite bans. The failed talks suggest uranium compromise will not be resolved in April—pushing uranium negotiations into May-June if the ceasefire holds. Trump's signals that talks 'could happen in next two days' lack Iranian reciprocal commitment. The broader implication: ceasefire extension does not equal diplomatic progress; both sides are consolidating positions rather than compromising.",
+      tags: [{ text:"Talks cancelled", cls:"t-red" },{ text:"Iran refuses", cls:"t-red" },{ text:"Uranium stalled", cls:"t-red" }]
     },
     {
       dot: "d-high",
-      title: "OIL HOLDS STABLE AT $86–95 — WTI $86.65, Brent $95.17; blockade enforcement persists despite Strait opening",
-      body: "Crude oil prices held steady on April 21 with WTI at $86.65 and Brent at $95.17, reflecting trader consensus that blockade enforcement remains the primary constraint on Iranian crude sales despite the Strait of Hormuz being open to transit shipping. The 11% crash that followed Iran's April 17 Strait opening announcement has reversed partially as markets repriced the persistent US naval blockade. Abqaiq (Saudi) and Kharg Island (Iran) remain offline—disrupting ~5% of global output and ~90% of Iranian exports respectively. The blockade's long-term viability depends entirely on April 22's diplomatic outcome: if ceasefire extends and blockade scaling is negotiated, oil could rebound to $95–100; if blockade persists indefinitely, expect continued $85–90 trading range. Polymarket odds show 76% probability WTI hits $90 in April 2026, suggesting traders expect further volatility before month-end. April 22's decision will set the trajectory for May-June oil markets.",
-      tags: [{ text:"WTI stable $86.65", cls:"t-amber" },{ text:"Blockade holds", cls:"t-red" },{ text:"Decision-driven", cls:"t-red" }]
-    },
-    {
-      dot: "d-mod",
-      title: "POLYMARKET REPRICES ON IRAN REJECTION — Uranium surrender odds flat at 68%; permanent peace falls to 45%; end-of-ops odds surge to 83%",
-      body: "Prediction markets shifted sharply on April 21 following Iran's announcement that it will not send negotiators to second-round talks. 'Iran agrees to surrender uranium enrichment by April 30' held steady at 68%, reflecting uncertainty about what Iran's rejection means for enrichment prospects. 'Permanent peace deal by May 31' declined to 45% (from 38% April 17), as traders repriced the negotiation collapse. However, 'Trump announces end of military operations against Iran by June 30' surged to 83%, suggesting strong market expectation that even without a permanent peace deal, Trump will halt offensive operations by summer. 'US-Iran permanent peace deal by May 31' remains at 68%. 'WTI crude hits $90 in April 2026' remains at 76%, as traders price April 22's volatility. The broad repricing reflects market consensus that April 22 will NOT produce a full diplomatic breakthrough—instead, ceasefire extension (soft option) is most likely, with talks resuming on a delayed timeline. If Iran participates in talks only after April 22, uranium compromise becomes a May-June question rather than April.",
-      tags: [{ text:"Uranium 68%", cls:"t-amber" },{ text:"Peace drops to 45%", cls:"t-red" },{ text:"Ops end 83%", cls:"t-green" }]
+      title: "INTERNATIONAL ENERGY AGENCY WARNS OF 'WORST ENERGY CRISIS EVER' — Jet fuel prices spike above $100; global airlines prepare for summer disruption",
+      body: "The International Energy Agency issued a stark warning on April 22 that the Iran-US-Israel conflict is creating 'the worst energy crisis ever faced by the world,' surpassing even the 1973 Arab oil embargo in geopolitical supply disruption. Jet fuel prices have risen to well over $100 per barrel since the conflict began on February 28, creating cascading cost pressures on European and global airlines. European carriers announced preparation for 'challenging spring and summer' operations with route consolidations and price increases. The IEA statement reflects the severe impact of offline supply: Kharg Island (Iran, 90% of exports), Abqaiq (Saudi, ~5% of global output), and the US naval blockade on Iranian ports all constrain supply simultaneously. With Trump's blockade persistence and Iran's ship seizures creating escalatory dynamics, the IEA warned that any further conflict expansion could push oil to $150+ per barrel within weeks. US gas prices remain at $4.022 on April 22 due to pump lag, but the IEA's warning suggests traders expect sustained $100+ crude baseline through May-June at minimum. Airlines' advance preparations for summer suggest expectation of persistent energy crisis through summer 2026.",
+      tags: [{ text:"Worst crisis ever", cls:"t-red" },{ text:"Jet fuel >$100", cls:"t-red" },{ text:"Summer disruption", cls:"t-amber" }]
     },
   ],
 
   // ── MAP ───────────────────────────────────────────────────
-  mapTitle: "Conflict Theater — Apr 21, 2026 · 24 HOURS TO DEADLINE",
+  mapTitle: "Conflict Theater — Apr 22, 2026 · CEASEFIRE EXTENDED, BLOCKADE PERSISTS, ESCALATION CONTINUES",
   mapCenter: [30, 35],
   mapScaleMult: 1.1,
-  mapLabel: { lon:56.5, lat:26.55, lines:["HORMUZ OPEN","BLOCKADE ACTIVE"], color:"#ef9f27" },
+  mapLabel: { lon:56.5, lat:26.55, lines:["STRAIT OPEN","BLOCKADE ACTIVE","SHIPS SEIZED"], color:"#ef9f27" },
   markers: [
-    { name:"Tehran",              lat:35.69, lon:51.39, type:"diplo", note:"REJECTED TALKS — Apr 21 — Iran declared it will not send negotiators to second round; uranium enrichment impasse persists; mediation collapsed" },
-    { name:"Qom",                 lat:34.64, lon:50.88, type:"strike", note:"Nuclear-adjacent strikes paused under ceasefire — negotiations failed Apr 11-12 — no compromise on enrichment — April 22 deadline critical" },
-    { name:"Bushehr",             lat:28.97, lon:50.84, type:"strike", note:"Nuclear plant damaged Apr 7 — remains offline — compensation package unresolved — talks collapsed" },
-    { name:"Kharg Island",        lat:29.24, lon:50.32, type:"strike", note:"US struck Apr 7 — handles 90% of Iran's crude exports — OFFLINE UNDER BLOCKADE — no export relief despite Strait opening" },
-    { name:"Mahshahr Petrochem",  lat:30.56, lon:49.20, type:"strike", note:"Israel struck Apr 6 — export operations frozen by blockade — not resolved in failed talks" },
-    { name:"Abqaiq",              lat:25.93, lon:49.69, type:"strike", note:"STRUCK Apr 8 — OFFLINE — handles ~5% of global oil — critical global supply bottleneck" },
-    { name:"Strait of Hormuz",    lat:26.55, lon:56.50, type:"airdef", note:"OPEN FOR TRANSIT Apr 17 — Iran declared fully open for ceasefire duration — US blockade REMAINS ACTIVE — transit-open but exports frozen" },
-    { name:"Kuwait",              lat:29.37, lon:47.99, type:"airdef", note:"Active defenses — intercepted Iranian attacks Apr 8 — ceasefire monitoring" },
-    { name:"UAE",                 lat:24.50, lon:54.40, type:"airdef", note:"Air defenses active — ceasefire holding with heightened vigilance" },
-    { name:"Bahrain",             lat:26.07, lon:50.55, type:"airdef", note:"Ceasefire zone — monitoring compliance" },
-    { name:"Saudi Arabia",        lat:26.50, lon:44.00, type:"strike", note:"Abqaiq remains OFFLINE — global supply impact critical; not resolved in talks" },
-    { name:"Lebanon",             lat:33.80, lon:35.80, type:"diplo", note:"CEASEFIRE VIOLATIONS REPORTED — Apr 21 — Violations by both sides emerge; 10-day truce fragile; expires April 27 unless extended" },
-    { name:"N. Israel (Hezbollah)", lat:33.20, lon:35.57, type:"diplo", note:"Violations reported Apr 21 — Israeli incursions alleged — Hezbollah rocket fire — tensions escalating; ceasefire discipline collapsing" },
-    { name:"Haifa",               lat:32.82, lon:34.99, type:"airdef", note:"Ceasefire violations emerging — air defense monitoring heightened" },
-    { name:"Tel Aviv",            lat:32.08, lon:34.78, type:"diplo", note:"Israel monitoring Lebanon ceasefire violations — diplomatic coordination on April 22 deadline" },
-    { name:"CVN-72 Arabian Sea",  lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — blockade enforcement active · Persian Gulf monitoring · threat enforcement" },
-    { name:"CVN-78 E.Med",        lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean · regional posture · Israel support" },
-    { name:"Islamabad",           lat:33.72, lon:73.06, type:"diplo",  note:"MEDIATION COLLAPSED — Apr 21 — Second-round talks rejected by Iran · no negotiators sent · Pakistan's brokering failed · April 22 cliff looms" },
-    { name:"Washington DC",       lat:38.91, lon:-77.04, type:"diplo", note:"Trump signals blockade continues; Congress 214-213 margin constrains military action; April 22 decision authority vested with President" },
-    { name:"Paris",               lat:48.86, lon:2.35, type:"diplo",  note:"49-NATION SUMMIT — Apr 17 FAILED — No framework produced · Strait opening welcomed but blockade persists · diplomatic urgency unfulfilled" },
+    { name:"Tehran",              lat:35.69, lon:51.39, type:"diplo", note:"CEASEFIRE EXTENDED Apr 22 — Iran given time to unify proposal — refuses second-round talks — blockade incompatible with ceasefire — uranium impasse unresolved" },
+    { name:"Qom",                 lat:34.64, lon:50.88, type:"strike", note:"Nuclear-adjacent — ceasefire holds but uranium negotiations failed — no compromise path visible — talks stalled indefinitely" },
+    { name:"Bushehr",             lat:28.97, lon:50.84, type:"strike", note:"Nuclear plant damaged Apr 7 — remains offline — compensation unresolved — no talks to resume" },
+    { name:"Kharg Island",        lat:29.24, lon:50.32, type:"strike", note:"US struck Apr 7 — 90% of Iran's crude exports — OFFLINE UNDER BLOCKADE — blockade persists despite ceasefire extension" },
+    { name:"Mahshahr Petrochem",  lat:30.56, lon:49.20, type:"strike", note:"Israel struck Apr 6 — export frozen by blockade — unresolved in failed talks" },
+    { name:"Abqaiq",              lat:25.93, lon:49.69, type:"strike", note:"STRUCK Apr 8 — OFFLINE — 5% of global oil — critical bottleneck · IEA warns worst crisis ever" },
+    { name:"Strait of Hormuz",    lat:26.55, lon:56.50, type:"airdef", note:"OPEN Apr 17 — BLOCKADE REMAINS ACTIVE — Iran seized 3+ ships Apr 22 — ceasefire within escalation dynamic — shipping premiums spike" },
+    { name:"Kuwait",              lat:29.37, lon:47.99, type:"airdef", note:"Active defenses — monitoring Strait tensions — shipping insurance costs rise" },
+    { name:"UAE",                 lat:24.50, lon:54.40, type:"airdef", note:"Air defenses active — Strait monitoring heightened — ceasefire holding with extreme vigilance" },
+    { name:"Bahrain",             lat:26.07, lon:50.55, type:"airdef", note:"Ceasefire zone — shipping hub at risk from Strait escalation" },
+    { name:"Saudi Arabia",        lat:26.50, lon:44.00, type:"strike", note:"Abqaiq OFFLINE — global supply crisis · IEA calls it worst ever — oil at $101+ · not resolved in talks" },
+    { name:"Lebanon",             lat:33.80, lon:35.80, type:"diplo", note:"DEATH TOLL 2,454 — Apr 22 — ceasefire fragile — expires Apr 27 unless extended — Israeli attacks ongoing" },
+    { name:"N. Israel (Hezbollah)", lat:33.20, lon:35.57, type:"diplo", note:"Violations reported — tensions escalating — ceasefire discipline weakening — journalists killed Apr 22" },
+    { name:"Haifa",               lat:32.82, lon:34.99, type:"airdef", note:"Violations and escalation — heightened air defense — Lebanon truce expires Apr 27" },
+    { name:"Tel Aviv",            lat:32.08, lon:34.78, type:"diplo", note:"Monitoring Lebanon escalation — intensifying operations ahead of April 27 expiry — casualties rising" },
+    { name:"CVN-72 Arabian Sea",  lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — blockade enforcement active Apr 22 — Trump says blockade persists indefinitely · jet fuel crisis escalates" },
+    { name:"CVN-78 E.Med",        lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean · regional posture · Israel support · IEA warns worst crisis" },
+    { name:"Islamabad",           lat:33.72, lon:73.06, type:"diplo",  note:"TALKS COLLAPSED — Apr 22 — Iran refused delegation · no second-round date · mediation failed · uranium stalled" },
+    { name:"Washington DC",       lat:38.91, lon:-77.04, type:"diplo", note:"Trump extends ceasefire, maintains blockade, warns of military action if talks fail — Congress 214-213 margin limits new strikes" },
+    { name:"Paris",               lat:48.86, lon:2.35, type:"diplo",  note:"49-NATION SUMMIT FAILED Apr 17 — no framework produced · Strait opening welcomed but blockade persists · crisis deepens" },
   ],
 
   // ── POLYMARKET ────────────────────────────────────────────
   polyTitle: "Polymarket · live odds",
   poly: [
-    { name:"Trump ends military ops against Iran by Jun 30",   pct:83,  delta:"▲21", deltaUp:true, barColor:"var(--green)" },
-    { name:"Iran surrenders uranium stockpile by Apr 30",      pct:68,  delta:"▲0", deltaUp:false, barColor:"var(--amber)" },
-    { name:"Permanent peace deal by May 31",                  pct:45,  delta:"▼7", deltaUp:false, barColor:"var(--red)" },
-    { name:"US-Iran conflict ends by Jun 30",                 pct:68,  delta:"▼2", deltaUp:false, barColor:"var(--blue)" },
-    { name:"WTI crude hits $90 in April 2026",                pct:76,  delta:"▲0", deltaUp:false, barColor:"var(--amber)" },
+    { name:"Trump extends ceasefire by Apr 22",          pct:92,  delta:"▲92", deltaUp:true, barColor:"var(--green)" },
+    { name:"Trump ends military ops against Iran by Jun 30", pct:79, delta:"▼4", deltaUp:false, barColor:"var(--amber)" },
+    { name:"Iran agrees to uranium surrender by Apr 30", pct:62,  delta:"▼6", deltaUp:false, barColor:"var(--red)" },
+    { name:"Permanent peace deal by May 31",             pct:41,  delta:"▼4", deltaUp:false, barColor:"var(--red)" },
+    { name:"WTI crude hits $100 by end of April",        pct:68,  delta:"▲68", deltaUp:true, barColor:"var(--red)" },
   ],
 
   // ── WATCH LIST (up to 5) ──────────────────────────────────
   watchItems: [
-    { icon:"!!!",  iconColor:"var(--red)", text:"<strong>APRIL 22 MIDNIGHT CLIFF — 24 HOURS UNTIL CEASEFIRE DECISION — Iran rejects talks, violations emerge, diplomatic impasse critical</strong> — With less than 24 hours until April 22 midnight, the ceasefire framework faces imminent collapse. Iran has declared it will not send negotiators to second-round talks; Israel and Hezbollah are reporting mutual violations of the Lebanon truce; the 49-nation Paris summit produced no binding extension framework; and Trump faces Congressional pressure limiting his ability to order new military strikes. The April 22 decision determines whether ceasefire extends (best case) or reverts to active conflict (worst case). Lebanon's 10-day truce expires April 27, so April 22 must establish a post-ceasefire framework or face 5-day descent into re-escalation. Markets price low probability of full diplomatic breakthrough but expect soft ceasefire extension. Oil volatility will spike immediately post-deadline. Pump prices will transmit the decision April 22-24. This is the highest-consequence geopolitical moment since the conflict began on Feb 28." },
-    { icon:"!!",   iconColor:"var(--red)", text:"<strong>LEBANON CEASEFIRE VIOLATIONS — Both Israel and Hezbollah report breaches; ceasefire discipline collapsing; 6 days to April 27 expiry</strong> — Lebanon's military reported ceasefire violations on April 21 for the first time, including alleged Israeli incursions into southern Lebanon beyond agreed security zones and reported Hezbollah rocket fire from Bekaa Valley positions. Israeli forces denied violations but confirmed their presence remains 'extensive.' Hezbollah stated they are 'monitoring Israeli compliance' and reserve the right to respond. These are the first concrete recorded breaches of the 10-day truce (April 17-27). Escalation risks are high: if violations accelerate, ceasefire discipline will collapse entirely; if April 22 fails to extend framework, violations become trigger for full-scale resumption. Both sides are testing boundaries ahead of the deadline. Displaced Lebanese families have begun returning home but now fear renewed conflict. Early warning system: any pattern of escalating violations April 21-22 indicates ceasefire collapse probability >60%." },
-    { icon:"!!",   iconColor:"var(--red)", text:"<strong>IRAN REJECTS SECOND-ROUND TALKS — Tehran declares no negotiators sent; mediation collapsed; uranium impasse unresolved</strong> — Iran announced April 21 that it will not participate in US-Iran second-round nuclear negotiations, effectively collapsing Pakistan's mediation and ending the slim diplomatic path to ceasefire extension. Iran's parliamentary speaker said Tehran will not negotiate 'under shadow of threats' and accused Trump of maintaining hostile posture. VP JD Vance had prepared a US delegation for Islamabad, but Iran's rejection leaves zero diplomatic momentum into April 22. The uranium enrichment impasse remains unresolved: US demands complete restrictions, Iran insists program is civilian and refuses indefinite bans. Trump claimed second-round talks 'could happen in next two days'—contradicting Iran's position and creating strategic confusion. With no second-round date, no mediation framework, and April 22 deadline 24 hours away, the probability of diplomatic breakthrough has collapsed. Ceasefire extension becomes a purely political decision by Trump rather than a negotiated outcome." },
-    { icon:"!",    iconColor:"var(--amber)", text:"<strong>OIL STABLE BUT BLOCKADE-DEPENDENT — WTI $86.65, Brent $95.17; April 22 decision will set May-June trajectory</strong> — Crude oil prices held stable on April 21 (WTI $86.65, Brent $95.17) as traders repriced the persistent US naval blockade despite Iran's Strait of Hormuz opening. The 11% April 17 crash has partially reversed; current prices reflect trader consensus that blockade enforcement is the primary constraint on Iranian crude sales. Abqaiq and Kharg Island remain offline, disrupting ~5% of global output and ~90% of Iranian exports. If April 22 ceasefire extends and blockade scaling is negotiated, oil could rebound to $95–100 within days; if blockade persists indefinitely, expect continued $85–90 trading range through May. Polymarket odds show 76% probability WTI hits $90 in April, suggesting traders expect post-deadline volatility. The April 22 decision will determine May-June oil market trajectory entirely." },
-    { icon:"i",    iconColor:"var(--green)", text:"<strong>US GAS CONTINUES DECLINE TO $4.022 — Down 54¢ from peak; pump prices insulated from April 22 volatility through Apr 23</strong> — National average gasoline fell to $4.022 on April 21, down 54¢ from the April 9 peak and continuing its week-long decline. Gas station pump prices typically lag crude by 5-7 days, meaning April 22's diplomatic decision will not fully manifest at pumps until April 22-24. This provides 24-48 hour buffer as consumers remain insulated from market shock. If ceasefire extends and blockade scaling is negotiated, prices could drop another 20-30¢ by late April, reaching $3.72–3.92 by April 30. If blockade persists indefinitely, prices stabilize around $3.95–4.05 by mid-May. Current price is $1.04 above pre-war baseline ($2.98 Feb 26). The pump lag effect means April 22's decision will fully impact consumer prices April 23-24, but the lag provides crucial stabilization window." },
+    { icon:"!!!",  iconColor:"var(--red)", text:"<strong>IRAN SEIZES SHIPS — ESCALATION WITHIN CEASEFIRE — 3+ commercial vessels detained in Strait Apr 22; Trump dismisses as non-violation; blockade-Strait deadlock deepens</strong> — Iran seized at least three commercial vessels in the Strait of Hormuz on April 22, just hours after Trump announced the ceasefire extension and reaffirmed the US blockade would persist. Iran views the blockade as fundamentally incompatible with ceasefire terms and is using ship seizures to pressure the US toward blockade scaling. Trump stated the seizures do not violate the ceasefire, but this creates a dangerous precedent: both sides are now escalating within the ostensible ceasefire framework. The seized ships are non-US flagged (Iran has right to board in territorial waters), but international shipping insurance premiums spiked immediately. If Iran continues seizing commercial vessels and Trump retaliates militarily, the ceasefire will collapse from within. This is a critical early warning: the ceasefire is not a genuine de-escalation but rather a pause in which both sides continue pressure tactics. Watch for: any Trump military response to future ship seizures (high probability >50%), or any Iranian escalation of Strait interference. Either triggers full conflict resumption." },
+    { icon:"!!",   iconColor:"var(--red)", text:"<strong>LEBANON DEATH TOLL CLIMBS TO 2,454 — Casualties rising, journalists killed, ceasefire expires Apr 27 — Israel intensifying operations; Hezbollah violations; escalation-within-ceasefire dynamic</strong> — Lebanon's death toll rose to 2,454 killed and 7,658 injured by April 22, with Israeli airstrikes continuing to claim civilian and media targets. Journalist Amal Khalil was killed on April 22; her colleague Zeinab Faraj wounded. The casualty spike and targeting of media suggest Israel is accelerating operations ahead of April 27's ceasefire expiry. Both Israel and Hezbollah have reported mutual violations; ceasefire discipline is collapsing. The 10-day truce expires April 27 (5 days from April 22)—if the April 22 Iran-US ceasefire extension fails to establish a renegotiation framework, Lebanon's ceasefire expires automatically and active combat resumes. Displaced families who returned home April 17 now fear renewed conflict. Early warning: any surge in Israeli airstrikes April 23-26 indicates Israel is preparing for ceasefire collapse. Any Lebanese retaliation for civilian casualties April 22-23 accelerates the timeline to April 27 breakdown." },
+    { icon:"!!",   iconColor:"var(--red)", text:"<strong>OIL SPIKES TO $101.73 ON CEASEFIRE EXTENSION + BLOCKADE PERSISTENCE — Brent +3.3%, WTI +2%; blockade-Strait deadlock drives $100+ baseline expectation; pump prices pressured April 23-24</strong> — Brent crude surged to $101.73 USD/bbl (+3.3%) on April 22 as traders repriced Trump's ceasefire extension combined with his reaffirmation that the blockade persists indefinitely. WTI rose above $89 (+2%). Markets interpreted the extension as good for conflict avoidance but negative for oil: the blockade remains the binding constraint on supply, with Kharg Island offline (90% of Iran's exports) and Abqaiq offline (5% of global). The 3% Brent rally will transmit to US gas pumps over 5-7 days, pushing national average from $4.022 toward $4.15–4.25 by April 28-29 unless negotiations stabilize geopolitical risk. If blockade scaling is negotiated, oil could spike to $110+ from relief; if blockade persists and Iran seizes more ships, expect $100+ baseline through May-June. The IEA called the crisis 'the worst energy crisis ever'—worse than 1973 embargo. Watch for: Trump military response to Iran ship seizures (triggers oil spike to $120+), or any blockade scaling announcement (oil crash to $85–90)." },
+    { icon:"!!",   iconColor:"var(--amber)", text:"<strong>SECOND-ROUND TALKS COLLAPSED — Iran refused delegation; uranium impasse unresolved; mediation failed; negotiations delayed to May-June</strong> — VP JD Vance's second-round nuclear talks in Islamabad collapsed on April 22 when Iran refused to send negotiators. Iranian President Pezeshkian stated Tehran will not negotiate while blockade and 'threats' persist. An Iranian adviser called the ceasefire extension a potential 'ploy to buy time' for military planning. The uranium enrichment impasse remains unresolved: US demands complete restrictions; Iran insists program is civilian. With talks cancelled, uranium compromise will not be resolved in April—pushing negotiations into May-June if ceasefire holds. Trump's claims that talks 'could happen in next two days' lack Iranian reciprocal commitment. The broader implication: ceasefire extension ≠ diplomatic progress. Both sides are consolidating positions, not compromising. Watch for: any Trump announcement of new uranium proposal (unlikely), or any Iranian willingness to rejoin talks (would signal shift). Neither appears imminent." },
+    { icon:"!",    iconColor:"var(--amber)", text:"<strong>US GAS AT $4.022, OIL SPIKING TO $101+ — Pump lag delays April 22 oil surge to April 23-24; expect national average to spike toward $4.15-4.25 by April 28-29</strong> — National average gasoline remained at $4.022 on April 22 due to typical 5-7 day pump lag behind crude movements. However, the 3% Brent rally to $101.73 will fully manifest at gas pumps April 23-24 as station operators adjust prices. Expect national average to rise toward $4.15–4.25 by April 28-29 unless geopolitical risk premium eases. If blockade scaling is negotiated suddenly, prices could drop to $3.80–3.95 by May 5; if blockade persists and escalation continues, expect $4.15–4.30 baseline through May. The IEA's 'worst crisis ever' assessment suggests traders are pricing long-term persistence of high prices. Current price ($4.022) is $1.04 above pre-war baseline ($2.98 Feb 26)—roughly 35% increase from war start. Watch pump prices daily April 23-24 to confirm the lag transmission; any spike beyond $4.30 signals market pricing in further escalation." },
   ],
 
   // ── THREAT LEVELS ─────────────────────────────────────────
   threats: [
-    { name:"April 22 ceasefire expiry",      pct:78, color:"var(--red)",   label:"CRITICAL" },
-    { name:"Iran / US escalation risk",      pct:72, color:"var(--red)",   label:"CRITICAL" },
-    { name:"Lebanon ceasefire collapse",     pct:68, color:"var(--red)",   label:"CRITICAL" },
-    { name:"Naval blockade enforcement",     pct:85, color:"var(--red)",   label:"CRITICAL" },
-    { name:"Global oil supply disruption",   pct:61, color:"var(--amber)", label:"HIGH" },
-    { name:"Strait of Hormuz closure",       pct:18, color:"var(--green)", label:"LOW" },
+    { name:"Strait of Hormuz closure risk",      pct:38, color:"var(--red)",   label:"HIGH" },
+    { name:"Iran / US escalation risk",          pct:76, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Lebanon ceasefire collapse (Apr 27)", pct:72, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Naval blockade enforcement",         pct:88, color:"var(--red)",   label:"CRITICAL" },
+    { name:"Global oil supply disruption",       pct:74, color:"var(--amber)", label:"HIGH" },
+    { name:"Uranium enrichment stalemate",       pct:85, color:"var(--red)",   label:"CRITICAL" },
   ],
 
   // ── GAS CHART ─────────────────────────────────────────────
   gasTitle: "US Avg Gas Price — Weekly (AAA national avg)",
-  gasSub: "Regular unleaded · Jan 8 – Apr 21, 2026 · sourced from AAA newsroom",
+  gasSub: "Regular unleaded · Jan 8 – Apr 22, 2026 · sourced from AAA newsroom",
   gasCurrentVal: "$4.022",
-  gasCurrentSub: "Apr 21 · down 54¢ from peak · ceasefire violations emerging · April 22 cliff ahead · pump lag buffers through Apr 23",
+  gasCurrentSub: "Apr 22 · down 54¢ from peak · oil spikes to $101.73 · pump lag delays transmission · expect $4.15+ by Apr 28 · ceasefire extended but blockade persists",
   gasSplitIdx: 8,
   gasData: [
     { date:"Jan 8",  price:2.81 },
@@ -512,6 +508,7 @@ const DATA = {
     { date:"Apr 16", price:4.093 },
     { date:"Apr 17", price:4.09 },
     { date:"Apr 21", price:4.022 },
+    { date:"Apr 22", price:4.022 },
   ],
   gasEvents: [
     { label:["War begins","Feb 28"],        index:7.5,  color:"#e24b4a" },
@@ -530,8 +527,9 @@ const DATA = {
     { label:["Lebanon ceasefire","Apr 17"], index:17.2, color:"#3dba7f" },
     { label:["Strait opens","Apr 17"],      index:17.3, color:"#3dba7f" },
     { label:["Oil crashes","▼11%"],         index:17.35, color:"#e24b4a" },
-    { label:["Iran rejects","talks"],       index:22.0, color:"#e24b4a" },
-    { label:["Violations","emerge"],        index:22.1, color:"#e24b4a" },
+    { label:["Ceasefire extended","Apr 22"], index:22.9, color:"#3dba7f" },
+    { label:["Ships seized","Apr 22"],      index:23.0, color:"#e24b4a" },
+    { label:["Oil spikes","$101.73"],       index:23.05, color:"#e24b4a" },
   ],
   gasYMin: 2.7,
   gasYMax: 4.5,
@@ -539,11 +537,11 @@ const DATA = {
     { label:"YTD low",    value:"$2.81",  sub:"Jan 8, 2026" },
     { label:"pre-event",  value:"$2.98",  sub:"Feb 26 — day before war" },
     { label:"peak",       value:"$4.17",  sub:"Apr 9 · war spike + blockade" },
-    { label:"today",      value:"$4.022", sub:"Apr 21 · down 54¢ from peak · violations emerging · April 22 deadline critical", red:true },
+    { label:"today",      value:"$4.022", sub:"Apr 22 · stable due to pump lag · oil spike to $101.73 · expect pressure Apr 23-24 · ceasefire extended, blockade persists", red:false },
   ],
 
   // ── FOOTER SOURCES ────────────────────────────────────────
-  sources: ["Al Jazeera","CNN","Washington Post","NPR","BBC","OilPrice API","AAA newsroom","Trading Economics","Polymarket","Pakistan media"],
+  sources: ["Al Jazeera","NBC News","CNN","NPR","CNBC","Fortune","OilPrice API","AAA newsroom","Trading Economics","International Energy Agency","Polymarket"],
 
 }; // ← END OF DATA — do not edit below this line
 </script>
