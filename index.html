@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0a0907">
+<meta name="theme-color" content="#1c1c1e">
 <title>Ethan Gardner</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='6' fill='%23c9a96a'/></svg>">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0907;
-  --dot:rgba(201,169,106,0.28);
+  --bg:#1c1c1e;
+  --dot:#c9a96a;
   --gap:22px;
   --ox:0px;
   --oy:0px;
@@ -38,19 +38,10 @@ body.dragging{cursor:grabbing}
   background-position:calc(50% + var(--ox)) calc(50% + var(--oy));
   will-change:background-position;
 }
-.vignette{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(ellipse at 50% 50%,rgba(201,169,106,0.10),transparent 65%),
-    radial-gradient(120% 80% at 50% 50%,transparent 55%,rgba(0,0,0,0.55) 100%);
-}
 </style>
 </head>
 <body>
   <div class="grid" id="grid"></div>
-  <div class="vignette"></div>
 <script>
 (() => {
   const body = document.body;
