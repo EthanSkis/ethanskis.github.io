@@ -12,6 +12,8 @@
   --bg:#1c1c1e;
   --dot:#ffffff;
   --gap:22px;
+  --dot-r:1px;
+  --dot-r2:1.4px;
   --ox:0px;
   --oy:0px;
 }
@@ -33,10 +35,10 @@ body.dragging{cursor:grabbing}
   position:fixed;
   inset:0;
   background-color:var(--bg);
-  background-image:radial-gradient(circle,var(--dot) 1px,transparent 1.4px);
+  background-image:radial-gradient(circle,var(--dot) var(--dot-r),transparent var(--dot-r2));
   background-size:var(--gap) var(--gap);
   background-position:calc(50% + var(--ox)) calc(50% + var(--oy));
-  will-change:background-position;
+  will-change:background-position,background-size;
 }
 </style>
 </head>
@@ -45,21 +47,37 @@ body.dragging{cursor:grabbing}
 <script>
 (() => {
   const body = document.body;
+  const SENS = 0.25;
+  const BASE_GAP = 22;
+  const MIN_GAP = 6;
+  const MAX_GAP = 240;
+
   let ox = 0, oy = 0;
+  let gap = BASE_GAP;
   let vx = 0, vy = 0;
-  let lastX = 0, lastY = 0;
   let lastT = 0;
-  let dragging = false;
-  let pointerId = null;
   let raf = null;
+  let mode = 'idle';
+
+  const pointers = new Map();
+  let panLast = { x: 0, y: 0 };
+  let pinchStart = null;
 
   const apply = () => {
     body.style.setProperty('--ox', ox + 'px');
     body.style.setProperty('--oy', oy + 'px');
   };
+  const applyGap = () => {
+    body.style.setProperty('--gap', gap + 'px');
+    const r = gap / BASE_GAP;
+    body.style.setProperty('--dot-r', (1 * r) + 'px');
+    body.style.setProperty('--dot-r2', (1.4 * r) + 'px');
+  };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const center = () => ({ vw: window.innerWidth, vh: window.innerHeight });
 
   const tick = () => {
-    if (dragging) { raf = null; return; }
+    if (mode !== 'idle') { raf = null; return; }
     vx *= 0.94;
     vy *= 0.94;
     ox += vx;
@@ -72,42 +90,83 @@ body.dragging{cursor:grabbing}
     }
   };
 
-  const onDown = (e) => {
-    dragging = true;
-    pointerId = e.pointerId;
+  const startPan = (p) => {
+    mode = 'pan';
     body.classList.add('dragging');
-    body.setPointerCapture(e.pointerId);
-    lastX = e.clientX;
-    lastY = e.clientY;
+    panLast.x = p.x; panLast.y = p.y;
     lastT = performance.now();
     vx = 0; vy = 0;
     if (raf) { cancelAnimationFrame(raf); raf = null; }
   };
 
-  const SENS = 0.25;
+  const startPinch = () => {
+    mode = 'pinch';
+    body.classList.remove('dragging');
+    const [a, b] = [...pointers.values()];
+    const midX = (a.x + b.x) / 2;
+    const midY = (a.y + b.y) / 2;
+    const dist = Math.hypot(b.x - a.x, b.y - a.y);
+    pinchStart = { dist, gap, ox, oy, midX, midY };
+    vx = 0; vy = 0;
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  };
+
+  const onDown = (e) => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    body.setPointerCapture(e.pointerId);
+    if (pointers.size === 1) {
+      startPan({ x: e.clientX, y: e.clientY });
+    } else if (pointers.size === 2) {
+      startPinch();
+    }
+  };
 
   const onMove = (e) => {
-    if (!dragging || e.pointerId !== pointerId) return;
-    const now = performance.now();
-    const dx = (e.clientX - lastX) * SENS;
-    const dy = (e.clientY - lastY) * SENS;
-    const dt = Math.max(1, now - lastT);
-    ox += dx;
-    oy += dy;
-    vx = dx / dt * 16;
-    vy = dy / dt * 16;
-    lastX = e.clientX;
-    lastY = e.clientY;
-    lastT = now;
-    apply();
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (mode === 'pinch' && pointers.size >= 2) {
+      const [a, b] = [...pointers.values()];
+      const midX = (a.x + b.x) / 2;
+      const midY = (a.y + b.y) / 2;
+      const dist = Math.hypot(b.x - a.x, b.y - a.y);
+      const ratio = dist / Math.max(1, pinchStart.dist);
+      const newGap = clamp(pinchStart.gap * ratio, MIN_GAP, MAX_GAP);
+      const s = newGap / pinchStart.gap;
+      const { vw, vh } = center();
+      ox = (midX - vw / 2) - s * (pinchStart.midX - vw / 2 - pinchStart.ox);
+      oy = (midY - vh / 2) - s * (pinchStart.midY - vh / 2 - pinchStart.oy);
+      gap = newGap;
+      applyGap();
+      apply();
+    } else if (mode === 'pan' && pointers.size === 1) {
+      const now = performance.now();
+      const dx = (e.clientX - panLast.x) * SENS;
+      const dy = (e.clientY - panLast.y) * SENS;
+      const dt = Math.max(1, now - lastT);
+      ox += dx;
+      oy += dy;
+      vx = dx / dt * 16;
+      vy = dy / dt * 16;
+      panLast.x = e.clientX;
+      panLast.y = e.clientY;
+      lastT = now;
+      apply();
+    }
   };
 
   const onUp = (e) => {
-    if (e.pointerId !== pointerId) return;
-    dragging = false;
-    pointerId = null;
-    body.classList.remove('dragging');
-    if (!raf) raf = requestAnimationFrame(tick);
+    if (!pointers.has(e.pointerId)) return;
+    pointers.delete(e.pointerId);
+    if (pointers.size === 1) {
+      const [p] = [...pointers.values()];
+      startPan(p);
+    } else if (pointers.size === 0) {
+      const wasPan = mode === 'pan';
+      mode = 'idle';
+      body.classList.remove('dragging');
+      if (wasPan && !raf) raf = requestAnimationFrame(tick);
+    }
   };
 
   body.addEventListener('pointerdown', onDown);
@@ -115,12 +174,27 @@ body.dragging{cursor:grabbing}
   body.addEventListener('pointerup', onUp);
   body.addEventListener('pointercancel', onUp);
   body.addEventListener('contextmenu', (e) => e.preventDefault());
+
   window.addEventListener('wheel', (e) => {
     e.preventDefault();
-    ox -= e.deltaX * SENS;
-    oy -= e.deltaY * SENS;
-    apply();
+    if (e.ctrlKey) {
+      const { vw, vh } = center();
+      const oldGap = gap;
+      const newGap = clamp(oldGap * Math.exp(-e.deltaY * 0.01), MIN_GAP, MAX_GAP);
+      const s = newGap / oldGap;
+      ox = (e.clientX - vw / 2) - s * (e.clientX - vw / 2 - ox);
+      oy = (e.clientY - vh / 2) - s * (e.clientY - vh / 2 - oy);
+      gap = newGap;
+      applyGap();
+      apply();
+    } else {
+      ox -= e.deltaX * SENS;
+      oy -= e.deltaY * SENS;
+      apply();
+    }
   }, { passive: false });
+
+  window.addEventListener('gesturestart', (e) => e.preventDefault());
 })();
 </script>
 </body>
