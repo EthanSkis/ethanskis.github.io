@@ -6,79 +6,129 @@
 <meta name="theme-color" content="#0a0907">
 <title>Ethan Gardner</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='6' fill='%23c9a96a'/></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0a0907;
-  --gold:#c9a96a;
-  --gold-bright:#e8cc8a;
-  --gold-deep:#8a7340;
-  --dot:rgba(201,169,106,0.26);
-  --ink:#ece4d2;
+  --dot:rgba(201,169,106,0.28);
   --gap:22px;
+  --ox:0px;
+  --oy:0px;
 }
-html,body{height:100%;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html,body{height:100%;background:var(--bg);overscroll-behavior:none}
 body{
-  font-family:'Geist',system-ui,-apple-system,sans-serif;
   min-height:100svh;
   min-height:100dvh;
   overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  background-color:var(--bg);
-  background-image:
-    radial-gradient(ellipse at 50% 50%,rgba(201,169,106,0.10),transparent 65%),
-    radial-gradient(circle,var(--dot) 1px,transparent 1.4px);
-  background-size:auto,var(--gap) var(--gap);
-  background-position:center,center;
+  position:fixed;
+  inset:0;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  cursor:grab;
 }
-body::before{
-  content:"";
+body.dragging{cursor:grabbing}
+.grid{
+  position:fixed;
+  inset:0;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle,var(--dot) 1px,transparent 1.4px);
+  background-size:var(--gap) var(--gap);
+  background-position:calc(50% + var(--ox)) calc(50% + var(--oy));
+  will-change:background-position;
+}
+.vignette{
   position:fixed;
   inset:0;
   pointer-events:none;
-  background:radial-gradient(120% 80% at 50% 50%,transparent 55%,rgba(0,0,0,0.55) 100%);
-}
-.stage{position:relative;z-index:1;padding:0 24px}
-.name{
-  font-family:'Geist',system-ui,sans-serif;
-  font-weight:400;
-  font-size:18px;
-  letter-spacing:0.04em;
-  color:var(--ink);
-  opacity:0.85;
-  margin-bottom:18px;
-}
-.figure{
-  font-family:'Geist',system-ui,sans-serif;
-  font-weight:500;
-  font-size:clamp(78px,23vw,134px);
-  line-height:0.95;
-  letter-spacing:-0.045em;
-  background:linear-gradient(180deg,var(--gold-bright) 0%,var(--gold) 45%,var(--gold-deep) 100%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  -webkit-text-fill-color:transparent;
-  color:transparent;
-  filter:drop-shadow(0 6px 22px rgba(201,169,106,0.18));
-}
-.figure .currency{
-  font-size:0.55em;
-  vertical-align:0.42em;
-  margin-right:0.04em;
-  font-weight:400;
-  opacity:0.85;
+  background:
+    radial-gradient(ellipse at 50% 50%,rgba(201,169,106,0.10),transparent 65%),
+    radial-gradient(120% 80% at 50% 50%,transparent 55%,rgba(0,0,0,0.55) 100%);
 }
 </style>
 </head>
 <body>
-  <div class="stage">
-    <div class="name">Ethan Gardner</div>
-    <div class="figure"><span class="currency">$</span>1,336</div>
-  </div>
+  <div class="grid" id="grid"></div>
+  <div class="vignette"></div>
+<script>
+(() => {
+  const body = document.body;
+  let ox = 0, oy = 0;
+  let vx = 0, vy = 0;
+  let lastX = 0, lastY = 0;
+  let lastT = 0;
+  let dragging = false;
+  let pointerId = null;
+  let raf = null;
+
+  const apply = () => {
+    body.style.setProperty('--ox', ox + 'px');
+    body.style.setProperty('--oy', oy + 'px');
+  };
+
+  const tick = () => {
+    if (dragging) { raf = null; return; }
+    vx *= 0.94;
+    vy *= 0.94;
+    ox += vx;
+    oy += vy;
+    apply();
+    if (Math.abs(vx) > 0.05 || Math.abs(vy) > 0.05) {
+      raf = requestAnimationFrame(tick);
+    } else {
+      raf = null;
+    }
+  };
+
+  const onDown = (e) => {
+    dragging = true;
+    pointerId = e.pointerId;
+    body.classList.add('dragging');
+    body.setPointerCapture(e.pointerId);
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastT = performance.now();
+    vx = 0; vy = 0;
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  };
+
+  const onMove = (e) => {
+    if (!dragging || e.pointerId !== pointerId) return;
+    const now = performance.now();
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    const dt = Math.max(1, now - lastT);
+    ox += dx;
+    oy += dy;
+    vx = dx / dt * 16;
+    vy = dy / dt * 16;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastT = now;
+    apply();
+  };
+
+  const onUp = (e) => {
+    if (e.pointerId !== pointerId) return;
+    dragging = false;
+    pointerId = null;
+    body.classList.remove('dragging');
+    if (!raf) raf = requestAnimationFrame(tick);
+  };
+
+  body.addEventListener('pointerdown', onDown);
+  body.addEventListener('pointermove', onMove);
+  body.addEventListener('pointerup', onUp);
+  body.addEventListener('pointercancel', onUp);
+  body.addEventListener('contextmenu', (e) => e.preventDefault());
+  window.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    ox -= e.deltaX;
+    oy -= e.deltaY;
+    apply();
+  }, { passive: false });
+})();
+</script>
 </body>
 </html>
