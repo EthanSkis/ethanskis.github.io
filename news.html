@@ -373,14 +373,14 @@ const DATA = {
 
   // ── METRICS (up to 5) ─────────────────────────────────────
   metrics: [
-    { color:"amber",  label:"Brent Crude",    value:"$100.53",     sub:"May 9 · +$0.47 from May 8 (+0.47%); modest recovery as deal momentum accelerates; traders cautiously pricing 60-65% deal success",             subClass:"up" },
-    { color:"amber",  label:"WTI Crude",      value:"$94.36",      sub:"May 9 · -$0.45 from May 8 (-0.48%); lagging Brent; spread widens to $6.17 as market hedges Strait opening uncertainty",     subClass:"dn" },
-    { color:"red",  label:"US Gas Avg",     value:"$4.55",       sub:"May 9 · holding steady; up 25¢ for second consecutive week; refined traders monitoring oil for Strait reopening signal",           subClass:"neutral" },
-    { color:"green",   label:"Deal Status", value:"ACCELERATING", sub:"May 9 — Trump expects Iranian response TODAY evening; described as 'closest to agreement since war began'; MOU framework public",           subClass:"up" },
-    { color:"amber",  label:"Strait Status", value:"CLOSED", sub:"Zero transits; sporadic US-Iranian clashes continue; Iran seized tanker Ocean Koi May 9; blockade indefinite pending MOU signature",    subClass:"dn" },
+    { color:"red",  label:"Brent Crude",    value:"$99.95",      sub:"May 11 · +$4.65 from May 8 (+4.9%); oil spikes on deal collapse fears and escalation repricing; traders pricing extended blockade scenario",             subClass:"up" },
+    { color:"red",  label:"WTI Crude",      value:"$105.50",     sub:"May 11 · +$11.14 from May 8 (+11.8%); sharp spike reflects escalation premium; WTI leading Brent as traders price U.S. military risk",     subClass:"up" },
+    { color:"red",  label:"US Gas Avg",     value:"$4.520",      sub:"May 11 · down $0.03 from peak $4.55; resilience despite oil spike suggests traders hedging; watch for $4.70 (collapse signal) or $4.40 (de-escalation)",           subClass:"neutral" },
+    { color:"red",   label:"Deal Status", value:"STALLED", sub:"May 11 — Trump rejects Iran counter-proposal as 'totally unacceptable'; gap on Strait sovereignty and nuclear program deemed insurmountable",           subClass:"dn" },
+    { color:"red",  label:"Escalation Risk", value:"HIGH", sub:"Brent-WTI spread $6.45; Lebanon ceasefire collapse 70%+ if deal fails; Iran claims fourth round 'difficult'; Trump's May 15 deadline looms",    subClass:"up" },
   ],
 
-  storiesTitle: "Global Conflict — May 9, 2026",
+  storiesTitle: "Global Conflict — May 11, 2026",
 
   // ── STORIES (up to 6) ─────────────────────────────────────
   stories: [
@@ -423,10 +423,10 @@ const DATA = {
   ],
 
   // ── MAP ───────────────────────────────────────────────────
-  mapTitle: "Conflict Theater — May 9, 2026 · DEAL ACCELERATING: TRUMP EXPECTS IRAN RESPONSE TODAY, MOU FRAMEWORK PUBLIC, NUCLEAR MORATORIUM 12-15YR NEGOTIATED, STRAIT CLOSED BUT OPENING TIMELINE EMERGING",
+  mapTitle: "Conflict Theater — May 11, 2026 · DEAL STALLED: TRUMP REJECTS IRAN COUNTER-PROPOSAL, FOURTH ROUND TALKS 'DIFFICULT', STRAIT CLOSED, OIL SPIKES, LEBANON ESCALATION RISK RISING",
   mapCenter: [30, 35],
   mapScaleMult: 1.1,
-  mapLabel: { lon:56.5, lat:26.55, lines:["STRAIT CLOSED","DEAL ACCELERATING","RESPONSE TODAY"], color:"#ef9f27" },
+  mapLabel: { lon:56.5, lat:26.55, lines:["STRAIT CLOSED","DEAL STALLED","OIL SPIKE"], color:"#e24b4a" },
   markers: [
     { name:"Tehran",              lat:35.69, lon:51.39, type:"diplo", note:"DEAL ACCELERATING — Trump expects Iranian response TODAY (May 9 evening) — MOU framework public with nuclear moratorium 12-15yr negotiated — described as 'closest to agreement since war began' — Iran focused on Strait reopening first, nuclear concessions second — Iranian response THIS EVENING will determine deal success or escalation path" },
     { name:"Qom",                 lat:34.64, lon:50.88, type:"diplo", note:"Nuclear program negotiations — central to MOU terms — uranium enrichment limits under discussion — deal appears to include nuclear concessions in exchange for sanctions lift" },
@@ -453,11 +453,11 @@ const DATA = {
   // ── POLYMARKET ────────────────────────────────────────────
   polyTitle: "Polymarket · live odds",
   poly: [
-    { name:"Iran-US war ends by June 30",    pct:68,  delta:"▲20", deltaUp:true, barColor:"var(--green)" },
-    { name:"Strait of Hormuz reopens by May 31", pct:58, delta:"▲23", deltaUp:true, barColor:"var(--green)" },
-    { name:"Trump ends military ops by June 30", pct:62, delta:"▲24", deltaUp:true, barColor:"var(--green)" },
-    { name:"WTI crude hits $120 by May 31",  pct:38,  delta:"▼14", deltaUp:false, barColor:"var(--red)" },
-    { name:"Iran agrees to nuclear moratorium by May 31", pct:64, delta:"▲36", deltaUp:true, barColor:"var(--green)" },
+    { name:"Iran-US war ends by June 30",    pct:42,  delta:"▼26", deltaUp:false, barColor:"var(--red)" },
+    { name:"Strait of Hormuz reopens by May 31", pct:28, delta:"▼30", deltaUp:false, barColor:"var(--red)" },
+    { name:"Trump ends military ops by June 30", pct:35, delta:"▼27", deltaUp:false, barColor:"var(--red)" },
+    { name:"WTI crude hits $120 by May 31",  pct:68,  delta:"▲30", deltaUp:true, barColor:"var(--green)" },
+    { name:"Iran agrees to nuclear moratorium by May 31", pct:22, delta:"▼42", deltaUp:false, barColor:"var(--red)" },
   ],
 
   // ── WATCH LIST (up to 5) ──────────────────────────────────
@@ -481,9 +481,9 @@ const DATA = {
 
   // ── GAS CHART ─────────────────────────────────────────────
   gasTitle: "US Avg Gas Price — Daily (AAA national avg)",
-  gasSub: "Regular unleaded · Jan 8 – May 8, 2026 · sourced from AAA newsroom",
-  gasCurrentVal: "$4.55",
-  gasCurrentSub: "May 8 (latest available) · up 25¢ for second consecutive week; holding steady despite deal acceleration; refined traders hedging on Strait reopening confirmation; watch for $4.70+ (deal collapse) or $4.40- (deal success)",
+  gasSub: "Regular unleaded · Jan 8 – May 11, 2026 · sourced from AAA newsroom",
+  gasCurrentVal: "$4.520",
+  gasCurrentSub: "May 11 (latest available) · slight decline from May 10 peak despite oil spike; resilience suggests traders hedging on deal resurrection or Strait blockade acceptance; watch for $4.70 (collapse signal) or $4.40 (deal success)",
   gasSplitIdx: 8,
   gasData: [
     { date:"Jan 8",  price:2.81 },
@@ -518,6 +518,9 @@ const DATA = {
     { date:"May 6",  price:4.536 },
     { date:"May 7",  price:4.55 },
     { date:"May 8",  price:4.55 },
+    { date:"May 9",  price:4.55 },
+    { date:"May 10", price:4.522 },
+    { date:"May 11", price:4.520 },
   ],
   gasEvents: [
     { label:["War begins","Feb 28"],        index:7.5,  color:"#e24b4a" },
@@ -564,6 +567,9 @@ const DATA = {
     { label:["Deal accelerates","May 9"],   index:27.95, color:"#ef9f27" },
     { label:["Response expected","today"],  index:27.97, color:"#ef9f27" },
     { label:["MOU framework","public"],     index:27.98, color:"#3dba7f" },
+    { label:["Trump rejects Iran","May 11"], index:28.05, color:"#e24b4a" },
+    { label:["Oil spikes","Brent $99.95"],  index:28.08, color:"#e24b4a" },
+    { label:["Talks 'difficult'","May 11"],  index:28.1, color:"#e24b4a" },
   ],
   gasYMin: 2.7,
   gasYMax: 4.7,
@@ -571,11 +577,11 @@ const DATA = {
     { label:"YTD low",    value:"$2.81",  sub:"Jan 8, 2026" },
     { label:"pre-event",  value:"$2.98",  sub:"Feb 26 — day before war" },
     { label:"peak (May 5)",       value:"$4.483", sub:"May 5 — Iran attacks UAE; Brent hits $116.55" },
-    { label:"May 8-9",    value:"$4.55", sub:"May 8-9 · up 25¢ for second week; deal accelerating; traders hedging; if Strait reopens $4.00-4.25 likely; if deal fails $4.80-5.50", red:true },
+    { label:"May 11",    value:"$4.520", sub:"May 11 · resilient despite oil spike; deal rejection fears mount; traders watching for escalation repricing", red:false },
   ],
 
   // ── FOOTER SOURCES ────────────────────────────────────────
-  sources: ["CNN","Axios","Al Jazeera","Trading Economics","OilPrice.com","AAA","Polymarket","PBS News","Time","CNBC"],
+  sources: ["CNN","Al Jazeera","CNBC","Trading Economics","OilPrice.com","AAA","Polymarket","PBS News","Time","Axios"],
 
 }; // ← END OF DATA — do not edit below this line
 </script>
