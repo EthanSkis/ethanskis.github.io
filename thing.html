@@ -3,248 +3,390 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0c0d0f">
+<meta name="theme-color" content="#0a0b0d">
 <title>Trailhome — homes near singletrack</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M15 78 L40 38 L55 60 L70 42 L88 78 Z' fill='none' stroke='%233dba7f' stroke-width='5' stroke-linejoin='round'/><circle cx='72' cy='28' r='7' fill='%233dba7f'/></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M3 26 L11 12 L16 19 L21 10 L29 26 Z' fill='none' stroke='%234ade80' stroke-width='2.5' stroke-linejoin='round'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link rel="stylesheet" href="header.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0c0d0f;--surface:#111214;--surface2:#17191c;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --text:#e8e6e1;--muted:#6b6a66;--muted2:#9a9894;
-  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.10);
-  --green:#3dba7f;--green-dim:rgba(61,186,127,0.10);
-  --purple:#9b8cf7;--purple-dim:rgba(155,140,247,0.10);
-  --red:#e24b4a;--red-dim:rgba(226,75,74,0.10);
-  --amber:#e2b34b;
-  --bar-bg:rgba(12,13,15,0.92);
-  --header-accent:#3dba7f;--header-accent-dim:rgba(61,186,127,0.15);
+  --bg:#0a0b0d;
+  --glass:rgba(14,16,19,0.78);
+  --glass-2:rgba(22,25,29,0.72);
+  --surface:#16191d;
+  --border:rgba(255,255,255,0.07);
+  --border-strong:rgba(255,255,255,0.14);
+  --text:#ecebe6;
+  --muted:#7a7872;
+  --muted2:#a8a6a0;
+  --green:#4ade80;
+  --green-soft:rgba(74,222,128,0.14);
+  --blue:#60a5fa;
+  --blue-soft:rgba(96,165,250,0.14);
+  --amber:#fbbf24;
+  --advanced:#f5f5f0;
+  --advanced-soft:rgba(245,245,240,0.10);
+  --tile-filter:none;
   --serif:'Instrument Serif',Georgia,serif;
   --mono:'DM Mono',monospace;
   --sans:'Geist',system-ui,sans-serif;
-  --tile-filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.95) saturate(.7);
   --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --tile-url:https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png;
 }
 [data-theme="light"]{
-  --bg:#f5f5f0;--surface:#eaeae5;--surface2:#deded9;
-  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
-  --text:#1a1a1a;--muted:#7a7a72;--muted2:#5a5a54;
-  --blue:#2a7de0;--green:#2a8f5e;--red:#c43030;--purple:#7a6ad0;--amber:#b88a1a;
-  --bar-bg:rgba(245,245,240,0.92);
-  --header-accent:#2a8f5e;--header-accent-dim:rgba(42,143,94,0.15);
-  --tile-filter:none;
+  --bg:#f1efe9;
+  --glass:rgba(248,246,240,0.85);
+  --glass-2:rgba(240,238,232,0.75);
+  --surface:#e6e3db;
+  --border:rgba(0,0,0,0.08);
+  --border-strong:rgba(0,0,0,0.14);
+  --text:#1a1a1a;
+  --muted:#8a8780;
+  --muted2:#5e5b54;
+  --green:#16a34a;
+  --green-soft:rgba(22,163,74,0.12);
+  --blue:#2563eb;
+  --blue-soft:rgba(37,99,235,0.12);
+  --amber:#b88a1a;
+  --advanced:#1a1a1a;
+  --advanced-soft:rgba(0,0,0,0.10);
 }
+
 html,body{height:100%}
 body{
   background:var(--bg);color:var(--text);
   font-family:var(--sans);font-size:14px;line-height:1.5;
-  display:flex;flex-direction:column;
-  height:100vh;height:100dvh;
-  overflow:hidden;
-  overscroll-behavior:none;
+  overflow:hidden;overscroll-behavior:none;
+  position:fixed;inset:0;
 }
-header{flex:0 0 auto}
 
-.app{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-
-/* ── Desktop: side panel + map ───────────────────────────────── */
-.main{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:340px 1fr}
-
-.panel{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;min-height:0}
-.panel::-webkit-scrollbar{width:6px}
-.panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-
-.panel-section{padding:18px 18px 14px;border-bottom:1px solid var(--border)}
-.panel-title{font-family:var(--serif);font-size:24px;letter-spacing:-.01em;color:var(--text);margin-bottom:4px}
-.panel-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
-.stat-row{display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--muted2);flex-wrap:wrap}
-.stat-row b{color:var(--text);font-weight:500;font-family:var(--mono)}
-
-.filter{margin-top:14px}
-.filter:first-child{margin-top:0}
-.filter-label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.filter-label b{color:var(--text);font-weight:500;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:13px}
-input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:32px;touch-action:manipulation}
-input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--border2);border-radius:2px}
-input[type=range]::-moz-range-track{height:3px;background:var(--border2);border-radius:2px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--green);margin-top:-9.5px;cursor:pointer;border:3px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4)}
-input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--green);cursor:pointer;border:3px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4)}
-
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-family:var(--mono);font-size:11px;padding:8px 12px;border-radius:14px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted2);cursor:pointer;user-select:none;letter-spacing:.03em;transition:all .15s;touch-action:manipulation}
-.chip.on[data-diff=green]{background:var(--green-dim);color:var(--green);border-color:var(--green)}
-.chip.on[data-diff=blue]{background:var(--blue-dim);color:var(--blue);border-color:var(--blue)}
-.chip.on[data-diff=black]{background:rgba(255,255,255,.06);color:var(--text);border-color:var(--text)}
-.chip:not(.on){opacity:.5}
-
-.listings{padding:6px 8px 18px}
-.listing{padding:12px 12px;margin:6px 4px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .15s;touch-action:manipulation}
-.listing:hover{border-color:var(--green);background:var(--bg)}
-.listing.active{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
-.listing-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.listing-price{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text);letter-spacing:-.01em}
-.listing-trail{font-family:var(--mono);font-size:11px;color:var(--green);white-space:nowrap}
-.listing-specs{font-size:12px;color:var(--muted2);margin-top:4px}
-.listing-addr{font-size:11.5px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
-.listing-nearest{font-size:11px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
-.listing-nearest b{color:var(--text);font-weight:500}
-
-.note{padding:12px 14px calc(12px + var(--safe-b));font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.55;background:var(--surface2);border-top:1px solid var(--border)}
-.note b{color:var(--muted2);font-weight:500}
-
-.map-wrap{position:relative;min-height:0;min-width:0}
-#map{height:100%;width:100%;background:var(--bg)}
-.leaflet-tile{filter:var(--tile-filter)}
+/* ── Map (underneath everything) ───────────────────────────── */
+#map{position:fixed;inset:0;z-index:1;background:var(--bg)}
 .leaflet-container{background:var(--bg);font-family:var(--sans);touch-action:none}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--surface);color:var(--text);border:1px solid var(--border)}
-.leaflet-popup-content{margin:10px 12px;font-size:12.5px;line-height:1.5}
-.leaflet-popup-content b{color:var(--text)}
-.leaflet-control-zoom a{background:var(--surface)!important;color:var(--text)!important;border-color:var(--border)!important}
-.leaflet-control-attribution{background:var(--bar-bg)!important;color:var(--muted)!important;font-size:10px!important}
+.leaflet-tile{filter:var(--tile-filter)}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{
+  background:var(--glass);backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
+  color:var(--text);border:1px solid var(--border-strong);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.leaflet-popup-content-wrapper{border-radius:10px}
+.leaflet-popup-content{margin:11px 14px;font-size:12.5px;line-height:1.55}
+.leaflet-popup-close-button{color:var(--muted)!important;padding:6px 8px 0 0!important}
+.leaflet-popup-close-button:hover{color:var(--text)!important}
+.leaflet-control-zoom{border:1px solid var(--border-strong)!important;border-radius:8px!important;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.leaflet-control-zoom a{
+  background:var(--glass)!important;color:var(--text)!important;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-color:var(--border)!important;width:32px!important;height:32px!important;line-height:32px!important;font-size:18px!important
+}
+.leaflet-control-zoom a:hover{background:var(--glass-2)!important;color:var(--green)!important}
+.leaflet-control-attribution{
+  background:var(--glass)!important;backdrop-filter:blur(8px);
+  color:var(--muted)!important;font-size:10px!important;
+  border-top-left-radius:6px;padding:3px 8px!important
+}
 .leaflet-control-attribution a{color:var(--muted2)!important}
 
-.home-marker{width:30px;height:30px;border-radius:50% 50% 50% 0;background:var(--green);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);box-shadow:0 1px 6px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s}
-.home-marker.dim{background:var(--muted);opacity:.4}
-.home-marker.active{background:var(--blue);transform:rotate(-45deg) scale(1.2)}
-.home-marker span{transform:rotate(45deg);color:#fff;font-family:var(--mono);font-size:10px;font-weight:500}
-.trailhead{width:20px;height:20px;border-radius:3px;background:var(--amber);border:2px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4);transform:rotate(45deg)}
-
-.legend{position:absolute;bottom:16px;left:16px;background:var(--bar-bg);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:11px;font-family:var(--mono);color:var(--muted2);z-index:500;letter-spacing:.04em;pointer-events:none}
-.legend-row{display:flex;align-items:center;gap:8px;margin:3px 0}
-.legend-row .sw{width:14px;height:3px;border-radius:1px}
-.legend-row .dot{width:10px;height:10px;border-radius:50%}
-.legend-row .sq{width:10px;height:10px;border-radius:2px;transform:rotate(45deg)}
-
-/* ── Mobile tab bar ─────────────────────────────────────────── */
-.tabs{display:none;flex:0 0 auto;background:var(--surface);border-bottom:1px solid var(--border);padding:0}
-.tab{flex:1;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:12px 0;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;touch-action:manipulation}
-.tab.active{color:var(--green);border-bottom-color:var(--green)}
-.tab .badge{display:inline-block;background:var(--green-dim);color:var(--green);font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px}
-
-/* ── Mobile layout ─────────────────────────────────────────── */
-@media(max-width:780px){
-  .main{display:block;position:relative}
-  .tabs{display:flex}
-  .panel,.map-wrap{position:absolute;inset:0;display:none}
-  .panel.show,.map-wrap.show{display:block}
-  .panel.show{display:flex;flex-direction:column}
-  .panel.show > *{flex:0 0 auto}
-  .panel.show .listings{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .panel-section{padding:14px 14px 12px}
-  .panel-title{font-size:20px}
-  .legend{bottom:10px;left:10px;padding:7px 9px;font-size:10px}
-  .stat-row{gap:10px;font-size:11px}
+/* ── Map markers ─────────────────────────────────────────── */
+.home-pin{
+  width:34px;height:34px;
+  background:var(--green);
+  border-radius:50% 50% 50% 4px;
+  transform:rotate(-45deg);
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--bg);
+  box-shadow:0 4px 12px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.2);
+  cursor:pointer;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), background .15s, opacity .15s;
+}
+.home-pin span{transform:rotate(45deg);color:#0a0b0d;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:-.02em}
+.home-pin.dim{background:var(--muted);opacity:.32}
+.home-pin.dim span{color:#0a0b0d;opacity:.7}
+.home-pin.active{background:var(--blue);transform:rotate(-45deg) scale(1.25);z-index:1000!important}
+.home-pin.active span{color:#fff}
+.trail-pin{
+  width:22px;height:22px;
+  background:var(--amber);
+  border-radius:4px;
+  border:2px solid var(--bg);
+  box-shadow:0 3px 10px rgba(0,0,0,.5);
+  transform:rotate(45deg);
+  position:relative;
+}
+.trail-pin::after{
+  content:'';position:absolute;inset:3px;
+  background:var(--bg);border-radius:1px;
+  transform:rotate(-0deg);
 }
 
-/* hide tabs default; only show inside mobile media */
-@media(min-width:781px){
-  .panel,.map-wrap{display:block}
-  .panel{display:flex;flex-direction:column}
-  .panel > .panel-section{flex:0 0 auto}
-  .panel > .listings{flex:1 1 auto}
-  .panel > .note{flex:0 0 auto}
+/* ── Brand mark ──────────────────────────────────────────── */
+.brand-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+  color:var(--text);font-weight:500;text-transform:uppercase;
 }
+.brand-logo svg{width:22px;height:22px;flex-shrink:0;color:var(--green)}
+.brand-logo .pulse{
+  width:6px;height:6px;border-radius:50%;background:var(--green);
+  animation:pulse 2.4s infinite;flex-shrink:0
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+/* ── Top-right theme toggle (floats over map) ─────────────── */
+.theme-btn{
+  position:fixed;top:calc(18px + var(--safe-t));right:18px;z-index:600;
+  width:38px;height:38px;border-radius:50%;
+  background:var(--glass);backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid var(--border-strong);
+  color:var(--text);font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+  transition:transform .15s, background .15s;
+  touch-action:manipulation;
+}
+.theme-btn:hover,.theme-btn:active{background:var(--glass-2);transform:scale(1.06)}
+
+/* ── Sheet (sidebar on desktop, bottom-sheet on mobile) ──── */
+.sheet{
+  position:fixed;z-index:500;
+  background:var(--glass);
+  backdrop-filter:blur(24px) saturate(140%);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  border:1px solid var(--border-strong);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,.35);
+}
+
+/* desktop: left sidebar */
+@media (min-width:781px){
+  .sheet{
+    top:18px;left:18px;bottom:18px;
+    width:380px;border-radius:16px;
+  }
+  .handle{display:none}
+}
+
+/* mobile: bottom sheet */
+@media (max-width:780px){
+  .sheet{
+    left:0;right:0;bottom:0;
+    border-radius:18px 18px 0 0;
+    border-bottom:none;border-left:none;border-right:none;
+    max-height:84vh;max-height:84dvh;
+    transform:translateY(calc(100% - 132px - var(--safe-b)));
+    transition:transform .32s cubic-bezier(.32,.72,0,1);
+  }
+  .sheet.open{transform:translateY(0)}
+  .handle{
+    flex:0 0 auto;
+    padding:9px 0 6px;
+    display:flex;justify-content:center;
+    cursor:pointer;touch-action:manipulation;
+  }
+  .handle::before{
+    content:'';width:36px;height:4px;background:var(--border-strong);border-radius:2px;
+    transition:background .15s;
+  }
+  .sheet.open .handle::before{background:var(--green)}
+}
+
+/* sheet sections */
+.sheet-head{
+  flex:0 0 auto;padding:14px 18px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;gap:10px;
+}
+@media (min-width:781px){
+  .sheet-head{padding:22px 20px 18px}
+}
+
+.stats{
+  display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.stat-big{
+  font-family:var(--serif);font-size:32px;color:var(--text);
+  text-transform:none;letter-spacing:-.02em;line-height:1;
+  font-style:italic;
+}
+.stat-sep{color:var(--border-strong);font-size:14px}
+
+.sheet-body{
+  flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;
+}
+.sheet-body::-webkit-scrollbar{width:6px}
+.sheet-body::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+
+.section{padding:16px 18px;border-bottom:1px solid var(--border)}
+@media (min-width:781px){.section{padding:18px 20px}}
+.section-title{
+  font-family:var(--mono);font-size:10px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;
+}
+
+.filter{margin-top:14px}
+.filter:first-of-type{margin-top:0}
+.filter-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.filter-row span{font-size:13px;color:var(--muted2)}
+.filter-row b{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:500;letter-spacing:.02em}
+input[type=range]{
+  width:100%;-webkit-appearance:none;appearance:none;background:transparent;
+  height:24px;touch-action:manipulation;cursor:pointer;
+}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--border-strong);border-radius:2px}
+input[type=range]::-moz-range-track{height:4px;background:var(--border-strong);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--green);border:3px solid var(--bg);
+  margin-top:-8px;cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--green);border:3px solid var(--bg);
+  cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{
+  font-family:var(--mono);font-size:11px;
+  padding:7px 11px;border-radius:999px;
+  border:1px solid var(--border-strong);
+  background:transparent;color:var(--muted);
+  cursor:pointer;user-select:none;letter-spacing:.04em;
+  transition:all .15s;touch-action:manipulation;
+}
+.chip.on[data-diff=green]{background:var(--green-soft);color:var(--green);border-color:var(--green)}
+.chip.on[data-diff=blue]{background:var(--blue-soft);color:var(--blue);border-color:var(--blue)}
+.chip.on[data-diff=black]{background:var(--advanced-soft);color:var(--text);border-color:var(--text)}
+.chip:not(.on){opacity:.4}
+.chip:active{transform:scale(.96)}
+
+/* listings */
+.listings{padding:8px 10px 18px}
+@media (min-width:781px){.listings{padding:10px 12px 24px}}
+.listing{
+  padding:13px 14px;margin:6px 4px;
+  background:var(--glass-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  transition:all .18s;
+  touch-action:manipulation;
+}
+.listing:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+.listing.active{border-color:var(--green);background:var(--green-soft);box-shadow:0 0 0 1px var(--green) inset}
+.listing-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px}
+.listing-price{font-family:var(--serif);font-size:22px;color:var(--text);letter-spacing:-.02em;line-height:1;font-style:italic}
+.listing-ride{
+  font-family:var(--mono);font-size:11px;color:var(--green);
+  white-space:nowrap;background:var(--green-soft);
+  padding:4px 8px;border-radius:999px;letter-spacing:.04em;
+}
+.listing-specs{font-size:12.5px;color:var(--muted2);font-family:var(--sans)}
+.listing-foot{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  letter-spacing:.02em;
+}
+.listing-foot b{color:var(--text);font-weight:500}
+
+.empty{
+  padding:32px 20px;text-align:center;
+  color:var(--muted);font-family:var(--mono);font-size:12px;
+  line-height:1.6;
+}
+.empty b{display:block;color:var(--muted2);font-weight:500;margin-bottom:4px;font-size:13px}
+
+.footer-note{
+  padding:14px 18px calc(16px + var(--safe-b));
+  font-size:10.5px;color:var(--muted);font-family:var(--mono);
+  line-height:1.55;letter-spacing:.02em;
+  border-top:1px solid var(--border);
+}
+.footer-note b{color:var(--muted2);font-weight:500}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wm"><div class="dot"></div>TRAILHOME</div>
-  <div class="hdr-r">
-    <nav class="hdr-nav">
-      <a href="/" class="nav-link">Portfolio</a>
-      <a href="/news" class="nav-link">News</a>
-      <a href="/notes" class="nav-link">Notes</a>
-      <a href="/snake" class="nav-link">Snake</a>
-      <a href="/html" class="nav-link">Editor</a>
-      <a href="/ai" class="nav-link">AI</a>
-      <a href="/thing" class="nav-link active">Trails</a>
-    </nav>
-    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
-    <div style="position:relative;display:inline-flex">
-      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
-        <div class="menu-bar"></div><div class="menu-bar"></div><div class="menu-bar"></div>
-      </button>
-      <nav class="nav-menu" id="navMenu">
-        <a href="/" class="nav-link">Portfolio</a>
-        <a href="/news" class="nav-link">News</a>
-        <a href="/notes" class="nav-link">Notes</a>
-        <a href="/snake" class="nav-link">Snake</a>
-        <a href="/html" class="nav-link">Editor</a>
-        <a href="/ai" class="nav-link">AI</a>
-        <a href="/thing" class="nav-link active">Trails</a>
-      </nav>
+<div id="map"></div>
+
+<button class="theme-btn" id="themeBtn" title="Toggle theme">☀</button>
+
+<div class="sheet" id="sheet">
+  <div class="handle" id="handle"></div>
+
+  <div class="sheet-head">
+    <div class="brand-logo">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M3 26 L11 12 L16 19 L21 10 L29 26 Z"/>
+      </svg>
+      <span>trailhome</span>
+      <span class="pulse" style="margin-left:auto"></span>
+    </div>
+    <div class="stats">
+      <div>
+        <div class="stat-big" id="statHomes">—</div>
+        homes
+      </div>
+      <span class="stat-sep">/</span>
+      <div>
+        <div class="stat-big" id="statAvg">—</div>
+        min avg ride
+      </div>
+      <span class="stat-sep">/</span>
+      <div>Bend, OR</div>
     </div>
   </div>
-</header>
-<script src="header.js"></script>
 
-<div class="app">
-  <div class="tabs" role="tablist">
-    <button class="tab active" data-tab="map">Map</button>
-    <button class="tab" data-tab="panel">List <span class="badge" id="badge">0</span></button>
-  </div>
-  <div class="main">
-    <aside class="panel" id="panel">
-      <div class="panel-section">
-        <div class="panel-title">Live where you ride.</div>
-        <div class="panel-sub">Bend, Oregon · MVP demo</div>
-        <div class="stat-row">
-          <div><b id="statHomes">—</b> homes</div>
-          <div><b id="statTrails">—</b> trails</div>
-          <div><b id="statAvg">—</b> avg min</div>
+  <div class="sheet-body">
+    <div class="section">
+      <div class="section-title">Filters</div>
+      <div class="filter">
+        <div class="filter-row"><span>Max price</span><b id="priceVal">$1.2M</b></div>
+        <input type="range" id="priceRange" min="300" max="2500" step="50" value="1200">
+      </div>
+      <div class="filter">
+        <div class="filter-row"><span>Min beds</span><b id="bedsVal">2</b></div>
+        <input type="range" id="bedsRange" min="1" max="5" step="1" value="2">
+      </div>
+      <div class="filter">
+        <div class="filter-row"><span>Max ride to trail</span><b id="rideVal">15 min</b></div>
+        <input type="range" id="rideRange" min="2" max="40" step="1" value="15">
+      </div>
+      <div class="filter" style="margin-top:18px">
+        <div class="filter-row" style="margin-bottom:6px"><span>Trail difficulty</span></div>
+        <div class="chips" id="diffChips">
+          <div class="chip on" data-diff="green">● easy</div>
+          <div class="chip on" data-diff="blue">◆ intermediate</div>
+          <div class="chip on" data-diff="black">◆◆ advanced</div>
         </div>
       </div>
+    </div>
 
-      <div class="panel-section">
-        <div class="filter">
-          <div class="filter-label"><span>Max price</span><b id="priceVal">$1.2M</b></div>
-          <input type="range" id="priceRange" min="300" max="2500" step="50" value="1200">
-        </div>
-        <div class="filter">
-          <div class="filter-label"><span>Min beds</span><b id="bedsVal">2</b></div>
-          <input type="range" id="bedsRange" min="1" max="5" step="1" value="2">
-        </div>
-        <div class="filter">
-          <div class="filter-label"><span>Max ride to trail</span><b id="rideVal">15 min</b></div>
-          <input type="range" id="rideRange" min="2" max="40" step="1" value="15">
-        </div>
-        <div class="filter">
-          <div class="filter-label" style="margin-bottom:8px"><span>Trail difficulty</span></div>
-          <div class="chips" id="diffChips">
-            <div class="chip on" data-diff="green">● easy</div>
-            <div class="chip on" data-diff="blue">◆ intermediate</div>
-            <div class="chip on" data-diff="black">◆◆ advanced</div>
-          </div>
-        </div>
-      </div>
+    <div class="section" style="padding:14px 18px 4px">
+      <div class="section-title">Listings · sorted by ride time</div>
+    </div>
+    <div class="listings" id="listings"></div>
 
-      <div class="listings" id="listings"></div>
-
-      <div class="note">
-        <b>MVP notes —</b> Listings &amp; trail geometry here are synthetic, hand-placed near real Bend trailheads (Phil's, Wanoga, Tumalo Falls, Horse Butte, Pilot Butte). A production build would swap these for an MLS / RESO Web API feed and licensed Trailforks or OpenStreetMap data.
-      </div>
-    </aside>
-
-    <div class="map-wrap show" id="mapWrap">
-      <div id="map"></div>
-      <div class="legend">
-        <div class="legend-row"><span class="dot" style="background:var(--green)"></span> home</div>
-        <div class="legend-row"><span class="sq" style="background:var(--amber)"></span> trailhead</div>
-        <div class="legend-row"><span class="sw" style="background:var(--green)"></span> easy</div>
-        <div class="legend-row"><span class="sw" style="background:var(--blue)"></span> intermediate</div>
-        <div class="legend-row"><span class="sw" style="background:var(--text)"></span> advanced</div>
-      </div>
+    <div class="footer-note">
+      <b>MVP demo —</b> Listings &amp; trail geometry are synthetic, hand-placed near real Bend trailheads (Phil's, Wanoga, Tumalo Falls, Horse Butte, Pilot Butte). A production build would swap these for a RESO Web API / MLS feed and licensed Trailforks or OpenStreetMap data.
     </div>
   </div>
 </div>
 
 <script>
-/* ── Sample data (Bend, OR) ────────────────────────────────────────── */
+/* ── Data ──────────────────────────────────────────────────────────── */
 const trailheads = [
   { name: "Phil's Trailhead",   lat: 44.0285, lng: -121.3934 },
   { name: "Wanoga Sno-park",    lat: 43.9645, lng: -121.4715 },
@@ -298,18 +440,17 @@ const homes = [
   { id:22, price:1325, beds:4, baths:3,   sqft:2510, lat:44.0508, lng:-121.4060, addr:"Skyline Ranch" },
 ];
 
-/* ── Geo helpers ───────────────────────────────────────────────────── */
+/* ── Helpers ───────────────────────────────────────────────────────── */
 const haversineMi = (a, b) => {
-  const R = 3958.8;
-  const toRad = d => d * Math.PI / 180;
-  const dLat = toRad(b[0] - a[0]);
-  const dLng = toRad(b[1] - a[1]);
+  const R = 3958.8, toRad = d => d * Math.PI / 180;
+  const dLat = toRad(b[0] - a[0]), dLng = toRad(b[1] - a[1]);
   const s = Math.sin(dLat/2)**2 + Math.cos(toRad(a[0])) * Math.cos(toRad(b[0])) * Math.sin(dLng/2)**2;
   return 2 * R * Math.asin(Math.sqrt(s));
 };
-
 const BIKE_MPH = 12;
 const fmtPrice = k => k >= 1000 ? `$${(k/1000).toFixed(2)}M` : `$${k}k`;
+const getCSS = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#fff';
+const isMobile = () => window.matchMedia('(max-width:780px)').matches;
 
 homes.forEach(h => {
   let best = { d: Infinity, name: '' };
@@ -317,50 +458,86 @@ homes.forEach(h => {
     const d = haversineMi([h.lat, h.lng], [t.lat, t.lng]);
     if (d < best.d) best = { d, name: t.name };
   });
-  h.nearest = best.name;
-  h.miles = best.d;
+  h.nearest = best.name; h.miles = best.d;
   h.rideMin = Math.round((best.d / BIKE_MPH) * 60);
 });
 
-/* ── Map setup ─────────────────────────────────────────────────────── */
-const isMobile = () => window.matchMedia('(max-width:780px)').matches;
+/* ── Theme ────────────────────────────────────────────────────────── */
+const themeBtn = document.getElementById('themeBtn');
+const tileUrls = {
+  dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+};
+let currentTheme = localStorage.getItem('trailhome-theme') || 'dark';
+
+function applyTheme(t){
+  currentTheme = t;
+  document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+  themeBtn.textContent = t === 'light' ? '☾' : '☀';
+  if (tileLayer) {
+    tileLayer.setUrl(tileUrls[t]);
+  }
+  if (typeof trailObjs !== 'undefined') {
+    trailObjs.forEach(o => o.line.setStyle({ color: diffColor(o.diff) }));
+  }
+  localStorage.setItem('trailhome-theme', t);
+}
+themeBtn.addEventListener('click', () => applyTheme(currentTheme === 'light' ? 'dark' : 'light'));
+
+/* ── Map ──────────────────────────────────────────────────────────── */
+document.documentElement.setAttribute('data-theme', currentTheme === 'light' ? 'light' : 'dark');
+
 const map = L.map('map', {
   zoomControl: true,
   attributionControl: true,
   tap: true,
-  tapTolerance: 15,
-  bounceAtZoomLimits: false,
-}).setView([44.030, -121.355], isMobile() ? 10 : 11);
+  tapTolerance: 18,
+  zoomSnap: 0.5,
+}).setView([44.020, -121.380], isMobile() ? 11 : 11.5);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18,
-  attribution: '© OpenStreetMap',
+L.control.zoom({ position: 'topleft' }); // already added by default
+map.zoomControl.setPosition('topright');
+
+const tileLayer = L.tileLayer(tileUrls[currentTheme], {
+  maxZoom: 19,
+  detectRetina: true,
+  attribution: '© OpenStreetMap · © CARTO',
 }).addTo(map);
 
-const getCSS = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#fff';
-const diffColor = d => d === 'green' ? getCSS('--green') : d === 'blue' ? getCSS('--blue') : getCSS('--text');
+const diffColor = d =>
+  d === 'green' ? getCSS('--green')
+  : d === 'blue' ? getCSS('--blue')
+  : getCSS('--advanced');
 
 const trailLayer = L.layerGroup().addTo(map);
 const trailObjs = trails.map(t => {
-  const line = L.polyline(t.coords, { color: diffColor(t.diff), weight: 4, opacity: 0.9, lineCap: 'round', lineJoin: 'round' })
-    .bindPopup(`<b>${t.name}</b><br>${t.length} mi · ${t.diff === 'green' ? 'easy' : t.diff === 'blue' ? 'intermediate' : 'advanced'}`);
+  const line = L.polyline(t.coords, {
+    color: diffColor(t.diff),
+    weight: 4.5, opacity: 0.92,
+    lineCap: 'round', lineJoin: 'round',
+  }).bindPopup(`<b>${t.name}</b><br><span style="color:var(--muted2)">${t.length} mi · ${t.diff === 'green' ? 'easy' : t.diff === 'blue' ? 'intermediate' : 'advanced'}</span>`);
   line.addTo(trailLayer);
   return { ...t, line };
 });
 
 trailheads.forEach(t => {
-  const icon = L.divIcon({ className: '', html: '<div class="trailhead"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
-  L.marker([t.lat, t.lng], { icon }).bindPopup(`<b>${t.name}</b><br>Trailhead`).addTo(map);
+  const icon = L.divIcon({
+    className:'', html:'<div class="trail-pin"></div>',
+    iconSize:[22,22], iconAnchor:[11,11],
+  });
+  L.marker([t.lat, t.lng], { icon })
+    .bindPopup(`<b>${t.name}</b><br><span style="color:var(--muted2)">Trailhead</span>`)
+    .addTo(map);
 });
 
 const homeLayer = L.layerGroup().addTo(map);
 const homeMarkers = {};
 homes.forEach(h => {
   const icon = L.divIcon({
-    className: '',
-    html: `<div class="home-marker" data-id="${h.id}"><span>${h.beds}br</span></div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
+    className:'',
+    html:`<div class="home-pin" data-id="${h.id}"><span>${h.beds}br</span></div>`,
+    iconSize:[34,34], iconAnchor:[17,34],
+    popupAnchor:[0,-32],
   });
   const m = L.marker([h.lat, h.lng], { icon })
     .bindPopup(homePopup(h))
@@ -370,34 +547,22 @@ homes.forEach(h => {
 });
 
 function homePopup(h){
-  return `<b>${fmtPrice(h.price)}</b> · ${h.addr}<br>
-    ${h.beds} bd · ${h.baths} ba · ${h.sqft.toLocaleString()} sqft<br>
-    <span style="color:var(--green)">⛰ ${h.rideMin} min ride to ${h.nearest}</span><br>
-    <span style="color:var(--muted)">${h.miles.toFixed(1)} mi straight-line</span>`;
+  return `<div style="font-family:var(--serif);font-size:22px;font-style:italic;letter-spacing:-.02em;line-height:1;margin-bottom:4px">${fmtPrice(h.price)}</div>
+    <div style="color:var(--muted2);font-size:12px;margin-bottom:6px">${h.addr} · ${h.beds} bd · ${h.baths} ba · ${h.sqft.toLocaleString()} sqft</div>
+    <div style="display:inline-block;background:var(--green-soft);color:var(--green);font-family:var(--mono);font-size:11px;padding:4px 8px;border-radius:999px;letter-spacing:.04em">⛰ ${h.rideMin} min ride · ${h.nearest}</div>`;
 }
 
-/* ── Filter state ──────────────────────────────────────────────────── */
-const state = {
-  maxPrice: 1200,
-  minBeds: 2,
-  maxRide: 15,
-  diffs: new Set(['green','blue','black']),
-};
-
+/* ── Filters ──────────────────────────────────────────────────────── */
+const state = { maxPrice:1200, minBeds:2, maxRide:15, diffs:new Set(['green','blue','black']) };
 const els = {
-  price: document.getElementById('priceRange'),
-  priceVal: document.getElementById('priceVal'),
-  beds: document.getElementById('bedsRange'),
-  bedsVal: document.getElementById('bedsVal'),
-  ride: document.getElementById('rideRange'),
-  rideVal: document.getElementById('rideVal'),
-  listings: document.getElementById('listings'),
-  statHomes: document.getElementById('statHomes'),
-  statTrails: document.getElementById('statTrails'),
-  statAvg: document.getElementById('statAvg'),
-  badge: document.getElementById('badge'),
-  panel: document.getElementById('panel'),
-  mapWrap: document.getElementById('mapWrap'),
+  price:document.getElementById('priceRange'), priceVal:document.getElementById('priceVal'),
+  beds:document.getElementById('bedsRange'),   bedsVal:document.getElementById('bedsVal'),
+  ride:document.getElementById('rideRange'),   rideVal:document.getElementById('rideVal'),
+  listings:document.getElementById('listings'),
+  statHomes:document.getElementById('statHomes'),
+  statAvg:document.getElementById('statAvg'),
+  sheet:document.getElementById('sheet'),
+  handle:document.getElementById('handle'),
 };
 
 els.price.addEventListener('input', e => { state.maxPrice = +e.target.value; els.priceVal.textContent = fmtPrice(state.maxPrice); render(); });
@@ -413,45 +578,31 @@ document.querySelectorAll('#diffChips .chip').forEach(c => {
   });
 });
 
-/* ── Mobile tabs ───────────────────────────────────────────────────── */
-function setTab(name){
-  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  els.panel.classList.toggle('show', name === 'panel');
-  els.mapWrap.classList.toggle('show', name === 'map');
-  if (name === 'map') {
-    requestAnimationFrame(() => map.invalidateSize());
-  }
-}
-document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+/* ── Bottom-sheet toggle (mobile only) ────────────────────────────── */
+els.handle.addEventListener('click', () => els.sheet.classList.toggle('open'));
+els.sheet.addEventListener('click', e => {
+  if (!isMobile()) return;
+  if (els.sheet.classList.contains('open')) return;
+  if (e.target === els.handle) return;
+  els.sheet.classList.add('open');
+});
 
-/* keep map sized correctly on viewport changes (mobile URL bar, rotation) */
-let resizeT;
-const onResize = () => {
-  clearTimeout(resizeT);
-  resizeT = setTimeout(() => map.invalidateSize(), 120);
-};
-window.addEventListener('resize', onResize);
-window.addEventListener('orientationchange', onResize);
-if (window.visualViewport) window.visualViewport.addEventListener('resize', onResize);
-
-/* ── Render ────────────────────────────────────────────────────────── */
+/* ── Render ───────────────────────────────────────────────────────── */
 let activeId = null;
 
 function render(){
   const visible = homes.filter(h =>
-    h.price <= state.maxPrice &&
-    h.beds  >= state.minBeds  &&
-    h.rideMin <= state.maxRide
+    h.price <= state.maxPrice && h.beds >= state.minBeds && h.rideMin <= state.maxRide
   );
   const visibleIds = new Set(visible.map(h => h.id));
 
   homes.forEach(h => {
     const el = homeMarkers[h.id].getElement();
     if (!el) return;
-    const dot = el.querySelector('.home-marker');
-    if (!dot) return;
-    dot.classList.toggle('dim', !visibleIds.has(h.id));
-    dot.classList.toggle('active', h.id === activeId);
+    const pin = el.querySelector('.home-pin');
+    if (!pin) return;
+    pin.classList.toggle('dim', !visibleIds.has(h.id));
+    pin.classList.toggle('active', h.id === activeId);
   });
 
   trailObjs.forEach(t => {
@@ -464,48 +615,53 @@ function render(){
         <div class="listing${h.id === activeId ? ' active' : ''}" data-id="${h.id}">
           <div class="listing-top">
             <div class="listing-price">${fmtPrice(h.price)}</div>
-            <div class="listing-trail">${h.rideMin} min ride</div>
+            <div class="listing-ride">${h.rideMin} min</div>
           </div>
-          <div class="listing-specs">${h.beds} bd · ${h.baths} ba · ${h.sqft.toLocaleString()} sqft</div>
-          <div class="listing-addr">${h.addr}</div>
-          <div class="listing-nearest">nearest · <b>${h.nearest}</b> · ${h.miles.toFixed(1)} mi</div>
+          <div class="listing-specs">${h.beds} bd · ${h.baths} ba · ${h.sqft.toLocaleString()} sqft · ${h.addr}</div>
+          <div class="listing-foot">
+            <span>nearest · <b>${h.nearest}</b></span>
+            <span>${h.miles.toFixed(1)} mi</span>
+          </div>
         </div>`).join('')
-    : `<div style="padding:24px 16px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">no matches — loosen filters</div>`;
+    : `<div class="empty"><b>No matches</b>Loosen the filters to see more homes.</div>`;
 
   els.listings.querySelectorAll('.listing').forEach(card => {
     card.addEventListener('click', () => {
       focusHome(+card.dataset.id);
-      if (isMobile()) setTab('map');
+      if (isMobile()) els.sheet.classList.remove('open');
     });
   });
 
-  els.statHomes.textContent  = visible.length;
-  els.statTrails.textContent = trailObjs.filter(t => state.diffs.has(t.diff)).length;
-  els.statAvg.textContent    = visible.length
+  els.statHomes.textContent = visible.length;
+  els.statAvg.textContent = visible.length
     ? Math.round(visible.reduce((s,h) => s + h.rideMin, 0) / visible.length)
     : '—';
-  els.badge.textContent = visible.length;
 }
 
 function focusHome(id){
   activeId = id;
   const h = homes.find(x => x.id === id);
   if (!h) return;
-  map.panTo([h.lat, h.lng], { animate: true });
+  const off = isMobile() ? -0.012 : 0;
+  map.panTo([h.lat + off, h.lng], { animate:true, duration:.5 });
   homeMarkers[id].openPopup();
   render();
   const card = els.listings.querySelector(`.listing[data-id="${id}"]`);
-  if (card) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  if (card) card.scrollIntoView({ block:'nearest', behavior:'smooth' });
 }
 
-document.addEventListener('themechange', () => {
-  trailObjs.forEach(t => t.line.setStyle({ color: diffColor(t.diff) }));
-});
+/* ── Resize handling ──────────────────────────────────────────────── */
+let resizeT;
+const onResize = () => { clearTimeout(resizeT); resizeT = setTimeout(() => map.invalidateSize(), 120); };
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', onResize);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', onResize);
 
-/* initial invalidate so Leaflet picks up real container size after fonts load */
-window.addEventListener('load', () => requestAnimationFrame(() => map.invalidateSize()));
-
+/* ── Init ─────────────────────────────────────────────────────────── */
+applyTheme(currentTheme);
 render();
+requestAnimationFrame(() => map.invalidateSize());
+window.addEventListener('load', () => setTimeout(() => map.invalidateSize(), 50));
 </script>
 
 </body>
