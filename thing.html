@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0d0f">
+<title>Trailhome — homes near singletrack</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M15 78 L40 38 L55 60 L70 42 L88 78 Z' fill='none' stroke='%233dba7f' stroke-width='5' stroke-linejoin='round'/><circle cx='72' cy='28' r='7' fill='%233dba7f'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="header.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0d0f;--surface:#111214;--surface2:#17191c;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e8e6e1;--muted:#6b6a66;--muted2:#9a9894;
+  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.10);
+  --green:#3dba7f;--green-dim:rgba(61,186,127,0.10);
+  --purple:#9b8cf7;--purple-dim:rgba(155,140,247,0.10);
+  --red:#e24b4a;--red-dim:rgba(226,75,74,0.10);
+  --amber:#e2b34b;
+  --bar-bg:rgba(12,13,15,0.92);
+  --header-accent:#3dba7f;--header-accent-dim:rgba(61,186,127,0.15);
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'Geist',system-ui,sans-serif;
+  --tile-filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.95) saturate(.7);
+}
+[data-theme="light"]{
+  --bg:#f5f5f0;--surface:#eaeae5;--surface2:#deded9;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
+  --text:#1a1a1a;--muted:#7a7a72;--muted2:#5a5a54;
+  --blue:#2a7de0;--green:#2a8f5e;--red:#c43030;--purple:#7a6ad0;--amber:#b88a1a;
+  --bar-bg:rgba(245,245,240,0.92);
+  --header-accent:#2a8f5e;--header-accent-dim:rgba(42,143,94,0.15);
+  --tile-filter:none;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;overflow:hidden}
+
+.app{display:grid;grid-template-rows:auto 1fr;height:100vh;height:100dvh}
+.main{display:grid;grid-template-columns:340px 1fr;min-height:0}
+@media(max-width:780px){.main{grid-template-columns:1fr;grid-template-rows:auto 1fr}}
+
+.panel{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.panel::-webkit-scrollbar{width:6px}
+.panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+@media(max-width:780px){.panel{border-right:none;border-bottom:1px solid var(--border);max-height:42vh}}
+
+.panel-section{padding:18px 18px 14px;border-bottom:1px solid var(--border)}
+.panel-title{font-family:var(--serif);font-size:24px;letter-spacing:-.01em;color:var(--text);margin-bottom:4px}
+.panel-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.stat-row{display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--muted2)}
+.stat-row b{color:var(--text);font-weight:500;font-family:var(--mono)}
+
+.filter{margin-top:14px}
+.filter:first-child{margin-top:0}
+.filter-label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.filter-label b{color:var(--text);font-weight:500;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:13px}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:18px}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--border2);border-radius:2px}
+input[type=range]::-moz-range-track{height:3px;background:var(--border2);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--green);margin-top:-5.5px;cursor:pointer;border:2px solid var(--bg)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--green);cursor:pointer;border:2px solid var(--bg)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:14px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted2);cursor:pointer;user-select:none;letter-spacing:.03em;transition:all .15s}
+.chip.on[data-diff=green]{background:var(--green-dim);color:var(--green);border-color:var(--green)}
+.chip.on[data-diff=blue]{background:var(--blue-dim);color:var(--blue);border-color:var(--blue)}
+.chip.on[data-diff=black]{background:rgba(255,255,255,.06);color:var(--text);border-color:var(--text)}
+.chip:not(.on){opacity:.55}
+
+.listings{padding:6px 8px 18px}
+.listing{padding:12px 12px;margin:6px 4px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.listing:hover{border-color:var(--green);background:var(--bg)}
+.listing.active{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
+.listing-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.listing-price{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text);letter-spacing:-.01em}
+.listing-trail{font-family:var(--mono);font-size:11px;color:var(--green);white-space:nowrap}
+.listing-specs{font-size:12px;color:var(--muted2);margin-top:4px}
+.listing-addr{font-size:11.5px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.listing-nearest{font-size:11px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.listing-nearest b{color:var(--text);font-weight:500}
+
+#map{height:100%;width:100%;background:var(--bg)}
+.leaflet-tile{filter:var(--tile-filter)}
+.leaflet-container{background:var(--bg);font-family:var(--sans)}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.leaflet-popup-content{margin:10px 12px;font-size:12.5px;line-height:1.5}
+.leaflet-popup-content b{color:var(--text)}
+.leaflet-control-zoom a{background:var(--surface)!important;color:var(--text)!important;border-color:var(--border)!important}
+.leaflet-control-attribution{background:var(--bar-bg)!important;color:var(--muted)!important;font-size:10px!important}
+.leaflet-control-attribution a{color:var(--muted2)!important}
+
+.home-marker{width:26px;height:26px;border-radius:50% 50% 50% 0;background:var(--green);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);box-shadow:0 1px 6px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s}
+.home-marker.dim{background:var(--muted);opacity:.4}
+.home-marker.active{background:var(--blue);transform:rotate(-45deg) scale(1.2)}
+.home-marker span{transform:rotate(45deg);color:#fff;font-family:var(--mono);font-size:10px;font-weight:500}
+.trailhead{width:18px;height:18px;border-radius:3px;background:var(--amber);border:2px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4);transform:rotate(45deg)}
+
+.legend{position:absolute;bottom:18px;left:18px;background:var(--bar-bg);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11px;font-family:var(--mono);color:var(--muted2);z-index:1000;letter-spacing:.04em}
+.legend-row{display:flex;align-items:center;gap:8px;margin:3px 0}
+.legend-row .sw{width:14px;height:3px;border-radius:1px}
+.legend-row .dot{width:10px;height:10px;border-radius:50%}
+.legend-row .sq{width:10px;height:10px;border-radius:2px;transform:rotate(45deg)}
+
+.note{padding:12px 14px;font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.55;background:var(--surface2);border-top:1px solid var(--border)}
+.note b{color:var(--muted2);font-weight:500}
+.map-wrap{position:relative;min-height:0}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wm"><div class="dot"></div>TRAILHOME</div>
+  <div class="hdr-r">
+    <nav class="hdr-nav">
+      <a href="/" class="nav-link">Portfolio</a>
+      <a href="/news" class="nav-link">News</a>
+      <a href="/notes" class="nav-link">Notes</a>
+      <a href="/snake" class="nav-link">Snake</a>
+      <a href="/html" class="nav-link">Editor</a>
+      <a href="/ai" class="nav-link">AI</a>
+      <a href="/thing" class="nav-link active">Trails</a>
+    </nav>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
+    <div style="position:relative;display:inline-flex">
+      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
+        <div class="menu-bar"></div><div class="menu-bar"></div><div class="menu-bar"></div>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="/" class="nav-link">Portfolio</a>
+        <a href="/news" class="nav-link">News</a>
+        <a href="/notes" class="nav-link">Notes</a>
+        <a href="/snake" class="nav-link">Snake</a>
+        <a href="/html" class="nav-link">Editor</a>
+        <a href="/ai" class="nav-link">AI</a>
+        <a href="/thing" class="nav-link active">Trails</a>
+      </nav>
+    </div>
+  </div>
+</header>
+<script src="header.js"></script>
+
+<div class="app">
+  <div class="main">
+    <aside class="panel">
+      <div class="panel-section">
+        <div class="panel-title">Live where you ride.</div>
+        <div class="panel-sub">Bend, Oregon · MVP demo</div>
+        <div class="stat-row">
+          <div><b id="statHomes">—</b> homes</div>
+          <div><b id="statTrails">—</b> trails</div>
+          <div><b id="statAvg">—</b> avg min to trail</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="filter">
+          <div class="filter-label"><span>Max price</span><b id="priceVal">$1.2M</b></div>
+          <input type="range" id="priceRange" min="300" max="2500" step="50" value="1200">
+        </div>
+        <div class="filter">
+          <div class="filter-label"><span>Min beds</span><b id="bedsVal">2</b></div>
+          <input type="range" id="bedsRange" min="1" max="5" step="1" value="2">
+        </div>
+        <div class="filter">
+          <div class="filter-label"><span>Max ride to trail</span><b id="rideVal">15 min</b></div>
+          <input type="range" id="rideRange" min="2" max="40" step="1" value="15">
+        </div>
+        <div class="filter">
+          <div class="filter-label" style="margin-bottom:8px"><span>Trail difficulty</span></div>
+          <div class="chips" id="diffChips">
+            <div class="chip on" data-diff="green">● easy</div>
+            <div class="chip on" data-diff="blue">◆ intermediate</div>
+            <div class="chip on" data-diff="black">◆◆ advanced</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="listings" id="listings"></div>
+
+      <div class="note">
+        <b>MVP notes —</b> Listings &amp; trail geometry here are synthetic, hand-placed near real Bend trailheads (Phil's, Wanoga, Tumalo Falls, Horse Butte, Pilot Butte). A production build would swap these for an MLS / RESO Web API feed and licensed Trailforks or OpenStreetMap data.
+      </div>
+    </aside>
+
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="legend">
+        <div class="legend-row"><span class="dot" style="background:var(--green)"></span> home</div>
+        <div class="legend-row"><span class="sq" style="background:var(--amber)"></span> trailhead</div>
+        <div class="legend-row"><span class="sw" style="background:var(--green)"></span> easy</div>
+        <div class="legend-row"><span class="sw" style="background:var(--blue)"></span> intermediate</div>
+        <div class="legend-row"><span class="sw" style="background:var(--text)"></span> advanced</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Sample data (Bend, OR) ────────────────────────────────────────── */
+const trailheads = [
+  { name: "Phil's Trailhead",   lat: 44.0285, lng: -121.3934 },
+  { name: "Wanoga Sno-park",    lat: 43.9645, lng: -121.4715 },
+  { name: "Tumalo Falls",       lat: 44.0337, lng: -121.5648 },
+  { name: "Swampy Lakes",       lat: 43.9870, lng: -121.5108 },
+  { name: "Horse Butte",        lat: 44.0044, lng: -121.2487 },
+  { name: "Pilot Butte",        lat: 44.0651, lng: -121.2761 },
+];
+
+const trails = [
+  { name: "Phil's → Kent's → Helipad", diff: "blue",  length: 9.2,
+    coords: [[44.0285,-121.3934],[44.0319,-121.4023],[44.0362,-121.4118],[44.0335,-121.4202],[44.0271,-121.4185],[44.0241,-121.4090],[44.0285,-121.3934]] },
+  { name: "Whoops",                    diff: "green", length: 3.4,
+    coords: [[44.0285,-121.3934],[44.0306,-121.3998],[44.0298,-121.4051],[44.0254,-121.4044],[44.0247,-121.3978],[44.0285,-121.3934]] },
+  { name: "Funner",                    diff: "blue",  length: 4.1,
+    coords: [[44.0285,-121.3934],[44.0245,-121.3968],[44.0202,-121.4011],[44.0175,-121.4072],[44.0210,-121.4108]] },
+  { name: "Tiddlywinks",               diff: "black", length: 5.6,
+    coords: [[43.9870,-121.5108],[43.9810,-121.5048],[43.9762,-121.4980],[43.9712,-121.4895],[43.9684,-121.4810],[43.9645,-121.4715]] },
+  { name: "Storm King",                diff: "black", length: 6.8,
+    coords: [[44.0337,-121.5648],[44.0298,-121.5560],[44.0252,-121.5475],[44.0205,-121.5391],[44.0158,-121.5310],[44.0118,-121.5232]] },
+  { name: "Swampy → Flagline",         diff: "blue",  length: 11.5,
+    coords: [[43.9870,-121.5108],[43.9924,-121.5172],[43.9982,-121.5220],[44.0048,-121.5251],[44.0112,-121.5258],[44.0175,-121.5240]] },
+  { name: "Horse Butte Loop",          diff: "green", length: 5.0,
+    coords: [[44.0044,-121.2487],[44.0098,-121.2451],[44.0142,-121.2402],[44.0148,-121.2335],[44.0112,-121.2295],[44.0048,-121.2310],[44.0009,-121.2378],[44.0044,-121.2487]] },
+  { name: "Pilot Butte Summit",        diff: "blue",  length: 2.2,
+    coords: [[44.0651,-121.2761],[44.0639,-121.2742],[44.0628,-121.2723],[44.0628,-121.2702],[44.0641,-121.2691],[44.0656,-121.2702]] },
+];
+
+const homes = [
+  { id:1,  price:875,  beds:3, baths:2,   sqft:1820, lat:44.0512, lng:-121.3210, addr:"NW Crossing" },
+  { id:2,  price:1295, beds:4, baths:3,   sqft:2640, lat:44.0438, lng:-121.3502, addr:"Tetherow" },
+  { id:3,  price:625,  beds:2, baths:2,   sqft:1240, lat:44.0578, lng:-121.3022, addr:"Old Bend" },
+  { id:4,  price:1850, beds:4, baths:3.5, sqft:3120, lat:44.0354, lng:-121.3680, addr:"Broken Top" },
+  { id:5,  price:495,  beds:2, baths:1,   sqft:980,  lat:44.0612, lng:-121.2954, addr:"Larkspur" },
+  { id:6,  price:740,  beds:3, baths:2,   sqft:1640, lat:44.0688, lng:-121.2870, addr:"Mountain View" },
+  { id:7,  price:1120, beds:3, baths:2.5, sqft:2010, lat:44.0480, lng:-121.3340, addr:"Westside" },
+  { id:8,  price:585,  beds:2, baths:2,   sqft:1100, lat:44.0124, lng:-121.2580, addr:"Horse Butte rim" },
+  { id:9,  price:920,  beds:3, baths:2,   sqft:1880, lat:44.0188, lng:-121.2842, addr:"SE Bend" },
+  { id:10, price:1675, beds:5, baths:4,   sqft:3380, lat:43.9938, lng:-121.4612, addr:"Sunriver edge" },
+  { id:11, price:438,  beds:2, baths:1,   sqft:920,  lat:44.0820, lng:-121.3105, addr:"North Bend" },
+  { id:12, price:1050, beds:3, baths:2.5, sqft:1960, lat:44.0260, lng:-121.3168, addr:"Century Drive" },
+  { id:13, price:2390, beds:5, baths:4.5, sqft:4120, lat:44.0395, lng:-121.4188, addr:"Skyliner" },
+  { id:14, price:660,  beds:3, baths:2,   sqft:1520, lat:44.0010, lng:-121.3010, addr:"Brookswood" },
+  { id:15, price:799,  beds:3, baths:2,   sqft:1700, lat:44.0445, lng:-121.2680, addr:"Eastlake" },
+  { id:16, price:1410, beds:4, baths:3,   sqft:2780, lat:44.0220, lng:-121.3508, addr:"River West" },
+  { id:17, price:545,  beds:2, baths:2,   sqft:1180, lat:44.0700, lng:-121.3225, addr:"Awbrey Glen" },
+  { id:18, price:1240, beds:4, baths:3,   sqft:2420, lat:44.0162, lng:-121.4322, addr:"Edge of forest" },
+  { id:19, price:1980, beds:5, baths:4,   sqft:3580, lat:44.0312, lng:-121.3878, addr:"Phil's gateway" },
+  { id:20, price:710,  beds:3, baths:2,   sqft:1580, lat:44.0058, lng:-121.2820, addr:"Knott Rd" },
+  { id:21, price:899,  beds:3, baths:2.5, sqft:1840, lat:43.9785, lng:-121.4502, addr:"Wanoga side" },
+  { id:22, price:1325, beds:4, baths:3,   sqft:2510, lat:44.0508, lng:-121.4060, addr:"Skyline Ranch" },
+];
+
+/* ── Geo helpers ───────────────────────────────────────────────────── */
+const haversineMi = (a, b) => {
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(b[0] - a[0]);
+  const dLng = toRad(b[1] - a[1]);
+  const s = Math.sin(dLat/2)**2 + Math.cos(toRad(a[0])) * Math.cos(toRad(b[0])) * Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+};
+
+const BIKE_MPH = 12;
+const fmtPrice = k => k >= 1000 ? `$${(k/1000).toFixed(2)}M` : `$${k}k`;
+
+/* For each home, find nearest trailhead and ride minutes */
+homes.forEach(h => {
+  let best = { d: Infinity, name: '' };
+  trailheads.forEach(t => {
+    const d = haversineMi([h.lat, h.lng], [t.lat, t.lng]);
+    if (d < best.d) best = { d, name: t.name };
+  });
+  h.nearest = best.name;
+  h.miles = best.d;
+  h.rideMin = Math.round((best.d / BIKE_MPH) * 60);
+});
+
+/* ── Map setup ─────────────────────────────────────────────────────── */
+const map = L.map('map', { zoomControl: true, attributionControl: true })
+  .setView([44.030, -121.355], 11);
+
+const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18,
+  attribution: '© OpenStreetMap contributors',
+}).addTo(map);
+
+const diffColor = d => d === 'green' ? getCSS('--green') : d === 'blue' ? getCSS('--blue') : getCSS('--text');
+function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#fff'; }
+
+/* trails */
+const trailLayer = L.layerGroup().addTo(map);
+const trailObjs = trails.map(t => {
+  const line = L.polyline(t.coords, {
+    color: diffColor(t.diff),
+    weight: 4,
+    opacity: 0.9,
+    lineCap: 'round',
+    lineJoin: 'round',
+  }).bindPopup(`<b>${t.name}</b><br>${t.length} mi · ${t.diff === 'green' ? 'easy' : t.diff === 'blue' ? 'intermediate' : 'advanced'}`);
+  line.addTo(trailLayer);
+  return { ...t, line };
+});
+
+/* trailheads */
+trailheads.forEach(t => {
+  const icon = L.divIcon({ className: '', html: '<div class="trailhead"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
+  L.marker([t.lat, t.lng], { icon }).bindPopup(`<b>${t.name}</b><br>Trailhead`).addTo(map);
+});
+
+/* homes */
+const homeLayer = L.layerGroup().addTo(map);
+const homeMarkers = {};
+homes.forEach(h => {
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="home-marker" data-id="${h.id}"><span>${h.beds}br</span></div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 26],
+  });
+  const m = L.marker([h.lat, h.lng], { icon })
+    .bindPopup(homePopup(h))
+    .on('click', () => focusHome(h.id))
+    .addTo(homeLayer);
+  homeMarkers[h.id] = m;
+});
+
+function homePopup(h){
+  return `<b>${fmtPrice(h.price)}</b> · ${h.addr}<br>
+    ${h.beds} bd · ${h.baths} ba · ${h.sqft.toLocaleString()} sqft<br>
+    <span style="color:var(--green)">⛰ ${h.rideMin} min ride to ${h.nearest}</span><br>
+    <span style="color:var(--muted)">${h.miles.toFixed(1)} mi straight-line</span>`;
+}
+
+/* ── Filter state ──────────────────────────────────────────────────── */
+const state = {
+  maxPrice: 1200,
+  minBeds: 2,
+  maxRide: 15,
+  diffs: new Set(['green','blue','black']),
+};
+
+const els = {
+  price: document.getElementById('priceRange'),
+  priceVal: document.getElementById('priceVal'),
+  beds: document.getElementById('bedsRange'),
+  bedsVal: document.getElementById('bedsVal'),
+  ride: document.getElementById('rideRange'),
+  rideVal: document.getElementById('rideVal'),
+  listings: document.getElementById('listings'),
+  statHomes: document.getElementById('statHomes'),
+  statTrails: document.getElementById('statTrails'),
+  statAvg: document.getElementById('statAvg'),
+};
+
+els.price.addEventListener('input', e => { state.maxPrice = +e.target.value; els.priceVal.textContent = fmtPrice(state.maxPrice); render(); });
+els.beds.addEventListener('input',  e => { state.minBeds  = +e.target.value; els.bedsVal.textContent  = state.minBeds; render(); });
+els.ride.addEventListener('input',  e => { state.maxRide  = +e.target.value; els.rideVal.textContent  = state.maxRide + ' min'; render(); });
+
+document.querySelectorAll('#diffChips .chip').forEach(c => {
+  c.addEventListener('click', () => {
+    const d = c.dataset.diff;
+    if (state.diffs.has(d)) state.diffs.delete(d); else state.diffs.add(d);
+    c.classList.toggle('on');
+    render();
+  });
+});
+
+/* ── Render ────────────────────────────────────────────────────────── */
+let activeId = null;
+
+function render(){
+  const visible = homes.filter(h =>
+    h.price <= state.maxPrice &&
+    h.beds  >= state.minBeds  &&
+    h.rideMin <= state.maxRide
+  );
+  const visibleIds = new Set(visible.map(h => h.id));
+
+  homes.forEach(h => {
+    const el = homeMarkers[h.id].getElement();
+    if (!el) return;
+    const dot = el.querySelector('.home-marker');
+    if (!dot) return;
+    dot.classList.toggle('dim', !visibleIds.has(h.id));
+    dot.classList.toggle('active', h.id === activeId);
+  });
+
+  trailObjs.forEach(t => {
+    if (state.diffs.has(t.diff)) t.line.addTo(trailLayer); else trailLayer.removeLayer(t.line);
+  });
+
+  const sorted = [...visible].sort((a,b) => a.rideMin - b.rideMin);
+  els.listings.innerHTML = sorted.length
+    ? sorted.map(h => `
+        <div class="listing${h.id === activeId ? ' active' : ''}" data-id="${h.id}">
+          <div class="listing-top">
+            <div class="listing-price">${fmtPrice(h.price)}</div>
+            <div class="listing-trail">${h.rideMin} min ride</div>
+          </div>
+          <div class="listing-specs">${h.beds} bd · ${h.baths} ba · ${h.sqft.toLocaleString()} sqft</div>
+          <div class="listing-addr">${h.addr}</div>
+          <div class="listing-nearest">nearest · <b>${h.nearest}</b> · ${h.miles.toFixed(1)} mi</div>
+        </div>`).join('')
+    : `<div style="padding:24px 16px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">no matches — loosen filters</div>`;
+
+  els.listings.querySelectorAll('.listing').forEach(card => {
+    card.addEventListener('click', () => focusHome(+card.dataset.id));
+  });
+
+  els.statHomes.textContent  = visible.length;
+  els.statTrails.textContent = trailObjs.filter(t => state.diffs.has(t.diff)).length;
+  els.statAvg.textContent    = visible.length
+    ? Math.round(visible.reduce((s,h) => s + h.rideMin, 0) / visible.length)
+    : '—';
+}
+
+function focusHome(id){
+  activeId = id;
+  const h = homes.find(x => x.id === id);
+  if (!h) return;
+  map.panTo([h.lat, h.lng], { animate: true });
+  homeMarkers[id].openPopup();
+  render();
+  const card = els.listings.querySelector(`.listing[data-id="${id}"]`);
+  if (card) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+/* Re-color trails on theme change so contrast stays right */
+document.addEventListener('themechange', () => {
+  trailObjs.forEach(t => t.line.setStyle({ color: diffColor(t.diff) }));
+});
+
+render();
+</script>
+
+</body>
+</html>
