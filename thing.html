@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0c0d0f">
 <title>Trailhome — homes near singletrack</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M15 78 L40 38 L55 60 L70 42 L88 78 Z' fill='none' stroke='%233dba7f' stroke-width='5' stroke-linejoin='round'/><circle cx='72' cy='28' r='7' fill='%233dba7f'/></svg>">
@@ -11,7 +11,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="header.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#0c0d0f;--surface:#111214;--surface2:#17191c;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
@@ -27,6 +27,7 @@
   --mono:'DM Mono',monospace;
   --sans:'Geist',system-ui,sans-serif;
   --tile-filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.95) saturate(.7);
+  --safe-b:env(safe-area-inset-bottom,0px);
 }
 [data-theme="light"]{
   --bg:#f5f5f0;--surface:#eaeae5;--surface2:#deded9;
@@ -38,42 +39,50 @@
   --tile-filter:none;
 }
 html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;overflow:hidden}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--sans);font-size:14px;line-height:1.5;
+  display:flex;flex-direction:column;
+  height:100vh;height:100dvh;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+header{flex:0 0 auto}
 
-.app{display:grid;grid-template-rows:auto 1fr;height:100vh;height:100dvh}
-.main{display:grid;grid-template-columns:340px 1fr;min-height:0}
-@media(max-width:780px){.main{grid-template-columns:1fr;grid-template-rows:auto 1fr}}
+.app{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
 
-.panel{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+/* ── Desktop: side panel + map ───────────────────────────────── */
+.main{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:340px 1fr}
+
+.panel{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;min-height:0}
 .panel::-webkit-scrollbar{width:6px}
 .panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-@media(max-width:780px){.panel{border-right:none;border-bottom:1px solid var(--border);max-height:42vh}}
 
 .panel-section{padding:18px 18px 14px;border-bottom:1px solid var(--border)}
 .panel-title{font-family:var(--serif);font-size:24px;letter-spacing:-.01em;color:var(--text);margin-bottom:4px}
 .panel-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
-.stat-row{display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--muted2)}
+.stat-row{display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--muted2);flex-wrap:wrap}
 .stat-row b{color:var(--text);font-weight:500;font-family:var(--mono)}
 
 .filter{margin-top:14px}
 .filter:first-child{margin-top:0}
 .filter-label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
 .filter-label b{color:var(--text);font-weight:500;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:13px}
-input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:18px}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:32px;touch-action:manipulation}
 input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--border2);border-radius:2px}
 input[type=range]::-moz-range-track{height:3px;background:var(--border2);border-radius:2px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--green);margin-top:-5.5px;cursor:pointer;border:2px solid var(--bg)}
-input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--green);cursor:pointer;border:2px solid var(--bg)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--green);margin-top:-9.5px;cursor:pointer;border:3px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--green);cursor:pointer;border:3px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4)}
 
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:14px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted2);cursor:pointer;user-select:none;letter-spacing:.03em;transition:all .15s}
+.chip{font-family:var(--mono);font-size:11px;padding:8px 12px;border-radius:14px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted2);cursor:pointer;user-select:none;letter-spacing:.03em;transition:all .15s;touch-action:manipulation}
 .chip.on[data-diff=green]{background:var(--green-dim);color:var(--green);border-color:var(--green)}
 .chip.on[data-diff=blue]{background:var(--blue-dim);color:var(--blue);border-color:var(--blue)}
 .chip.on[data-diff=black]{background:rgba(255,255,255,.06);color:var(--text);border-color:var(--text)}
-.chip:not(.on){opacity:.55}
+.chip:not(.on){opacity:.5}
 
 .listings{padding:6px 8px 18px}
-.listing{padding:12px 12px;margin:6px 4px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.listing{padding:12px 12px;margin:6px 4px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .15s;touch-action:manipulation}
 .listing:hover{border-color:var(--green);background:var(--bg)}
 .listing.active{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
 .listing-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -84,9 +93,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .listing-nearest{font-size:11px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
 .listing-nearest b{color:var(--text);font-weight:500}
 
+.note{padding:12px 14px calc(12px + var(--safe-b));font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.55;background:var(--surface2);border-top:1px solid var(--border)}
+.note b{color:var(--muted2);font-weight:500}
+
+.map-wrap{position:relative;min-height:0;min-width:0}
 #map{height:100%;width:100%;background:var(--bg)}
 .leaflet-tile{filter:var(--tile-filter)}
-.leaflet-container{background:var(--bg);font-family:var(--sans)}
+.leaflet-container{background:var(--bg);font-family:var(--sans);touch-action:none}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--surface);color:var(--text);border:1px solid var(--border)}
 .leaflet-popup-content{margin:10px 12px;font-size:12.5px;line-height:1.5}
 .leaflet-popup-content b{color:var(--text)}
@@ -94,21 +107,47 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .leaflet-control-attribution{background:var(--bar-bg)!important;color:var(--muted)!important;font-size:10px!important}
 .leaflet-control-attribution a{color:var(--muted2)!important}
 
-.home-marker{width:26px;height:26px;border-radius:50% 50% 50% 0;background:var(--green);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);box-shadow:0 1px 6px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s}
+.home-marker{width:30px;height:30px;border-radius:50% 50% 50% 0;background:var(--green);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);box-shadow:0 1px 6px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s}
 .home-marker.dim{background:var(--muted);opacity:.4}
 .home-marker.active{background:var(--blue);transform:rotate(-45deg) scale(1.2)}
 .home-marker span{transform:rotate(45deg);color:#fff;font-family:var(--mono);font-size:10px;font-weight:500}
-.trailhead{width:18px;height:18px;border-radius:3px;background:var(--amber);border:2px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4);transform:rotate(45deg)}
+.trailhead{width:20px;height:20px;border-radius:3px;background:var(--amber);border:2px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.4);transform:rotate(45deg)}
 
-.legend{position:absolute;bottom:18px;left:18px;background:var(--bar-bg);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11px;font-family:var(--mono);color:var(--muted2);z-index:1000;letter-spacing:.04em}
+.legend{position:absolute;bottom:16px;left:16px;background:var(--bar-bg);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:11px;font-family:var(--mono);color:var(--muted2);z-index:500;letter-spacing:.04em;pointer-events:none}
 .legend-row{display:flex;align-items:center;gap:8px;margin:3px 0}
 .legend-row .sw{width:14px;height:3px;border-radius:1px}
 .legend-row .dot{width:10px;height:10px;border-radius:50%}
 .legend-row .sq{width:10px;height:10px;border-radius:2px;transform:rotate(45deg)}
 
-.note{padding:12px 14px;font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.55;background:var(--surface2);border-top:1px solid var(--border)}
-.note b{color:var(--muted2);font-weight:500}
-.map-wrap{position:relative;min-height:0}
+/* ── Mobile tab bar ─────────────────────────────────────────── */
+.tabs{display:none;flex:0 0 auto;background:var(--surface);border-bottom:1px solid var(--border);padding:0}
+.tab{flex:1;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:12px 0;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;touch-action:manipulation}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.tab .badge{display:inline-block;background:var(--green-dim);color:var(--green);font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px}
+
+/* ── Mobile layout ─────────────────────────────────────────── */
+@media(max-width:780px){
+  .main{display:block;position:relative}
+  .tabs{display:flex}
+  .panel,.map-wrap{position:absolute;inset:0;display:none}
+  .panel.show,.map-wrap.show{display:block}
+  .panel.show{display:flex;flex-direction:column}
+  .panel.show > *{flex:0 0 auto}
+  .panel.show .listings{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .panel-section{padding:14px 14px 12px}
+  .panel-title{font-size:20px}
+  .legend{bottom:10px;left:10px;padding:7px 9px;font-size:10px}
+  .stat-row{gap:10px;font-size:11px}
+}
+
+/* hide tabs default; only show inside mobile media */
+@media(min-width:781px){
+  .panel,.map-wrap{display:block}
+  .panel{display:flex;flex-direction:column}
+  .panel > .panel-section{flex:0 0 auto}
+  .panel > .listings{flex:1 1 auto}
+  .panel > .note{flex:0 0 auto}
+}
 </style>
 </head>
 <body>
@@ -145,15 +184,19 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 <script src="header.js"></script>
 
 <div class="app">
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="map">Map</button>
+    <button class="tab" data-tab="panel">List <span class="badge" id="badge">0</span></button>
+  </div>
   <div class="main">
-    <aside class="panel">
+    <aside class="panel" id="panel">
       <div class="panel-section">
         <div class="panel-title">Live where you ride.</div>
         <div class="panel-sub">Bend, Oregon · MVP demo</div>
         <div class="stat-row">
           <div><b id="statHomes">—</b> homes</div>
           <div><b id="statTrails">—</b> trails</div>
-          <div><b id="statAvg">—</b> avg min to trail</div>
+          <div><b id="statAvg">—</b> avg min</div>
         </div>
       </div>
 
@@ -187,7 +230,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       </div>
     </aside>
 
-    <div class="map-wrap">
+    <div class="map-wrap show" id="mapWrap">
       <div id="map"></div>
       <div class="legend">
         <div class="legend-row"><span class="dot" style="background:var(--green)"></span> home</div>
@@ -268,7 +311,6 @@ const haversineMi = (a, b) => {
 const BIKE_MPH = 12;
 const fmtPrice = k => k >= 1000 ? `$${(k/1000).toFixed(2)}M` : `$${k}k`;
 
-/* For each home, find nearest trailhead and ride minutes */
 homes.forEach(h => {
   let best = { d: Infinity, name: '' };
   trailheads.forEach(t => {
@@ -281,46 +323,44 @@ homes.forEach(h => {
 });
 
 /* ── Map setup ─────────────────────────────────────────────────────── */
-const map = L.map('map', { zoomControl: true, attributionControl: true })
-  .setView([44.030, -121.355], 11);
+const isMobile = () => window.matchMedia('(max-width:780px)').matches;
+const map = L.map('map', {
+  zoomControl: true,
+  attributionControl: true,
+  tap: true,
+  tapTolerance: 15,
+  bounceAtZoomLimits: false,
+}).setView([44.030, -121.355], isMobile() ? 10 : 11);
 
-const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18,
-  attribution: '© OpenStreetMap contributors',
+  attribution: '© OpenStreetMap',
 }).addTo(map);
 
+const getCSS = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#fff';
 const diffColor = d => d === 'green' ? getCSS('--green') : d === 'blue' ? getCSS('--blue') : getCSS('--text');
-function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#fff'; }
 
-/* trails */
 const trailLayer = L.layerGroup().addTo(map);
 const trailObjs = trails.map(t => {
-  const line = L.polyline(t.coords, {
-    color: diffColor(t.diff),
-    weight: 4,
-    opacity: 0.9,
-    lineCap: 'round',
-    lineJoin: 'round',
-  }).bindPopup(`<b>${t.name}</b><br>${t.length} mi · ${t.diff === 'green' ? 'easy' : t.diff === 'blue' ? 'intermediate' : 'advanced'}`);
+  const line = L.polyline(t.coords, { color: diffColor(t.diff), weight: 4, opacity: 0.9, lineCap: 'round', lineJoin: 'round' })
+    .bindPopup(`<b>${t.name}</b><br>${t.length} mi · ${t.diff === 'green' ? 'easy' : t.diff === 'blue' ? 'intermediate' : 'advanced'}`);
   line.addTo(trailLayer);
   return { ...t, line };
 });
 
-/* trailheads */
 trailheads.forEach(t => {
-  const icon = L.divIcon({ className: '', html: '<div class="trailhead"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
+  const icon = L.divIcon({ className: '', html: '<div class="trailhead"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
   L.marker([t.lat, t.lng], { icon }).bindPopup(`<b>${t.name}</b><br>Trailhead`).addTo(map);
 });
 
-/* homes */
 const homeLayer = L.layerGroup().addTo(map);
 const homeMarkers = {};
 homes.forEach(h => {
   const icon = L.divIcon({
     className: '',
     html: `<div class="home-marker" data-id="${h.id}"><span>${h.beds}br</span></div>`,
-    iconSize: [26, 26],
-    iconAnchor: [13, 26],
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
   });
   const m = L.marker([h.lat, h.lng], { icon })
     .bindPopup(homePopup(h))
@@ -355,6 +395,9 @@ const els = {
   statHomes: document.getElementById('statHomes'),
   statTrails: document.getElementById('statTrails'),
   statAvg: document.getElementById('statAvg'),
+  badge: document.getElementById('badge'),
+  panel: document.getElementById('panel'),
+  mapWrap: document.getElementById('mapWrap'),
 };
 
 els.price.addEventListener('input', e => { state.maxPrice = +e.target.value; els.priceVal.textContent = fmtPrice(state.maxPrice); render(); });
@@ -369,6 +412,27 @@ document.querySelectorAll('#diffChips .chip').forEach(c => {
     render();
   });
 });
+
+/* ── Mobile tabs ───────────────────────────────────────────────────── */
+function setTab(name){
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  els.panel.classList.toggle('show', name === 'panel');
+  els.mapWrap.classList.toggle('show', name === 'map');
+  if (name === 'map') {
+    requestAnimationFrame(() => map.invalidateSize());
+  }
+}
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+
+/* keep map sized correctly on viewport changes (mobile URL bar, rotation) */
+let resizeT;
+const onResize = () => {
+  clearTimeout(resizeT);
+  resizeT = setTimeout(() => map.invalidateSize(), 120);
+};
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', onResize);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', onResize);
 
 /* ── Render ────────────────────────────────────────────────────────── */
 let activeId = null;
@@ -409,7 +473,10 @@ function render(){
     : `<div style="padding:24px 16px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">no matches — loosen filters</div>`;
 
   els.listings.querySelectorAll('.listing').forEach(card => {
-    card.addEventListener('click', () => focusHome(+card.dataset.id));
+    card.addEventListener('click', () => {
+      focusHome(+card.dataset.id);
+      if (isMobile()) setTab('map');
+    });
   });
 
   els.statHomes.textContent  = visible.length;
@@ -417,6 +484,7 @@ function render(){
   els.statAvg.textContent    = visible.length
     ? Math.round(visible.reduce((s,h) => s + h.rideMin, 0) / visible.length)
     : '—';
+  els.badge.textContent = visible.length;
 }
 
 function focusHome(id){
@@ -430,10 +498,12 @@ function focusHome(id){
   if (card) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
-/* Re-color trails on theme change so contrast stays right */
 document.addEventListener('themechange', () => {
   trailObjs.forEach(t => t.line.setStyle({ color: diffColor(t.diff) }));
 });
+
+/* initial invalidate so Leaflet picks up real container size after fonts load */
+window.addEventListener('load', () => requestAnimationFrame(() => map.invalidateSize()));
 
 render();
 </script>
