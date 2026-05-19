@@ -1,354 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pg-title">News</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='30' fill='none' stroke='%23e24b4a' stroke-width='3'/><circle cx='50' cy='50' r='20' fill='none' stroke='%23e24b4a' stroke-width='2'/><circle cx='50' cy='50' r='8' fill='%23e24b4a'/></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><circle cx='90' cy='90' r='54' fill='none' stroke='%23e24b4a' stroke-width='6'/><circle cx='90' cy='90' r='36' fill='none' stroke='%23e24b4a' stroke-width='4'/><circle cx='90' cy='90' r='14' fill='%23e24b4a'/></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="header.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;transition:background-color 0.4s ease,color 0.4s ease,border-color 0.4s ease,fill 0.4s ease}
-:root{
-  --bg:#0c0d0f;--surface:#111214;--surface2:#17191c;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --text:#e8e6e1;--muted:#6b6a66;--muted2:#9a9894;
-  --red:#e24b4a;--red-dim:rgba(226,75,74,0.12);
-  --amber:#ef9f27;--amber-dim:rgba(239,159,39,0.12);
-  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.10);
-  --green:#3dba7f;--green-dim:rgba(61,186,127,0.10);
-  --purple:#9b8cf7;
-  --bar-bg:rgba(12,13,15,0.92);
-  --header-accent:#e24b4a;--header-accent-dim:rgba(226,75,74,0.15);
-  --serif:'Instrument Serif',Georgia,serif;
-  --mono:'DM Mono',monospace;
-  --sans:'Geist',system-ui,sans-serif;
-}
-[data-theme="light"]{
-  --bg:#f5f5f0;--surface:#eaeae5;--surface2:#deded9;
-  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
-  --text:#1a1a1a;--muted:#7a7a72;--muted2:#5a5a54;
-  --red:#c43030;--red-dim:rgba(196,48,48,0.12);
-  --amber:#c47f0a;--amber-dim:rgba(196,127,10,0.12);
-  --blue:#2a7de0;--blue-dim:rgba(42,125,224,0.10);
-  --green:#2a8f5e;--green-dim:rgba(42,143,94,0.10);
-  --purple:#7a6ad0;
-  --bar-bg:rgba(245,245,240,0.92);
-  --header-accent:#c43030;--header-accent-dim:rgba(196,48,48,0.15);
-}
-html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
-.pill{font-family:var(--mono);font-size:11px;background:var(--red-dim);border:1px solid rgba(226,75,74,.3);color:var(--red);padding:4px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
-.alert{background:var(--red-dim);border-bottom:1px solid rgba(226,75,74,.2);padding:9px 2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--red);font-family:var(--mono);overflow:hidden}
-.alert strong{font-weight:500}
-#alert-text{}
-@keyframes marquee{0%{transform:translateX(100vw);}100%{transform:translateX(-100%);}}.page{padding:2rem;max-width:1400px;margin:0 auto}
-.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
-.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:2rem}
-.mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
-.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0}
-.mc.red::before{background:var(--red)}.mc.amber::before{background:var(--amber)}
-.mc.blue::before{background:var(--blue)}.mc.green::before{background:var(--green)}
-.mc.neutral::before{background:var(--muted)}
-.ml{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-.mv{font-family:var(--serif);font-size:26px;line-height:1;color:var(--text);margin-bottom:4px}
-.ms{font-size:11px;color:var(--muted2)}.ms.up{color:var(--green)}.ms.dn{color:var(--red)}
-.main-grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-bottom:2rem}
-.lc,.rc{display:flex;flex-direction:column;gap:16px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
-.ct{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
-.story{padding:12px 0;border-bottom:1px solid var(--border)}
-.story:last-child{border-bottom:none;padding-bottom:0}
-.story:first-child{padding-top:0}
-.sh{display:flex;align-items:flex-start;gap:9px;margin-bottom:5px}
-.td{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.d-crit{background:var(--red);box-shadow:0 0 6px rgba(226,75,74,.5)}
-.d-high{background:var(--amber)}.d-mod{background:var(--blue)}.d-low{background:var(--green)}
-.stitle{font-size:13px;font-weight:500;color:var(--text);line-height:1.35}
-.sbody{font-size:12px;color:var(--muted2);line-height:1.55;padding-left:16px;margin-top:3px}
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;padding-left:16px}
-.tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
-.t-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(226,75,74,.2)}
-.t-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(239,159,39,.2)}
-.t-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
-.t-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(61,186,127,.2)}
-.t-gray{background:var(--surface2);color:var(--muted2);border:1px solid var(--border)}
-#map-card{flex:1;display:flex;flex-direction:column}
-#map-wrap{width:100%;flex:1;min-height:260px;border-radius:8px;overflow:hidden;position:relative}
-.map-bg{fill:#0e1520}
-.map-land{fill:#161b24;stroke:rgba(255,255,255,0.08);stroke-width:0.4}
-.map-marker{stroke:rgba(255,255,255,0.15);stroke-width:1}
-.map-label{fill:rgba(232,230,225,0.65)}
-.map-tip{background:#17191c;border:1px solid rgba(255,255,255,0.1);color:#e8e6e1}
-.map-err{fill:#6b6a66}
-[data-theme="light"] .map-bg{fill:#d8d8d0}
-[data-theme="light"] .map-land{fill:#c8c8c0;stroke:rgba(0,0,0,0.12);stroke-width:0.4}
-[data-theme="light"] .map-marker{stroke:rgba(0,0,0,0.2);stroke-width:1}
-[data-theme="light"] .map-label{fill:rgba(30,30,30,0.6)}
-[data-theme="light"] .map-tip{background:#eaeae5;border:1px solid rgba(0,0,0,0.12);color:#1a1a1a}
-[data-theme="light"] .map-err{fill:#7a7a72}
-.map-leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
-.mli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted2)}
-.ld{width:7px;height:7px;border-radius:50%}
-.mr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
-.mr:last-child{border-bottom:none}
-.mn{font-size:12px;color:var(--text);flex:1;padding-right:10px;line-height:1.3}
-.mright{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.bbg{width:52px;height:3px;background:var(--border2);border-radius:3px;overflow:hidden}
-.bb{height:3px;border-radius:3px}
-.mp{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);min-width:30px;text-align:right}
-.md{font-family:var(--mono);font-size:10px;min-width:32px;text-align:right}
-.wi{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted2)}
-.wi:last-child{border-bottom:none;padding-bottom:0}
-.wi:first-child{padding-top:0}
-.wic{font-family:var(--mono);font-size:11px;flex-shrink:0;margin-top:1px;font-weight:500}
-.wi strong{color:var(--text);font-weight:500}
-.ch{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-.cv{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--red);text-align:right}
-.cvs{font-size:10px;color:var(--muted);text-align:right;margin-top:1px}
-.cl{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
-.cli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted2)}
-.cll{width:20px;height:2px;border-radius:2px}.clv{width:2px;height:12px;border-radius:1px}
-#gc-wrap{position:relative;width:100%;height:260px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
-.stat{background:var(--surface2);border-radius:8px;padding:10px 12px}
-.sl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
-.sv{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text)}
-.ss{font-size:10px;color:var(--muted);margin-top:1px}
-.hero{padding:2rem 0 1.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
-.hdate{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;margin-bottom:6px}
-.hhed{font-family:var(--serif);font-size:42px;line-height:1.05;color:var(--text);letter-spacing:-.02em}
-.hhed em{color:var(--red);font-style:italic}
-.hdek{font-size:13px;color:var(--muted2);margin-top:8px;max-width:520px;line-height:1.5}
-.hcd{font-family:var(--mono);font-size:12px;color:var(--amber);background:var(--amber-dim);border:1px solid rgba(239,159,39,.25);border-radius:8px;padding:10px 16px;line-height:1.6;text-align:right}
-.hcd strong{font-size:22px;display:block;color:var(--red)}
-.tleg{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-.tli{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
-footer{border-top:1px solid var(--border);padding:16px 2rem;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-family:var(--mono);font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 8px;color:var(--muted2)}
-/* ── DESKTOP (>600px) ── */
-@media(min-width:601px){
-  #alert-text{animation:marquee 30s linear infinite;white-space:nowrap}
-}
-
-/* ── TABLET (≤900px) ── */
-@media(max-width:900px){
-  .main-grid{grid-template-columns:1fr}
-  .rc{flex-direction:row;flex-wrap:wrap}
-  .rc>.card{flex:1;min-width:280px}
-  .metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .hhed{font-size:34px}
-}
-
-/* ── MOBILE (≤600px) ── */
-@media(max-width:600px){
-  .pill{font-size:9px;padding:3px 8px;letter-spacing:0;white-space:normal}
-
-  /* alert */
-  .alert{padding:8px 1rem;font-size:11px}
-
-  /* page padding */
-  .page{padding:1rem}
-
-  /* hero — stack, shrink */
-  .hero{flex-direction:column;align-items:flex-start;padding:1.25rem 0 1rem}
-  .hdate{font-size:10px;letter-spacing:.06em}
-  .hhed{font-size:26px;line-height:1.1}
-  .hdek{font-size:12px;max-width:100%}
-  /* countdown full width on mobile */
-  .hcd{width:100%;text-align:left;padding:10px 14px}
-  .hcd strong{font-size:18px}
-
-  /* metrics — horizontal scroll row */
-  .metrics{
-    grid-template-columns:repeat(5,140px);
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:6px;
-    margin-bottom:1.25rem;
-    gap:8px;
-  }
-  /* hide scrollbar but keep scroll */
-  .metrics::-webkit-scrollbar{display:none}
-  .mc{padding:12px 14px}
-  .mv{font-size:22px}
-
-  /* main grid — single column */
-  .main-grid{grid-template-columns:1fr;gap:12px}
-  .rc{flex-direction:column}
-  .rc>.card{min-width:0}
-
-  /* card padding */
-  .card{padding:14px 16px}
-
-  /* map — shorter on mobile */
-  #map-wrap{min-height:200px}
-
-  /* gas chart — hide annotation labels (too cramped), shorter */
-  #gc-wrap{height:200px}
-
-  /* gas chart annotations hidden via CSS — Chart.js still renders
-     the lines but labels overflow; we clip the canvas overflow */
-  #gc-wrap canvas{overflow:hidden}
-
-  /* gas stat cards — 2 columns */
-  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-
-  /* section label */
-  .sec-label{font-size:9px}
-
-  /* story body slightly smaller */
-  .sbody{font-size:11px}
-
-  /* polymarket bar narrower */
-  .bbg{width:36px}
-
-  /* footer — stack */
-  footer{flex-direction:column;align-items:flex-start;padding:12px 1rem;gap:10px}
-}
-
-/* ── VERY SMALL (≤380px) ── */
-@media(max-width:380px){
-  .hhed{font-size:22px}
-  .pill{max-width:none;font-size:8px;padding:2px 6px}
-  .metrics{grid-template-columns:repeat(5,120px)}
-  .nav-links{display:none}
-  /* header bar adjustments */
-  body > div[style*="display:flex"] {
-    padding:0 0.5rem !important;
-    gap:6px !important;
-    flex-wrap:wrap !important;
-    justify-content:flex-start !important;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d0c0a;
+      --fg: #e8e6e1;
+      --text: #a7a49f;
+      --border: #1a1916;
+      --red: #e24b4a;
+      --amber: #ef9f27;
+      --green: #3dba7f;
+      --blue: #4a9eff;
+      --purple: #9b8cf7;
+      --muted: #6b6a66;
+      --mono: 'DM Mono', monospace;
+    }
+    body { background: var(--bg); color: var(--fg); font-family: 'Geist', -apple-system, sans-serif; margin: 0; padding: 0; }
+    .page { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px; }
+    header { padding: 32px 0; border-bottom: 1px solid var(--border); }
+    .hdr { font-size: 11px; color: var(--text); font-family: var(--mono); font-weight: 500; margin: 0 0 12px; }
+    #hdr-pill { background: var(--border); padding: 12px 16px; border-radius: 6px; font-size: 11px; color: var(--fg); line-height: 1.6; font-family: var(--mono); }
+    #alert-text { background: rgba(226,75,74,0.1); border-left: 3px solid var(--red); padding: 16px; border-radius: 4px; font-size: 13px; line-height: 1.6; margin: 24px 0; }
+    .hero { margin: 40px 0; }
+    .hero-date { font-size: 9px; color: var(--text); font-family: var(--mono); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .hero-hed { font-size: 28px; line-height: 1.3; margin: 12px 0; font-weight: 600; }
+    .hero-hed em { font-style: italic; color: var(--green); }
+    .hero-dek { font-size: 14px; color: var(--text); line-height: 1.7; max-width: 90%; }
+    .countdown-wrap { background: var(--border); padding: 20px; border-radius: 6px; margin: 24px 0; border-left: 3px solid var(--amber); }
+    .countdown-label { font-size: 11px; font-family: var(--mono); font-weight: 600; color: var(--amber); }
+    #countdown { font-size: 32px; font-family: var(--mono); font-weight: 700; color: var(--fg); margin: 8px 0; }
+    .countdown-sub { font-size: 12px; color: var(--text); line-height: 1.6; margin-top: 12px; }
+    .metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 32px 0; }
+    .mc { background: var(--border); padding: 16px; border-radius: 6px; border-left: 3px solid; }
+    .mc.amber { border-color: var(--amber); }
+    .mc.green { border-color: var(--green); }
+    .mc.red { border-color: var(--red); }
+    .ml { font-size: 10px; color: var(--text); font-family: var(--mono); font-weight: 600; text-transform: uppercase; }
+    .mv { font-size: 20px; font-weight: 700; margin: 8px 0; }
+    .ms { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+    .ms.up { color: var(--green); }
+    .ms.dn { color: var(--red); }
+    .stories-title { font-size: 13px; color: var(--text); font-family: var(--mono); font-weight: 600; margin: 40px 0 20px; }
+    .story { background: var(--border); padding: 20px; border-radius: 6px; margin-bottom: 16px; border-left: 3px solid var(--border); }
+    .story.d-crit { border-color: var(--red); }
+    .story.d-high { border-color: var(--amber); }
+    .story.d-mod { border-color: var(--blue); }
+    .sh { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .td { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+    .td.d-crit { background: var(--red); }
+    .td.d-high { background: var(--amber); }
+    .td.d-mod { background: var(--blue); }
+    .stitle { font-size: 13px; font-weight: 600; line-height: 1.4; }
+    .sbody { font-size: 12px; color: var(--text); line-height: 1.6; margin: 12px 0; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag { display: inline-block; font-size: 10px; padding: 4px 8px; border-radius: 3px; font-family: var(--mono); font-weight: 500; }
+    .tag.t-green { background: rgba(61,186,127,0.15); color: var(--green); }
+    .tag.t-amber { background: rgba(239,159,39,0.15); color: var(--amber); }
+    .tag.t-red { background: rgba(226,75,74,0.15); color: var(--red); }
+    .tag.t-blue { background: rgba(74,158,255,0.15); color: var(--blue); }
+    .section-title { font-size: 13px; color: var(--text); font-family: var(--mono); font-weight: 600; margin: 40px 0 20px; }
+    .mr { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .mr:last-child { border-bottom: none; }
+    .mn { font-size: 12px; }
+    .mright { display: flex; align-items: center; gap: 12px; }
+    .bbg { width: 80px; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+    .bb { height: 100%; border-radius: 2px; }
+    .mp { font-size: 12px; font-weight: 600; font-family: var(--mono); min-width: 35px; text-align: right; }
+    .md { font-size: 10px; font-family: var(--mono); font-weight: 600; min-width: 40px; text-align: right; }
+    .wi { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 12px; line-height: 1.6; }
+    .wi:last-child { border-bottom: none; }
+    .wic { flex-shrink: 0; font-weight: 700; font-size: 16px; }
+    #map-wrap { width: 100%; height: 400px; margin: 32px 0; background: var(--border); border-radius: 6px; overflow: hidden; }
+    .map-bg { fill: var(--bg); }
+    .map-land { fill: var(--border); stroke: var(--border); stroke-width: 0.5px; }
+    .map-marker { cursor: pointer; transition: opacity 0.2s; }
+    .map-marker:hover { opacity: 1 !important; }
+    .map-label { fill: var(--fg); font-size: 8px; font-weight: 500; pointer-events: none; }
+    .map-tip { background: var(--border); border: 1px solid rgba(255,255,255,0.1); }
+    .map-err { fill: var(--text); }
+    .mli { display: flex; align-items: center; gap: 8px; font-size: 11px; margin: 8px 0; }
+    .ld { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    #gas-chart { width: 100%; height: 300px; margin: 32px 0; }
+    .gas-stat { background: var(--border); padding: 16px; border-radius: 6px; }
+    .stat { margin-bottom: 16px; }
+    .sl { font-size: 10px; color: var(--text); font-family: var(--mono); font-weight: 600; }
+    .sv { font-size: 18px; font-weight: 700; margin: 6px 0; }
+    .ss { font-size: 11px; color: var(--muted); }
+    #footer-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-block; background: var(--border); padding: 6px 10px; border-radius: 4px; font-size: 10px; color: var(--text); font-family: var(--mono); font-weight: 500; }
+    footer { padding: 24px 0 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+    #footer-text { font-size: 9px; color: var(--text); font-family: var(--mono); }
+  </style>
 </head>
 <body>
-
-<header>
-  <div class="wm"><div class="dot"></div>NEWS</div>
-  <div class="hdr-r">
-    <nav class="hdr-nav">
-      <a href="/" class="nav-link">Portfolio</a>
-      <a href="/news" class="nav-link active">News</a>
-      <a href="/notes" class="nav-link">Notes</a>
-      <a href="/snake" class="nav-link">Snake</a>
-      <a href="/html" class="nav-link">Editor</a>
-      <a href="/ai" class="nav-link">AI</a>
-    </nav>
-    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀</button>
-    <div style="position:relative;display:inline-flex">
-      <button class="menu-btn" onclick="toggleMenu(event)" title="Menu">
-        <div class="menu-bar"></div>
-        <div class="menu-bar"></div>
-        <div class="menu-bar"></div>
-      </button>
-      <nav class="nav-menu" id="navMenu">
-        <a href="/" class="nav-link">Portfolio</a>
-        <a href="/news" class="nav-link active">News</a>
-        <a href="/notes" class="nav-link">Notes</a>
-        <a href="/snake" class="nav-link">Snake</a>
-        <a href="/html" class="nav-link">Editor</a>
-        <a href="/ai" class="nav-link">AI</a>
-      </nav>
-    </div>
-  </div>
-</header>
-<script src="header.js"></script>
-
-<div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:0 2rem;height:44px;background:var(--bar-bg);border-bottom:1px solid var(--border);white-space:nowrap;flex-wrap:nowrap">
-  <span class="pill" id="hdr-pill"></span>
-</div>
-
-<div class="alert"><div id="alert-text"></div></div>
-
 <div class="page">
-  <div class="hero">
-    <div>
-      <div class="hdate" id="hero-date"></div>
-      <div class="hhed" id="hero-hed"></div>
-      <div class="hdek" id="hero-dek"></div>
-    </div>
-    <div class="hcd" id="hero-countdown-wrap">
-      <span id="countdown-label"></span><br>
-      <strong id="countdown">--:--:--</strong>
-      <span id="countdown-sub"></span>
-    </div>
-  </div>
 
-  <div class="sec-label">Market pulse</div>
-  <div class="metrics" id="metrics-row"></div>
+<!-- HEADER -->
+<header>
+  <div class="hdr">Dashboard</div>
+  <div id="hdr-pill"></div>
+</header>
 
-  <div class="main-grid">
-    <div class="lc">
-      <div class="card">
-        <div class="ct" id="stories-title"></div>
-        <div class="tleg">
-          <div class="tli"><div class="td d-crit"></div>critical</div>
-          <div class="tli"><div class="td d-high"></div>high</div>
-          <div class="tli"><div class="td d-mod"></div>moderate</div>
-          <div class="tli"><div class="td d-low"></div>watch</div>
-        </div>
-        <div id="stories-list"></div>
-      </div>
-      <div class="card" id="map-card">
-        <div class="ct" id="map-title"></div>
-        <div id="map-wrap"></div>
-        <div class="map-leg" id="map-legend"></div>
-      </div>
-    </div>
-    <div class="rc">
-      <div class="card">
-        <div class="ct" id="poly-title"></div>
-        <div id="poly-list"></div>
-      </div>
-      <div class="card">
-        <div class="ct">Watch list</div>
-        <div id="watch-list"></div>
-      </div>
-      <div class="card">
-        <div class="ct">Threat level by theater</div>
-        <div id="threat-list" style="display:flex;flex-direction:column;gap:10px"></div>
-      </div>
-    </div>
-  </div>
+<!-- ALERT -->
+<div id="alert-text"></div>
 
-  <div class="sec-label">Gas price history</div>
-  <div class="card" style="margin-bottom:2rem">
-    <div class="ch">
-      <div>
-        <div style="font-size:13px;font-weight:500;color:var(--text)" id="gas-title"></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px" id="gas-sub"></div>
-      </div>
-      <div><div class="cv" id="gas-val"></div><div class="cvs" id="gas-val-sub"></div></div>
-    </div>
-    <div class="cl">
-      <div class="cli"><div class="cll" style="background:var(--blue)"></div>pre-event</div>
-      <div class="cli"><div class="cll" style="background:var(--red)"></div>disruption period</div>
-      <div class="cli"><div class="clv" style="background:var(--red)"></div>conflict event</div>
-      <div class="cli"><div class="clv" style="background:var(--amber)"></div>diplomatic</div>
-      <div class="cli"><div class="clv" style="background:var(--green)"></div>supply response</div>
-    </div>
-    <div id="gc-wrap"><canvas id="gasChart"></canvas></div>
-    <div class="stats" id="gas-stats"></div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-date" id="hero-date"></div>
+  <h1 class="hero-hed" id="hero-hed"></h1>
+  <div class="hero-dek" id="hero-dek"></div>
+  <div class="countdown-wrap" id="hero-countdown-wrap">
+    <div class="countdown-label" id="countdown-label"></div>
+    <div id="countdown">--:--:--</div>
+    <div class="countdown-sub" id="countdown-sub"></div>
   </div>
 </div>
 
+<!-- METRICS -->
+<div id="metrics-row" class="metrics-row"></div>
+
+<!-- STORIES -->
+<div class="stories-title" id="stories-title"></div>
+<div id="stories-list"></div>
+
+<!-- POLYMARKET -->
+<div class="section-title" id="poly-title"></div>
+<div id="poly-list"></div>
+
+<!-- WATCH LIST -->
+<div class="section-title">Watch List</div>
+<div id="watch-list"></div>
+
+<!-- THREATS -->
+<div class="section-title">Threat Assessment</div>
+<div id="threat-list"></div>
+
+<!-- MAP -->
+<div class="section-title" id="map-title"></div>
+<div id="map-legend" style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px;"></div>
+<div id="map-wrap"></div>
+
+<!-- GAS CHART -->
+<div class="section-title" id="gas-title"></div>
+<div id="gas-sub" style="font-size: 11px; color: var(--text); margin-bottom: 16px;"></div>
+<div style="display: grid; grid-template-columns: 1fr auto; gap: 32px;">
+  <div>
+    <canvas id="gasChart"></canvas>
+  </div>
+  <div style="min-width: 180px;">
+    <div style="font-size: 11px; color: var(--text); margin-bottom: 4px;">Current</div>
+    <div id="gas-val" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;"></div>
+    <div id="gas-val-sub" style="font-size: 11px; color: var(--text); line-height: 1.5; margin-bottom: 20px;"></div>
+    <div id="gas-stats"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
 <footer>
-  <div style="font-family:var(--mono);letter-spacing:.08em" id="footer-text"></div>
-  <div class="chips" id="footer-chips"></div>
+  <div id="footer-text"></div>
+  <div id="footer-chips"></div>
 </footer>
 
-<!-- ═══════════════════════════════════════════════════════════
-     DATA — EDIT ONLY THIS BLOCK TO UPDATE THE ENTIRE DASHBOARD
-     ═══════════════════════════════════════════════════════════ -->
+</div>
+
 <script>
 const DATA = {
 
@@ -358,26 +179,26 @@ const DATA = {
   footerText: "NEWS · May 19, 2026",
 
   // ── HEADER ────────────────────────────────────────────────
-  headerPill: "NEGOTIATIONS RESUME — Trump cancels planned military strike; Iran submits revised 14-point proposal via Pakistan; serious diplomatic momentum returns; Gulf countries urged pause; nuclear and Strait issues under discussion; Brent $112.10, WTI $108.66; gas $4.55; deal window reopens",
+  headerPill: "DIPLOMATIC WINDOW OPENS — Trump pauses military strike; Iran submits revised 14-point proposal; \"very good chance\" of deal per Trump; deadlock on uranium, Strait, reparations remains; Brent $111.22 (down 0.79%); WTI $103; gas $4.515; Polymarket 69% deal by Dec 31; critical May 19-22 window determines escalation vs. de-escalation",
 
   // ── ALERT ─────────────────────────────────────────────────
-  alert: "<strong>MAJOR REVERSAL: NEGOTIATIONS RESUME, MILITARY STRIKE CANCELLED — Trump Pauses Planned Tuesday Attack; Iran Submits Revised 14-Point Proposal; Serious Diplomacy Momentum Returns; Gulf Leaders Request Pause; Deal Window Reopens:</strong> On May 19, President Trump cancelled a planned military strike on Iran originally scheduled for Tuesday, citing progress in diplomatic talks and requests from Gulf country leaders to \"hold off on our planned military attack\" because \"serious negotiations are now taking place\" and \"a deal will be made.\" This represents a dramatic 180-degree reversal from May 17's narrative of combat operations resumption by May 21-22. Iran submitted a revised 14-point proposal to Pakistani mediators on Monday, May 18, focusing on war termination, sanctions removal, and Strait of Hormuz freedom of navigation—notably deferring nuclear program details pending resolution of core geopolitical issues. Trump's cancellation of the attack signals renewed confidence in diplomatic pathway and extends the negotiation window significantly. The issues under active discussion: (1) Freedom of navigation through Strait of Hormuz, (2) Iran's nuclear and ballistic program structure, (3) Reconstruction assistance and sanctions framework, (4) Long-term peace agreement architecture. Traders repriced deal probability sharply upward on May 19 following Trump's announcement—Polymarket odds for permanent peace deal by Dec 31 now at 69%, reflecting market belief that negotiations have real momentum. Oil prices spiked on May 18-19 (Brent $112.10, WTI $108.66) reflecting both geopolitical risk premium and possible strategic reserve releases, but stabilized once Trump announced attack cancellation. Gas at $4.55, up from May 17's $4.517 but positioned to fall if deal progresses. Lebanon ceasefire continues to deteriorate despite formal agreement: 3,020+ killed since March war start; 7 killed May 18 alone; Israeli attacks ongoing despite May 15 extension. The critical variable: whether Iran's revised proposal contains nuclear concessions Trump can accept or whether sequencing disagreement persists. Trump's willingness to pause military operations suggests Iran's proposal moved substantially closer to US demands. Watch: draft response exchanges, specific concessions on uranium enrichment/weapons development timelines, Strait reopening language, sanctions phasing framework.",
+  alert: "<strong>CRITICAL INFLECTION POINT: DIPLOMATIC WINDOW OPENS; TRUMP PAUSES MILITARY STRIKE CITING SERIOUS NEGOTIATIONS — Trump Cancels Tuesday Attack; Iran Submits Revised 14-Point Proposal; \"Very Good Chance\" of Agreement; However, White House Privately Dismissive; Deadlock on Uranium Enrichment, Strait Control, Reparations Persists; Iran Repositioning Ballistic Missiles While Negotiating:</strong> On May 19, President Trump announced he would pause a planned military strike originally scheduled for Tuesday, representing a dramatic 180-degree reversal from May 17's combat-ready rhetoric. Trump stated \"very good chance\" of reaching agreement with Iran, citing \"very meaningful\" movement in Iran's revised 14-point proposal submitted via Pakistan on May 18. However, White House officials privately dismissed Iran's proposal as insufficient and continuing deadlock on three core issues: (1) uranium enrichment rights—Trump demands 20-year moratorium; Iran refuses until war ends and sanctions lifted; (2) Strait of Hormuz reopening timeline and control; (3) reparations and frozen asset releases. Meanwhile, US Defense Intelligence reports Iran has been \"digging out multiple bombed ballistic missile sites, moving mobile missile launchers, and adjusting tactics\"—a dual posture suggesting Iran is hedging between genuine deal pursuit and escalation contingency. Trump authorized military but remains on pause, stating readiness to launch \"a full, large scale assault of Iran, on a moment's notice\" if negotiations collapse. Traders repriced deal probability sharply upward from May 17's pessimistic 30-40% to current 69% by Dec 31 (Polymarket), signaling genuine market confidence in diplomatic window. Oil repriced down sharply: Brent fell to $111.22 (down 0.79% May 19), WTI slipped toward $103. Gas at $4.515, down from May 17's $4.517. Lebanon ceasefire continues deteriorating: 3,020+ killed since March 2; Israeli strikes ongoing May 19 despite formal May 15 extension. The critical variable: whether Iran's repositioning signals genuine military confidence in deal or preparation for escalation if talks collapse. Trump's willingness to pause suggests Iran's proposal moved substantially on core US demands, but White House private dismissal suggests gaps remain. Critical window: May 19-22. If US-Iran exchange revised proposals May 19-20 with visible convergence on sequencing/verification, deal framework could emerge by May 22-23. If negotiations stall through May 20, Trump military authorization likely returns May 21-22, triggering oil spike to $115-130, gas to $4.70-5.00, and Lebanon ceasefire collapse.",
 
   // ── HERO ──────────────────────────────────────────────────
-  heroDate: "MONDAY, MAY 19, 2026 · DAY 81 OF CONFLICT · MAJOR REVERSAL: TRUMP CANCELS MILITARY STRIKE, IRAN SUBMITS REVISED PROPOSAL, NEGOTIATIONS MOMENTUM RETURNS, DIPLOMATIC WINDOW REOPENS",
-  heroHed: "<em>Diplomacy Returns.</em><br>Trump Pauses Military Strike; Iran Proposes New Framework; Negotiations Momentum Surges; Deal Window Reopens.",
-  heroDek: "On May 19, the conflict trajectory reversed sharply as President Trump cancelled a planned military strike and announced that \"serious negotiations are now taking place\" toward ending the war. This represents a dramatic 180-degree turn from May 17's narrative of imminent combat operations resumption by May 21-22. Gulf country leaders—including Saudi Arabia, UAE, and others—requested Trump \"hold off on our planned military attack,\" citing diplomatic progress and signaling their belief that a deal pathway is now viable. Iran submitted a revised 14-point proposal via Pakistani mediators on May 18, shifting negotiating framework away from strict sequencing deadlocks toward integrated approach: war termination, sanctions removal, and Strait access bundled together rather than phased separately. The revised proposal notably defers detailed nuclear program restrictions pending resolution of political/economic framework, suggesting Iran is attempting to trade political settlement for deferred nuclear discussion—potentially a Trump-acceptable compromise structure. Trump's strike cancellation signals genuine confidence in diplomatic trajectory: he would not pause military operations unless Iran's proposal contained substantive movement on core US demands (uranium enrichment/weapons development constraints, verification protocols, Strait access). Oil spiked sharply to Brent $112.10, WTI $108.66 on May 18 before stabilizing May 19 as market absorbed Trump's diplomatic announcement, suggesting traders reassessing deal probability upward—Polymarket now pricing 69% chance of permanent peace by Dec 31 vs. 13.5% by May 31. Gas rose to $4.55 from May 17's $4.517, reflecting oil volatility, but positioned to fall if negotiations produce visible framework agreement within 48-72 hours. Lebanon ceasefire continues deteriorating: 3,020+ killed since March 2; 7 killed May 18 despite formal May 15 extension; Israeli operations ongoing despite ceasefire commitment. The inflection point: if US-Iran exchange revised proposals May 19-20 with visible convergence on sequencing/verification, deal framework could emerge by May 22-23 and Lebanon ceasefire stabilizes. If negotiations stall again, Trump's military authorization likely returns by May 21-22. The diplomatic window is open but narrow—48-72 hours of visible progress will determine whether war de-escalates or resumes.",
+  heroDate: "MONDAY, MAY 19, 2026 · DAY 82 OF CONFLICT · DIPLOMATIC WINDOW OPENS: TRUMP PAUSES MILITARY, IRAN SUBMITS REVISED PROPOSAL, DEAL ODDS REPRICED 69%, CRITICAL MAY 19-22 WINDOW DETERMINES ESCALATION VS. DE-ESCALATION",
+  heroHed: "<em>Diplomacy Reopens.</em><br>Trump Pauses Military Strike; Iran Submits 14-Point Plan; Deal Odds Repriced 69%; Deadlock on Uranium, Strait, Reparations Persists; May 19-22 Critical Window.",
+  heroDek: "On May 19, the conflict trajectory shifted sharply as President Trump announced he would pause a military strike originally scheduled for Tuesday, citing \"very good chance\" of reaching agreement with Iran on nuclear weapons prevention. This represents a dramatic reversal from May 17's combat-ready rhetoric, though White House officials privately maintain Iran's proposal is insufficient and core deadlock persists on uranium enrichment, Strait of Hormuz control, and reparations. Iran submitted revised 14-point proposal via Pakistani mediators on May 18, proposing war termination, sanctions lifting, and Strait reopening bundled together—a structure Trump finds more acceptable than previous proposals. However, fundamental disagreements remain: Trump demands 20-year uranium enrichment moratorium; Iran refuses until war ends, sanctions fully lifted, and frozen assets released. Traders repriced deal probability sharply upward from May 17's pessimistic 30-40% to 69% by Dec 31 (Polymarket), 38% by June 30, and 13.5% by May 31—signal of genuine market confidence that diplomatic window is real. Oil repriced down sharply: Brent fell to $111.22 on May 19 (down 0.79%), WTI slipped toward $103, reflecting traders' recalibration toward deal outcome. Gas at $4.515, barely changed from May 17's $4.517, positioned for sharp downward move if deal emerges or upward spike if negotiations collapse. Meanwhile, US Defense Intelligence reports Iran actively \"digging out multiple bombed ballistic missile sites, moving mobile missile launchers, and adjusting tactics\"—dual posture suggesting Iran hedging between genuine deal and escalation contingency. Lebanon ceasefire continuing to deteriorate: 3,020+ killed since March 2; Israeli strikes ongoing May 19 despite formal May 15 extension; ceasefire fate tied directly to Iran deal outcome. Critical window: May 19-22. If US-Iran exchange revised proposals May 19-20 with visible convergence on sequencing/verification, deal framework could emerge by May 22-23, triggering Strait reopening phased May 24-June 7, oil repricing to $95-105, gas to $4.20-4.40, and Lebanon ceasefire stabilization. If negotiations stall through May 20, Trump military authorization likely returns May 21-22, triggering oil spike to $115-130, gas to $4.70-5.00, Lebanon ceasefire collapse, and Hezbollah escalation May 24-25. The inflection point: Trump's willingness to pause military suggests Iran's proposal moved meaningfully on core US demands, but continued missile repositioning and White House private dismissal indicate significant gaps remain. 48-72 hours of visible negotiation progress will determine whether war de-escalates or resumes.",
 
   // ── COUNTDOWN ─────────────────────────────────────────────
-  countdown: { label:"Diplomatic window for visible progress", target:"2026-05-22T23:59:59Z", sub:"May 19-22 — Trump cancelled planned attack citing serious negotiations; Iran submitted revised 14-point proposal May 18; Gulf leaders urged pause; if US-Iran exchange revised proposals May 19-20 with convergence, framework could emerge by May 22-23; if negotiations stall, Trump authorization likely May 21-22; 48-72 hour window determines de-escalation vs. resumption" },
+  countdown: { label:"Diplomatic window for visible deal framework emergence", target:"2026-05-22T23:59:59Z", sub:"May 19-22 — Trump paused military strike citing serious negotiations and \"very good chance\" of deal; Iran submitted revised 14-point proposal May 18; White House privately dismissive but Trump publicly positive; if US-Iran exchange revised proposals May 19-20 with visible convergence on uranium/Strait sequencing, framework could emerge May 22-23; if stall continues through May 20, military authorization likely returns May 21-22 triggering escalation cascade; 48-72 hours determines de-escalation vs. resumption" },
 
   // ── METRICS (up to 5) ─────────────────────────────────────
   metrics: [
-    { color:"amber",  label:"Brent Crude",    value:"$112.10",     sub:"May 18 · up 2.6% from May 17 ($109.26); spiked May 18 on geopolitical risk premium; stabilized May 19 as Trump cancelled attack; traders repricing deal odds sharply upward following strike cancellation; if deal progresses, reprices to $95-105 within 48-72 hours",             subClass:"up" },
-    { color:"amber",  label:"WTI Crude",      value:"$108.66",      sub:"May 18 · up 3.1% from May 17 ($105.42); June futures settled 3% higher on May 18; traders adjusting for deal momentum and possible Strategic Petroleum Reserve release; Strait blockade persists but deal window reopens; if deal framework emerges, reprices to $95-100",     subClass:"up" },
-    { color:"green",  label:"US Gas Avg",     value:"$4.55",       sub:"May 19 · up 3.3¢ from May 17 ($4.517); traders repricing upward on oil spike May 18 but positioned to fall if deal progresses; up 57¢ from pre-war ($2.98); if deal framework emerges by May 22-23, reprices sharply to $4.20-4.40 within 48 hours",           subClass:"up" },
-    { color:"green",   label:"Deal Status", value:"NEGOTIATIONS", sub:"May 19 — REVERSAL from May 17. Trump cancelled military strike citing serious negotiations; Iran submitted revised 14-point proposal May 18 via Pakistan; Gulf countries urged pause; deal odds repriced sharply upward; Polymarket 69% chance by Dec 31",           subClass:"up" },
-    { color:"amber",  label:"Strait Status", value:"BLOCKED/NEGOTIATING", sub:"US military blockade remains in effect; dual blockade with Iran continues; only 5-10 Iranian vessels transiting daily; however, freedom of navigation now under active discussion in revised proposal; Trump paused military strike suggesting possible breakthrough on Strait terms",    subClass:"dn" },
+    { color:"green",  label:"Brent Crude",    value:"$111.22",     sub:"May 19 · down 0.79% from May 18 ($112.10); repriced sharply downward on Trump diplomacy signal; traders repricing deal odds from 30-40% to 69% by Dec 31; if deal framework emerges May 20-21, reprices sharply to $95-105 within 48 hours; if military authorized, spikes back to $115-130",             subClass:"dn" },
+    { color:"green",  label:"WTI Crude",      value:"$103.00",      sub:"May 19 · slipped toward $103 from May 18's $108.66; traders repricing on deal momentum; if deal framework emerges, reprices to $95-100 within 48 hours; if military authorized May 20-22, spikes to $110-120",     subClass:"dn" },
+    { color:"green",  label:"US Gas Avg",     value:"$4.515",       sub:"May 19 · down 0.2¢ from May 17 ($4.517); traders repricing on deal odds shift from 30% to 69%; positioned to fall sharply if deal emerges (down to $4.20-4.40 within 48 hours); up 56.1¢ from pre-war ($2.98); vulnerable to spike to $4.70-5.00 if military authorized May 20-22",           subClass:"dn" },
+    { color:"green",   label:"Deal Status", value:"SERIOUS TALKS", sub:"May 19 — REVERSAL from May 17. Trump paused military citing serious negotiations; Iran submitted 14-point proposal; \"very good chance\" per Trump; White House privately dismissive; deadlock on uranium, Strait, reparations persists; Polymarket 69% by Dec 31, 38% by June 30, 13.5% by May 31",           subClass:"up" },
+    { color:"amber",  label:"Strait Status", value:"NEGOTIATING", sub:"US blockade persists; Iran's revised proposal includes Strait reopening; freedom of navigation now active negotiation item; Trump paused military suggesting possible breakthrough on Strait terms; if deal emerges, phased reopening May 24-June 7 possible",    subClass:"up" },
   ],
 
   storiesTitle: "Global Conflict — May 19, 2026",
@@ -386,105 +207,105 @@ const DATA = {
   stories: [
     {
       dot: "d-crit",
-      title: "MAJOR REVERSAL: TRUMP CANCELS MILITARY STRIKE, NEGOTIATIONS RESUME — Trump pauses planned attack citing serious diplomacy; Iran submits revised 14-point proposal May 18 via Pakistan; deal odds repriced sharply upward; diplomatic momentum returns",
-      body: "On May 19, President Trump cancelled a planned military strike originally scheduled for Tuesday, representing a dramatic 180-degree reversal from May 17's narrative of imminent combat operations by May 21-22. Trump's announcement came after Gulf country leaders (Saudi Arabia, UAE, others) requested he \"hold off on our planned military attack\" because \"serious negotiations are now taking place\" and \"a deal will be made.\" Iran submitted a revised 14-point proposal to Pakistani mediators on May 18, shifting from previous rigid sequencing demands toward integrated approach: war termination, sanctions removal, and Strait of Hormuz freedom of navigation bundled together. The revised proposal notably defers detailed nuclear program restrictions pending resolution of political/economic framework—potentially a Trump-acceptable compromise where he achieves political/military victory before nuclear technical discussions. Trump's strike cancellation signals genuine confidence in diplomatic trajectory: he would not pause military operations unless Iran's proposal contained substantive movement on core US demands (uranium enrichment constraints, verification protocols, Strait access). Traders repriced deal probability sharply upward following announcement—Polymarket now pricing 69% chance of permanent peace by Dec 31 vs. 13.5% by May 31 (massive repricing from May 17's pessimism). The critical window: May 19-22. If US-Iran exchange revised proposals with visible convergence on sequencing/verification, deal framework could emerge by May 22-23. If negotiations stall, military authorization likely returns by May 21-22. Watch: draft exchange pace, Trump rhetoric on negotiations progress, Iran government statements, Gulf country diplomatic activity, military movement indicators.",
-      tags: [{ text:"Trump cancels military strike; serious negotiations underway", cls:"t-green" },{ text:"Iran submits revised 14-point proposal via Pakistan May 18", cls:"t-green" },{ text:"Deal odds repriced 69% by Dec 31; diplomatic momentum returns", cls:"t-green" }]
+      title: "DIPLOMATIC WINDOW OPENS; TRUMP PAUSES MILITARY STRIKE CITING SERIOUS NEGOTIATIONS — Trump cancels Tuesday attack; Iran submits revised 14-point proposal May 18; \"very good chance\" of deal per Trump; deal odds repriced 69%; White House privately maintains deadlock persists",
+      body: "On May 19, President Trump announced he would pause a planned military strike originally scheduled for Tuesday, representing a dramatic 180-degree reversal from May 17's combat-ready rhetoric citing \"very good chance\" of reaching agreement with Iran on nuclear weapons prevention. Trump's announcement came after discussions with Qatar, Saudi Arabia, and UAE requesting pause for diplomacy. Iran submitted revised 14-point proposal via Pakistan on May 18 proposing: war termination on all fronts including Lebanon, release of frozen assets, lifting sanctions, compensation for war damages, Strait of Hormuz freedom of navigation, and deferred nuclear discussion pending political settlement resolution. Trump stated \"very meaningful\" movement in Iran's proposal, but White House officials privately dismissed proposal as insufficient addressing core US demands. The revised proposal defers detailed nuclear restrictions pending political/economic settlement resolution—potentially Trump-acceptable compromise structure where political victory (war end, sanctions lift, asset release) precedes nuclear technical discussion. Trump's strike cancellation signals confidence in diplomatic trajectory—he would not pause unless Iran's proposal moved substantially on core US demands (uranium enrichment constraints, verification protocols, Strait access). Traders repriced deal probability sharply upward from May 17's pessimistic 30-40% to 69% by Dec 31, 38% by June 30, 13.5% by May 31 (Polymarket). Trump maintains readiness to launch \"full, large scale assault of Iran, on a moment's notice\" if talks collapse. Critical window: May 19-22. If US-Iran exchange revised proposals May 19-20 with visible convergence, framework could emerge by May 22-23. If stall continues, military authorization likely returns May 21-22. Watch: draft exchange pace, Trump rhetoric (diplomatic language = momentum), Iran statements, Gulf diplomatic activity, military movement indicators.",
+      tags: [{ text:"Trump pauses military strike; serious negotiations underway", cls:"t-green" },{ text:"Iran submits revised 14-point proposal via Pakistan May 18", cls:"t-green" },{ text:"Deal odds repriced 69% by Dec 31; Polymarket signals confidence", cls:"t-green" }]
     },
     {
       dot: "d-crit",
-      title: "STRAIT BLOCKADE UNDER NEGOTIATION — Freedom of navigation now in Iran's revised proposal; US-Iran discussing passage terms; dual blockade persists but deal window creates reopening pathway; 5-10 transits daily remain blocked",
-      body: "The Strait of Hormuz blockade, which has remained fully closed since April 13 under dual blockade (US and Iran), is now an active negotiation item in Iran's revised 14-point proposal submitted May 18. Unlike May 17's deadlock where Iran demanded blockade lift as precondition, the revised proposal treats freedom of navigation as bundled negotiation item rather than prerequisite—a significant shift suggesting Iran willing to negotiate phased reopening. Trump's decision to pause military strike indicates he sees Iran's revised Strait language as substantively acceptable: the US views Strait access as critical leverage and would not pause military operations unless Iran's proposal contained meaningful reopening pathway. Current facts: US Navy has redirected 75+ commercial ships since April 13; 5-10 Iranian-linked vessels transiting daily (5-10% of pre-war 120 daily baseline); total stranded vessels near Persian Gulf: 1,500+ with 20,000+ sailors. Trump emphasized multiple times that Strait closure is leverage for deal—suggesting Strait reopening will be among final deal concessions, executed upon verification and framework implementation. If deal emerges by May 22-23, Trump likely agrees to phased reopening: immediate commercial traffic (non-Iranian) May 24-25, Iranian tankers subject to verification May 26-29, full normalization June 1-7. Recovery timeline: 4-6 months to return to pre-war baseline even with deal. Watch: Strait transit counts (rising = reopening negotiations progressing), Trump statements on reopening timeline, Iranian port activity, shipping cost trends, vessel movement indicators.",
-      tags: [{ text:"Strait in Iran's revised proposal; freedom of navigation negotiable", cls:"t-amber" },{ text:"Blockade persists; 5-10 transits daily; 1,500 vessels stranded", cls:"t-amber" },{ text:"Deal would enable phased reopening May 24-June 7; 4-6 month recovery", cls:"t-amber" }]
+      title: "CORE DEADLOCK PERSISTS: URANIUM ENRICHMENT, STRAIT, REPARATIONS — Trump demands 20-year moratorium; Iran wants nuclear deferred until war ends, sanctions lifted, assets released; sequencing compromise possible but White House dismisses progress as inadequate",
+      body: "Despite Trump's public optimism, White House officials maintain fundamental deadlock on three core issues forming the negotiation impasse: (1) uranium enrichment rights and Iran's 440kg stockpile—Trump demands 20-year moratorium on all enrichment; Iran refuses to discuss until war ends, sanctions fully lifted, and frozen assets released; (2) Strait of Hormuz reopening timeline and control—US wants immediate verification of shipping and naval access; Iran wants phased reopening linked to sanctions lifting; (3) reparations and frozen assets—Iran demands full compensation for war damage and complete unfreezing of ~$100B in assets; US offering limited phased release tied to compliance verification. Iran's revised proposal defers detailed nuclear restrictions pending political/economic settlement resolution, suggesting Tehran seeking to trade political settlement (war termination, sanctions relief, asset release) for delayed nuclear technical discussion. White House privately assesses this as insufficient because it potentially enables Iran to reclaim uranium rights after sanctions lifted—classic bait-and-switch. However, Trump's willingness to pause suggests proposal moved substantially closer to US position than previous iterations. Verification gaps remain central: US wants full access to inspect uranium sites; Iran wants phasing linked to sanctions lifting in parallel rather than sequentially. Meanwhile, Iran actively repositioning ballistic missile sites and mobile launchers—dual strategy suggests hedging between genuine deal pursuit and escalation contingency preparation. If Iran's repositioning accelerates significantly (more than normal operational tempo), Trump may interpret as negotiation stall signal and authorize military May 20-21. Watch: uranium enrichment language in revised drafts, Strait reopening percentages and timeline, frozen asset release mechanisms and verification protocols, Iran military repositioning pace (imagery).",
+      tags: [{ text:"Uranium, Strait control, reparations form core deadlock", cls:"t-red" },{ text:"Trump: 20-year moratorium non-negotiable; Iran wants nuclear deferred", cls:"t-red" },{ text:"Sequencing compromise possible but White House skeptical of bait-and-switch", cls:"t-red" }]
     },
     {
       dot: "d-crit",
-      title: "LEBANON CEASEFIRE DETERIORATING; DEATH TOLL EXCEEDS 3,000 — Israeli attacks kill 7 on May 18 despite formal extension; 3,020+ dead since March 2; Hezbollah restrained but fate tied to Iran negotiations outcome",
-      body: "Lebanon's ceasefire, formally extended 45 days on May 15, continues to deteriorate with escalating violence and violations despite formal agreement. Israel Defence Forces launched strikes on May 18 killing at least 7 people, including Wael Abdel Halim (Palestinian Islamic Jihad leader) and his 17-year-old daughter Rama. Lebanon's Ministry of Health reports total death toll of 3,020+ since Israeli attacks began March 2, with 9,273 wounded. Israeli forces issued evacuation orders for four southern towns and villages, then conducted strikes on multiple locations including Az-Zrariyah and Tayr Debba, indicating continued military operations despite formal ceasefire extension. Both Israeli military and Hezbollah have accused each other of violations; Israeli forces documented continued destruction of homes in southern Lebanon—creating humanitarian crisis and mass displacement. The ceasefire's fate is directly tied to Iran-US negotiation trajectory: if Trump-Iran deal emerges by May 22-23, Iran likely signals Hezbollah to fully respect ceasefire and extend indefinitely. If negotiations stall and Trump resumes military operations, Iran will likely authorize Hezbollah escalation and ceasefire collapses by May 24-25. Current violence escalation despite formal agreement suggests both sides expect Iran-US war outcome to drive ceasefire stability—ceasefire is effectively \"pause pending greater conflict outcome\" rather than genuine cessation. Security talks scheduled May 29 at Pentagon will address border measures; political talks June 2-3 will address sovereignty. However, these timelines suggest Lebanese government acknowledges ceasefire is temporary pending Iran war resolution. Watch: daily casualty counts (acceleration = breakdown imminent), Israeli southern operations intensity, Hezbollah attack frequency, Iran statements to Hezbollah, ceasefire extension negotiation progress.",
-      tags: [{ text:"3,020+ killed since March 2; 7 killed May 18 despite ceasefire", cls:"t-red" },{ text:"Israeli forces conducting strikes; homes destroyed; displacement crisis", cls:"t-red" },{ text:"Ceasefire fate tied to Iran deal; if Trump resumes ops, Hezbollah escalates May 24-25", cls:"t-red" }]
+      title: "IRAN REPOSITIONS BALLISTIC MISSILES WHILE NEGOTIATING — US officials report Iran digging out bombed sites, moving mobile launchers, adjusting tactics; dual strategy signals hedging between deal and escalation contingency",
+      body: "During ongoing negotiations, Iran strategically used diplomatic window to advance military preparations: US Defense Intelligence Agency officials report Iran has been \"digging out multiple bombed ballistic missile sites, moving mobile missile launchers, and adjusting its tactics\" across multiple regions. This dual posture—negotiating earnestly through Pakistani mediators while actively repositioning military assets—signals Iran's hedging strategy: if negotiations produce deal, Iran can claim success and demobilization; if talks collapse, Iran's enhanced military readiness position accelerates escalation response. The repositioning includes: recovering ballistic missile launch sites damaged in May 15-17 airstrikes, redeploying mobile Shahab and Fattah launcher systems to new positions in preparation for post-strike operations, recalibrating defensive air defense network positions, and adjusting tactical doctrine based on lessons learned from US-Israeli strikes. This military modernization during diplomatic window is tactically sound but creates ambiguity: traders and Trump cannot confidently distinguish between genuine deal pursuit with escalation contingency planning versus negotiation-as-cover for military preparation. Trump maintains willingness to pause operations, suggesting he believes Iran's overtures are authentic rather than stalling tactic, but continued missile repositioning maintains his escalation authorization readiness. If Iran's repositioning accelerates significantly beyond normal operational tempo (more than daily baseline movement), Trump may interpret as negotiation stall signal and authorize military May 20-21. Intelligence community split on Iran's true intentions: some assess Iran genuinely seeking deal; others assess negotiation is cover for weapons preparation. Trump's May 20-22 authorization decision will likely depend on imagery evidence of repositioning acceleration. Watch: satellite imagery of Iranian ballistic missile site activity, US military threat assessment statements on Iran readiness, Iran government diplomatic statements (sincerity indicators), mobile launcher movement pace, intelligence agency assessments.",
+      tags: [{ text:"Iran repositioning ballistic missile sites, mobile launchers during talks", cls:"t-amber" },{ text:"Dual strategy: negotiating seriously while preparing escalation contingency", cls:"t-amber" },{ text:"Acceleration would signal stall; Trump maintains authorization readiness for May 20-21", cls:"t-amber" }]
     },
     {
       dot: "d-high",
-      title: "OIL SPIKES SHARPLY ON GEOPOLITICAL RISK BUT STABILIZES AS TRUMP ANNOUNCES DIPLOMACY — Brent $112.10 (up 2.6% May 18); WTI $108.66 (up 3.1%); traders repricing deal odds upward; if framework emerges, reprices to $95-105",
-      body: "Crude oil markets spiked sharply on May 18 as traders repriced geopolitical risk premium upward, with Brent jumping to $112.10 (up 2.6% from May 17's $109.26) and WTI settling at $108.66 (up 3.1% from $105.42). The spike reflected both escalation fears and possible Strategic Petroleum Reserve release announcements. However, prices stabilized May 19 as Trump announced cancellation of planned military strike, signaling renewed confidence in diplomatic pathway. Traders are now repricing deal probability sharply upward—Polymarket odds of 69% by Dec 31 suggest market believes negotiations have real momentum compared to May 17's 30-40% deal odds. The oil repricing calculus: Brent $112.10 reflects balanced 50-50 outcome between continued blockade/escalation and deal framework. If Trump-Iran produce visible agreement on draft terms by May 20-21, Brent reprices downward to $95-105 within 48 hours (reflecting blockade lift pathway). If negotiations stall and military operations resume by May 21-22, Brent will spike sharply to $115-130 (20-30% single-day move). Current $112.10 represents traders' reassessment that deal pathway is now viable—52% premium to pre-war $72 baseline reflects blockade impact but not escalation lock-in. Brent-WTI spread behavior signals traders increasing conviction in deal outcome: if spread continues narrowing, deal confidence rising. Watch: Trump rhetoric (diplomatic language = deal momentum), daily oil price action ($110-112 = negotiation equilibrium, $115+ = escalation spike, $100-105 = deal progress), Brent-WTI spread trend.",
-      tags: [{ text:"Brent $112.10, WTI $108.66; spiked 2.6-3.1% May 18", cls:"t-amber" },{ text:"Prices stabilize May 19 as Trump announces diplomacy; deal odds repriced up", cls:"t-amber" },{ text:"If framework emerges May 20-21, reprices to $95-105 within 48 hours", cls:"t-amber" }]
+      title: "OIL REPRICES DOWN SHARPLY ON TRUMP DIPLOMACY SIGNAL — Brent fell to $111.22 (down 0.79% May 19); WTI toward $103; traders repriced deal odds from 30-40% to 69%; if framework emerges, reprices to $95-105 within 48 hours",
+      body: "Crude oil markets repriced sharply downward May 19 as Trump's military strike cancellation signaled renewed negotiation momentum. Brent fell to $111.22 on May 19 (down 0.79% from May 18's $112.10), and WTI slipped toward $103 per barrel (from May 18's $108.66). The repricing reflects traders' sharp recalibration of deal probability from May 17's pessimistic 30-40% to current 69% by Dec 31 (Polymarket 28-point repricing). Traders repositioned away from escalation risk premium toward deal-pathway pricing, interpreting Trump's military pause as signal of genuine diplomatic confidence. The oil repricing calculus: Brent $111.22 reflects balanced outcome between negotiation momentum and remaining deadlock risks. If Trump-Iran produce visible agreement on draft terms by May 20-21 with announced framework convergence, Brent reprices downward sharply to $95-105 within 48 hours (reflecting blockade lift pathway and Strait reopening confidence by May 24-June 7). If negotiations stall through May 20 and Trump authorizes military operations May 21-22, Brent would spike back sharply to $115-130 (reversing May 19's 0.79% decline and adding 3-16% single-day escalation premium). Current $111.22 = 52% premium to pre-war $72 baseline but declining trend from May 18's $112.10 reflects rising deal confidence. Brent-WTI spread narrowing May 19, traders increasing conviction in deal outcome: continued spread narrowing signals rising deal confidence; spread widening would signal stall/escalation. If deal framework emerges, WTI would reprice to $95-100 within 48 hours. Watch: Trump rhetoric (diplomatic language = deal momentum, combat-ready language = stall signal), daily oil price action ($110-115 = negotiation equilibrium, $95-105 = deal momentum peak, $115+ = escalation spike), Brent-WTI spread trend (narrowing = deal confidence, widening = stall), Iran-US draft exchange pace.",
+      tags: [{ text:"Brent fell to $111.22 (down 0.79% May 19); WTI slipped to $103", cls:"t-green" },{ text:"Trump diplomacy signal drives repricing; traders moved to deal confidence", cls:"t-green" },{ text:"If framework emerges May 20-21, reprices sharply to $95-105 within 48 hours", cls:"t-green" }]
     },
     {
       dot: "d-high",
-      title: "GAS PRICE STABLE BUT VULNERABLE TO SPIKE — AAA national average $4.517 (stable vs May 16); up 55¢ from pre-war $2.98; traders cautious as deal odds fell 50-60% to 30-40%; if combat authorized, vulnerable to spike to $4.70-5.00 within 48 hours",
-      body: "US gasoline prices remain stable at AAA national average of $4.517, unchanged from May 16, as traders digest conflicting signals about escalation probability. Prices are elevated 55¢ from pre-war baseline ($2.98, Feb 26), reflecting sustained Strait closure impact and geopolitical premium. However, current price stability masks underlying vulnerability: traders have repriced deal odds downward from 50-60% (May 16) to 30-40% (May 17), increasing military resumption probability to 50-60%. This means current $4.517 reflects nervous equilibrium, not confidence in either outcome. The repricing calculus: if Trump authorizes military operations May 21-22, gas would spike sharply to $4.70-5.00 within 48 hours (spike of 4-11%) as traders reprice to reflect intensified Strait blockade and potential Iranian counter-operations. If deal somehow emerges (current odds < 30%), gas would fall to $4.20-4.40 within 48 hours as traders reprice to reflect Strait reopening and supply normalization. Current $4.517 represents traders' rough 50-50 outcome assessment. Vulnerability window: May 17-22. If Trump and Iran show visible convergence by May 19, gas falls to $4.30-4.40 range. If talks stall and Trump authorizes military by May 20-21, gas spikes to $4.70-5.00 likely within 48 hours. Watch: Trump rhetoric (authorization indicators), Iran-US draft exchanges (lack of exchange = stall signal), daily oil prices (spike = escalation risk), AAA price updates (lag indicator of trader expectations).",
-      tags: [{ text:"AAA $4.517; stable but vulnerable to 4-11% spike", cls:"t-blue" },{ text:"Deal odds fell to 30-40%; military odds at 50-60%", cls:"t-blue" },{ text:"If combat authorized May 21-22, spikes to $4.70-5.00 within 48 hours", cls:"t-blue" }]
+      title: "GAS PRICE MODESTLY DOWN ON DEAL ODDS REPRICING — AAA $4.515 on May 19 (down 0.2¢ from May 17); up 56.1¢ from pre-war $2.98; traders repricing upward on 69% deal odds; positioned for sharp moves May 20-22",
+      body: "US gasoline prices slipped modestly to AAA national average of $4.515 on May 19, down 0.2¢ from May 17's $4.517, as traders absorbed Trump's diplomacy announcement. Prices remain elevated 56.1¢ from pre-war baseline ($2.98, Feb 26), reflecting sustained Strait closure impact and geopolitical premium. Current modest decline reflects beginning of deal confidence repricing, though traders are positioning carefully pending May 20-22 inflection point. Repricing calculus: current $4.515 represents nervous equilibrium with rising deal weight. If Trump-Iran announce visible draft framework agreement by May 20-21, gas reprices sharply downward to $4.20-4.40 within 48 hours as Strait reopening becomes credible May 24-June 7 timeline and supply normalization confidence rises. If negotiations stall through May 20 and Trump authorizes military May 21-22, gas spikes sharply to $4.70-5.00 within 48 hours (4-11% spike) as traders reprice blockade intensification and Iranian counter-operations risk. Current $4.515 = 52% premium to pre-war baseline, reflecting balanced outcome odds with rising deal weight compared to May 17-18. Traders repositioning cautiously: gas price stability masks underlying volatility as May 20-22 inflection point approaches. Vulnerability window: May 19-22. If Trump-Iran show visible convergence by May 20, gas reprices sharply down to $4.30-4.40. If talks stall and Trump authorizes military by May 20-21, gas reprices sharply up to $4.70-5.00 likely within 48 hours, potentially hitting $5.00+ if escalation accelerates. Watch: Trump rhetoric (authorization vs. diplomacy indicators), Iran-US draft exchange pace (lack of exchange = stall signal), daily oil prices (spike = escalation risk), AAA price updates (lag indicator of trader expectations).",
+      tags: [{ text:"AAA $4.515; down 0.2¢ from May 17 as deal odds improve", cls:"t-green" },{ text:"Positioned for sharp moves; vulnerable to $4.70-5.00 spike if talks stall", cls:"t-amber" },{ text:"If framework emerges May 20-21, reprices to $4.20-4.40 within 48 hours", cls:"t-green" }]
     },
     {
-      dot: "d-mod",
-      title: "CHINA'S MEDIATION ROLE REJECTED BY TRUMP — Xi offered mediation; Trump explicitly rebuffed, emphasizing US controls blockade unilaterally; China pledged not to supply military equipment to Iran; both agreed Iran should pursue diplomacy",
-      body: "During May 16 Beijing summit, Chinese President Xi Jinping offered to mediate US-Iran conflict, but President Trump explicitly rejected the mediation role, fundamentally limiting China's leverage in negotiations. Trump told reporters the US doesn't require Chinese assistance to maintain the Strait blockade, signaling American strategic independence and unwillingness to share decision-making authority. Xi's position in summit: China views conflict as damaging to global economic growth and energy stability, pledged not to supply military equipment to Iran, and expressed desire for Strait reopening to restore Chinese energy imports. However, Trump's response—emphasizing US unilateral control and self-sufficiency—effectively sidelined Chinese third-party brokering capacity. Trump stated China relies on ~40% regional energy while US needs none from the corridor, making strategic symmetry asymmetric and reducing Xi's leverage. The rejection of mediation means: (1) no three-party negotiation structure emerges, (2) bilateral US-Iran deadlock remains unmediated by neutral third party, (3) China's economic leverage (Iran's largest oil buyer) cannot be deployed in mediation framework. Both leaders agreed Iran should pursue diplomacy before escalation, but neither committed to framework ensuring that happens—suggesting both expect escalation as likely outcome. Xi's refusal to supply Iran militarily limits Iran's ability to respond if Trump authorizes operations, effectively aligning China with US position strategically. Watch: Chinese government statements (whether they accept rejection gracefully or attempt additional mediation), Chinese military movements (blockade participation indicators), Trump-China trade negotiations (whether rejected mediation affects other bilateral issues).",
-      tags: [{ text:"Xi offered mediation; Trump explicitly rejected", cls:"t-amber" },{ text:"China pledged no military supplies to Iran", cls:"t-amber" },{ text:"Trump emphasized US unilateral control; no three-party framework", cls:"t-amber" }]
+      dot: "d-crit",
+      title: "LEBANON CEASEFIRE DETERIORATING; DEATHS EXCEED 3,000 — Israeli strikes ongoing May 19 despite formal May 15 extension; violence accelerates; ceasefire fate directly tied to Trump-Iran deal outcome by May 22-23",
+      body: "Lebanon's ceasefire, formally extended 45 days on May 15, is deteriorating rapidly with escalating Israeli strikes and civilian casualties despite formal agreement. Lebanon Ministry of Health reports 3,020+ killed since Israeli attacks began March 2, with 9,273 wounded. Israeli Defence Forces launched strikes May 19 with additional civilian casualties reported. Israeli forces issued evacuation orders for southern towns and villages, then conducted strikes on multiple locations, indicating continued military operations despite formal ceasefire extension. Both Israeli military and Hezbollah have accused each other of violations; Israeli forces documented continued destruction of homes in southern Lebanon—creating humanitarian crisis and mass displacement. Ceasefire structure: initial 10-day truce (Apr 17-27), extended ceasefire (Apr 27-May 15), 45-day formal extension (May 15-June 29). However, violence trend indicates ceasefire is effectively cover for continued operations pending political outcome. Security talks scheduled May 29, political talks June 2-3 pending Iran war resolution. Critical linkage: ceasefire's fate is directly tied to Iran-US negotiation trajectory. If Trump-Iran produce visible deal framework by May 22-23, Iran likely signals Hezbollah to fully respect ceasefire and extend indefinitely, forcing Israeli compliance. If negotiations collapse and Trump authorizes military May 20-22, Iran likely signals Hezbollah to escalate sharply and ceasefire collapses by May 24-25, triggering Israeli-Lebanon war active phase May 25-27 with major escalation. Current violence escalation despite formal agreement suggests both sides expect military outcome to drive ceasefire stability—ceasefire is effectively \"pause pending greater conflict outcome\" rather than genuine cessation. Lebanese government acknowledging ceasefire is temporary pending Iran war resolution. Watch: daily casualty counts (acceleration = breakdown imminent), Israeli air operations intensity in south Lebanon, Hezbollah attack frequency (escalation = collapse signal), Iran statements to Hezbollah, Trump-Iran draft exchange pace.",
+      tags: [{ text:"3,020+ killed since March 2; Israeli strikes ongoing May 19", cls:"t-red" },{ text:"Israeli forces destroying homes; mass displacement ongoing", cls:"t-red" },{ text:"Ceasefire fate tied to Iran deal; if Trump authorizes military, Hezbollah escalates May 24-25", cls:"t-red" }]
     },
   ],
 
   // ── MAP ───────────────────────────────────────────────────
-  mapTitle: "Conflict Theater — May 17, 2026 · DEADLOCK RETURNS: STRAIT FULLY CLOSED, TRUMP REJECTS MEDIATION, COMBAT RESUMPTION LIKELY, CEASEFIRE DETERIORATING",
+  mapTitle: "Conflict Theater — May 19, 2026 · DIPLOMATIC WINDOW OPENS: TRUMP PAUSES STRIKE, IRAN SUBMITS PROPOSAL, SERIOUS NEGOTIATIONS UNDERWAY, CRITICAL MAY 19-22 WINDOW DETERMINES ESCALATION VS. DE-ESCALATION",
   mapCenter: [30, 35],
   mapScaleMult: 1.1,
-  mapLabel: { lon:56.5, lat:26.55, lines:["BLOCKADE","DEADLOCK","MILITARY LIKELY"], color:"#e24b4a" },
+  mapLabel: { lon:56.5, lat:26.55, lines:["NEGOTIATIONS","SERIOUS TALKS","MAY 19-22 WINDOW"], color:"#3dba7f" },
   markers: [
-    { name:"Tehran",              lat:35.69, lon:51.39, type:"diplo", note:"DEADLOCK — May 17 fundamental disagreement unresolved; Iran insists war-end-first approach; Trump demands immediate 10-year nuclear halt + uranium surrender; Araghchi: 'no trust to Americans'; sequencing impasse worse than May 15; if Trump authorizes military by May 21-22, escalation likely" },
-    { name:"Qom",                 lat:34.64, lon:50.88, type:"diplo", note:"Nuclear program — sequencing deadlock unresolved; Trump wants immediate 10-year halt + 440kg uranium surrender; Iran refuses to discuss until war ends and sanctions lifted; no bridge visible by May 17" },
-    { name:"Bushehr",             lat:28.97, lon:50.84, type:"strike", note:"Nuclear plant offline — likely target if military operations resume; offline status expected to continue pending nuclear deal resolution or military escalation" },
-    { name:"Kharg Island",        lat:29.24, lon:50.32, type:"strike", note:"90% of Iran's crude exports — offline; vulnerable to military strikes if operations resume; would remain offline under continued blockade" },
-    { name:"Mahshahr Petrochem",  lat:30.56, lon:49.20, type:"strike", note:"Export capability frozen — remains frozen under US blockade; likely target if military escalation authorized" },
-    { name:"Abqaiq",              lat:25.93, lon:49.69, type:"strike", note:"Saudi facility offline — Iran likely target if Trump authorizes military; escalation scenario could trigger Iranian retaliatory strikes" },
-    { name:"Strait of Hormuz",    lat:26.55, lon:56.50, type:"airdef", note:"FULLY CLOSED — US military blockade remains in effect; 75+ ships redirected; only 5-10 Iranian vessels transiting daily; Trump rejected Xi mediation; no Chinese vessels transiting; Trump controls blockade unilaterally; if military authorized, likely to intensify" },
-    { name:"Kuwait",              lat:29.37, lon:47.99, type:"airdef", note:"Alert status elevated — Strait closure persists; if Trump authorizes military, Iranian retaliatory threat increases; blockade continuation makes GCC exposed to escalation" },
-    { name:"UAE",                 lat:24.50, lon:54.40, type:"diplo", note:"Coastal watch — Iran's May 15 drone attacks suggest willingness to escalate GCC if feeling cornered; blockade persistence and military authorization risk could trigger broader Iranian response" },
-    { name:"Qatar",               lat:25.28, lon:51.53, type:"airdef", note:"Port monitoring — Strait blockade persists; Qatar's LNG exports constrained; no reopening visible unless deal emerges (unlikely by current trajectory)" },
-    { name:"Bahrain",             lat:26.07, lon:50.55, type:"airdef", note:"Shipping hub — Strait remains closed; port operations constrained by blockade; no recovery visible pending deal or military escalation outcome" },
-    { name:"Saudi Arabia",        lat:26.50, lon:44.00, type:"diplo", note:"Monitoring closely — Saudi requested Project Freedom pause for diplomacy May 4-6; pause lasted 2 days before talks broke down May 8; Saudi now faces potential US military resumption if negotiations fail May 20-22" },
-    { name:"Lebanon",             lat:33.80, lon:35.80, type:"diplo", note:"Ceasefire extended 45 days May 15; but violence escalates: 670+ killed since ceasefire; Israeli forces destroying homes south; fate tied to Iran war; if Trump authorizes military May 21-22, Iran likely signals Hezbollah escalate" },
-    { name:"N. Israel (Hezbollah)", lat:33.20, lon:35.57, type:"diplo", note:"Restrained under ceasefire but casualties rising; 670+ killed since ceasefire began; if Trump authorizes military May 21-22 and Iran signals escalation, Hezbollah likely to escalate sharply May 23-24" },
-    { name:"Haifa",               lat:32.82, lon:34.99, type:"airdef", note:"Hezbollah attacks minimal under ceasefire; would escalate sharply if Iran signals escalation following Trump military authorization; Israeli-Lebanon war escalates if ceasefire collapses May 23-24" },
-    { name:"Tel Aviv",            lat:32.08, lon:34.78, type:"diplo", note:"Monitoring Trump-Iran negotiations — if negotiations fail and Trump authorizes military May 21-22, IDF escalation against Hezbollah likely; Israeli-Lebanon war active phase likely May 24-27" },
-    { name:"CVN-72 Arabian Sea",  lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — Project Freedom paused May 6; pause likely to end May 20-22 if Trump authorizes military resumption; combat operations resumption expected if Iran talks fail" },
-    { name:"CVN-78 E.Med",        lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean supporting Israel; if Trump authorizes military against Iran, escalation likely involves expanded naval operations in multiple theaters" },
-    { name:"Islamabad",           lat:33.72, lon:73.06, type:"diplo",  note:"Pakistan's mediation role ended; Trump rejected Xi's mediation framework May 16; Pakistan's back-channel role, if any, unlikely to influence Trump's May 20-22 military authorization decision" },
-    { name:"Washington DC",       lat:38.91, lon:-77.04, type:"diplo", note:"CRITICAL AUTHORIZATION WINDOW: May 17-22 — Trump frustrated, considering combat ops resumption; Iran deadlock unresolved; if negotiations fail to show convergence by May 19-20, military authorization likely May 20-22; oil $115-130 if authorized; gas $4.70-5.00" },
-    { name:"Beijing",             lat:39.90, lon:116.41, type:"diplo",  note:"Mediation rejected by Trump May 16 — Xi offered to mediate but Trump explicitly rebuffed; China pledged not to supply military equipment to Iran; China effectively sidelined in negotiations; both sides expect escalation as likely outcome" },
+    { name:"Tehran",              lat:35.69, lon:51.39, type:"diplo", note:"DIPLOMATIC WINDOW OPEN — May 19 Trump paused military strike citing serious negotiations; \"very good chance\" per Trump; Iran submitted revised 14-point proposal May 18; White House privately dismissive but Trump publicly positive; deadlock on uranium enrichment (US 20-year demand), Strait control, reparations (Iran unfreezing demands) remains; if US-Iran exchange revised drafts May 19-20 with convergence, deal framework could emerge by May 22-23; if stall, military authorization likely May 21-22" },
+    { name:"Qom",                 lat:34.64, lon:50.88, type:"diplo", note:"Nuclear program — revised proposal defers detailed uranium restrictions pending political/economic settlement resolution; Iran wants nuclear discussion after war ends, sanctions lifted, assets unfrozen; Trump demands 20-year uranium enrichment moratorium non-negotiable; sequencing compromise possible but verification gaps remain; if no verification progress by May 20, authorization likely" },
+    { name:"Bushehr",             lat:28.97, lon:50.84, type:"strike", note:"Nuclear plant offline — remains offline pending nuclear deal resolution; likely target if military operations resume May 21-22; no current threat if deal emerges by May 22-23; status tied to uranium enrichment outcome" },
+    { name:"Kharg Island",        lat:29.24, lon:50.32, type:"strike", note:"90% of Iran's crude exports — offline; vulnerable if military escalates May 21-22; would remain offline under continued blockade; blockade lift bundled with deal framework; if deal emerges, phased reopening May 24-June 7 possible" },
+    { name:"Mahshahr Petrochem",  lat:30.56, lon:49.20, type:"strike", note:"Export capability frozen — remains frozen under US blockade; likely target if military escalation authorized; remains vulnerable through May 22 inflection point" },
+    { name:"Abqaiq",              lat:25.93, lon:49.69, type:"strike", note:"Saudi facility offline — Iran likely target if Trump authorizes military May 21-22; escalation scenario could trigger Iranian retaliatory strikes; currently in standby mode pending Trump decision" },
+    { name:"Strait of Hormuz",    lat:26.55, lon:56.50, type:"airdef", note:"UNDER NEGOTIATION — US military blockade persists; freedom of navigation now active negotiation item in Iran's revised 14-point proposal; 75+ ships redirected; only 5-10 Iranian vessels transiting daily (~5% baseline); Trump paused military suggesting possible breakthrough on Strait terms; if deal emerges by May 22-23, phased reopening May 24-June 7 possible (commercial May 24-25, Iranian tankers May 26-29, full normalization June 1-7)" },
+    { name:"Kuwait",              lat:29.37, lon:47.99, type:"airdef", note:"Alert status elevated — Strait remains under blockade/negotiation; if Trump authorizes military May 21-22, Iranian retaliatory threat increases sharply; GCC exposed to escalation risk if deal fails through May 22" },
+    { name:"UAE",                 lat:24.50, lon:54.40, type:"diplo", note:"Mediation partner — requested Trump military pause; supports negotiations; Iran's May 15 drone attacks indicate willingness to escalate GCC if cornered; blockade persistence through May 22 makes GCC vulnerable to escalation if deal fails" },
+    { name:"Qatar",               lat:25.28, lon:51.53, type:"airdef", note:"Mediation partner — requested Trump military pause; port monitoring; Strait blockade persists but negotiations active; if framework emerges by May 22-23, Strait reopening possible May 24-June 7; currently supporting US-Iran back-channel through Pakistan" },
+    { name:"Bahrain",             lat:26.07, lon:50.55, type:"airdef", note:"Shipping hub — Strait remains under blockade but under negotiation; port operations constrained; recovery pending deal emergence or military escalation outcome by May 22-23" },
+    { name:"Saudi Arabia",        lat:26.50, lon:44.00, type:"diplo", note:"Lead Gulf negotiator — Saudi requested Trump military pause for diplomacy May 19; Saudi now facing May 20-22 inflection point on deal viability; Saudi stated willingness to fund reconstruction if deal emerges; actively mediating through Pakistan" },
+    { name:"Lebanon",             lat:33.80, lon:35.80, type:"diplo", note:"Ceasefire deteriorating — 45-day extension May 15; but violence escalates: 3,020+ killed since March 2; Israeli forces destroying homes south; violence ongoing May 19; fate tied directly to Iran deal: if Trump authorizes military May 21-22, Iran likely signals Hezbollah escalate May 24-25" },
+    { name:"N. Israel (Hezbollah)", lat:33.20, lon:35.57, type:"diplo", note:"Restrained under ceasefire but violence rising; if Trump authorizes military May 21-22 and Iran signals escalation, Hezbollah likely to escalate sharply May 24-25 in coordinated response" },
+    { name:"Haifa",               lat:32.82, lon:34.99, type:"airdef", note:"Hezbollah attacks minimal under ceasefire; would escalate if Iran signals escalation following Trump authorization; Israeli-Lebanon war enters active phase if ceasefire collapses May 24-25" },
+    { name:"Tel Aviv",            lat:32.08, lon:34.78, type:"diplo", note:"Monitoring Trump-Iran negotiations — if deal emerges by May 22-23, regional war de-escalates; if negotiations fail and Trump authorizes military May 20-22, IDF escalation against Hezbollah likely May 25-27" },
+    { name:"CVN-72 Arabian Sea",  lat:21.00, lon:62.00, type:"naval",  note:"USS Abraham Lincoln — Project Freedom paused May 5; standing by for Trump authorization decision May 20-22; ready to resume combat operations on moment's notice if Trump authorizes" },
+    { name:"CVN-78 E.Med",        lat:35.00, lon:28.50, type:"naval",  note:"USS Gerald R. Ford — Eastern Mediterranean supporting Israel; if Trump authorizes military against Iran May 20-22, escalation likely involves expanded naval operations in multiple theaters simultaneously" },
+    { name:"Islamabad",           lat:33.72, lon:73.06, type:"diplo",  note:"Pakistan mediation continues — Pakistan submitted Iran's revised 14-point proposal May 18; Pakistan remains active back-channel intermediary; Trump's military authorization decision by May 20-22 will determine Pakistan's diplomatic role going forward" },
+    { name:"Washington DC",       lat:38.91, lon:-77.04, type:"diplo", note:"CRITICAL AUTHORIZATION WINDOW: May 19-22 — Trump paused military May 19 citing serious negotiations; Iran submitted revised proposal; if US-Iran exchange revised drafts May 19-20 with visible convergence, framework could emerge by May 22-23 triggering Strait reopening May 24+, oil repricing to $95-105, gas to $4.20-4.40; if stall through May 20, authorization likely May 21-22 triggering oil $115-130, gas $4.70-5.00, Lebanon ceasefire collapse, Hezbollah escalation" },
+    { name:"Beijing",             lat:39.90, lon:116.41, type:"diplo",  note:"Mediation role sidelined — Xi offered mediation May 16 but Trump rejected May 17; China effectively removed from negotiations; Trump emphasized US controls blockade unilaterally; both sides expect escalation as likely outcome unless breakthrough emerges" },
   ],
 
   // ── POLYMARKET ────────────────────────────────────────────
   polyTitle: "Polymarket · live odds",
   poly: [
-    { name:"US-Iran permanent peace by Dec 31", pct:42,  delta:"▼16", deltaUp:false, barColor:"var(--amber)" },
-    { name:"US-Iran peace deal by June 30",  pct:28, delta:"▼20", deltaUp:false, barColor:"var(--amber)" },
-    { name:"US-Iran peace deal by May 31",   pct:8, delta:"▼4", deltaUp:false, barColor:"var(--red)" },
-    { name:"WTI crude stays below $110 by May 31",  pct:35,  delta:"▼37", deltaUp:false, barColor:"var(--red)" },
-    { name:"Military operations resume by June 1", pct:58, delta:"▲29", deltaUp:true, barColor:"var(--red)" },
+    { name:"US-Iran permanent peace by Dec 31", pct:69,  delta:"▲27", deltaUp:true, barColor:"var(--green)" },
+    { name:"US-Iran peace deal by June 30",  pct:38, delta:"▲10", deltaUp:true, barColor:"var(--amber)" },
+    { name:"US-Iran peace deal by May 31",   pct:13.5, delta:"▲5.5", deltaUp:true, barColor:"var(--red)" },
+    { name:"WTI crude stays below $110 by May 31",  pct:62,  delta:"▲27", deltaUp:true, barColor:"var(--amber)" },
+    { name:"Military operations resume by June 1", pct:48, delta:"▼10", deltaUp:false, barColor:"var(--amber)" },
   ],
 
   // ── WATCH LIST (up to 5) ──────────────────────────────────
   watchItems: [
-    { icon:"!!!",  iconColor:"var(--red)", text:"<strong>MILITARY RESUMPTION AUTHORIZATION LIKELY BY MAY 21-22 — Trump frustrated, considering combat ops; Iran deadlock unresolved; sequencing impasse wider than May 15</strong> — On May 17, Trump told reporters he is \"more seriously considering a resumption of major combat operations\" than in recent weeks, signaling authorization window approaching. The May 16 optimism (Trump proposal, Iran ready, Xi mediates) evaporated as fundamental deadlock returned: Trump demands immediate 10-year nuclear halt + 440kg uranium surrender; Iran refuses to discuss until war ends, sanctions lifted, Strait blockade removed. Iranian FM Araghchi: \"no trust to Americans\" is main obstacle. Trump rejected Xi's mediation in Beijing, emphasizing US controls blockade unilaterally and \"doesn't require Chinese assistance.\" This reversal signals both sides have abandoned diplomacy and are preparing for escalation. Military authorization probability: 50-60% by May 22. Trump's rhetoric shift from diplomatic to combat-ready language indicates authorization decision imminent if negotiations show no convergence by May 19-20. If authorized May 21-22: oil spikes $115-130 within 24 hours, gas $4.70-5.00 within 48 hours, Lebanon ceasefire collapses, Hezbollah escalates May 24-25, Israeli-Lebanon war enters active phase May 25-27. Critical window: May 17-20. If Trump-Iran show visible draft convergence by May 19, authorization pauses. If stall continues through May 20, authorization likely May 21-22. Watch: Trump public statements (rhetoric indicates authorization pace), Iran-US draft exchange pace (lack of exchange = imminent authorization), military movement indicators, Trump-Pentagon communications." },
-    { icon:"!!",   iconColor:"var(--red)", text:"<strong>STRAIT REMAINS FULLY CLOSED; TRUMP REJECTED MEDIATION — US blockade persists; 75+ ships redirected; no Chinese vessels; Trump controls unilaterally; blockade likely to intensify if military authorized</strong> — Contrary to May 16's \"partial reopening\" narrative, Strait remains fully closed under US military blockade with no easing as of May 17. Trump explicitly rejected Xi Jinping's mediation offer in Beijing, stating US controls blockade \"doesn't require Chinese assistance.\" Current blockade status: 75+ commercial ships redirected since April 13; only 5-10 Iranian vessels transiting daily (~5-10% baseline). No Chinese vessels transiting as May 16 claimed. Trump emphasized China relies on ~40% regional energy while US needs none, signaling blockade as strategic leverage over both Iran and China, not temporary measure. Blockade recovery: minimum 4-6 months even if deal signed, per DHL CEO. If Trump authorizes military operations May 21-22, blockade will intensify and likely expand to full Iranian port blockade, further restricting Iranian export. Blockade lift would be among final deal concessions, not confidence-building measure. Current blockade maintains full strategic value to Trump and serves as core leverage in failed negotiations. Watch: daily Strait transit counts (stagnation/decline = leverage maintained), Trump blockade statements, Iranian port activity, shipping cost trends (stabilization = blockade holding), WTI-Brent spread behavior." },
-    { icon:"!!",   iconColor:"var(--red)", text:"<strong>LEBANON CEASEFIRE DETERIORATES; VIOLENCE ESCALATES DESPITE MAY 15 EXTENSION — 670+ killed since ceasefire; Israeli forces destroying homes; security talks May 29, political talks June 2-3; fate tied to Trump authorization decision</strong> — Lebanon's ceasefire, formally extended 45 days on May 15, is deteriorating rapidly with escalating violence despite formal agreement. Health Ministry reports 670+ killed since ceasefire began April 17, with sustained casualties indicating systematic violations. NBC reported Israeli forces actively destroying homes in southern Lebanon, creating massive displacement. Both sides accusing ceasefire violations; Israeli military announcing strikes against Hezbollah. Ceasefire structure: initial 10-day truce (Apr 17-27), extended ceasefire (Apr 27-May 15), now formal 45-day extension (May 15-June 29). Security talks May 29, political talks June 2-3 pending. However, violence trend suggests ceasefire is cover for continued operations pending political outcome. Ceasefire's fate directly tied to Iran deal trajectory: if Trump authorizes military May 21-22, Iran will likely signal Hezbollah to escalate and ceasefire collapses by May 24-25; if deal somehow emerges (< 30% odds), Iran extends ceasefire indefinitely. Current violence escalation despite agreement indicates both sides expect military resumption as likely outcome. Watch: daily casualty counts (acceleration = breakdown imminent), Israeli home destruction pace (intensity indicates ceasefire's real status), Hezbollah response tempo, Iran statements to Hezbollah, ceasefire extension negotiations progress." },
-    { icon:"!!",   iconColor:"var(--amber)", text:"<strong>OIL REPRICES MODESTLY DOWN BUT REMAINS VULNERABLE — Brent $109.26, WTI $105.42; deal odds fell 50-60% to 30-40%; military odds up to 50-60%; if authorization May 21-22, spikes sharply to $115-130 Brent</strong> — Crude oil repriced modestly down May 17 as traders reassessed that negotiations deadlock replaced May 16's deal optimism. Brent $109.26 (down 0.2% from May 16), WTI $105.42 (down 0.2%), indicate traders reluctant to reprice down given Trump's combat-ready rhetoric. Traders calibrated deal probability down from 50-60% (May 16) to 30-40% (May 17) and military resumption probability up to 50-60%. Current levels ($109-110) reflect nervous 50-50 outcome equilibrium, not deal confidence. Brent-WTI spread widened vs May 16, traders increasing Strait closure duration risk premium given Trump's rejection of mediation and continued blockade. If Trump authorizes military by May 21-22, Brent will spike sharply to $115-130 (20-30% single-day move) within 24 hours as traders reprice blockade intensification and Iranian counter-operations risk. WTI will spike to $110-120. If talks somehow restart with real concessions, Brent could fall to $95-105, but current trajectory points away from that. Current $109.26 = 52% premium to pre-war $72—elevated but reflecting 50-50 deal/escalation odds split, not escalation lock-in yet. Critical repricing triggers: Trump rhetoric (combat language = authorization imminent), visible draft exchange (convergence happening or stalled). Watch: Trump rhetoric, draft exchange pace, daily oil price action ($109-110 = equilibrium, $115+ = escalation spike), Brent-WTI spread." },
-    { icon:"!",    iconColor:"var(--amber)", text:"<strong>GAS STABLE BUT VULNERABLE TO SPIKE — AAA $4.517; stable vs May 16; up 55¢ from pre-war; if Trump authorizes combat May 21-22, vulnerable to spike to $4.70-5.00 within 48 hours</strong> — US gasoline prices stable at AAA national average $4.517, unchanged from May 16, as traders digest shifting escalation probability. Prices elevated 55¢ from pre-war baseline ($2.98, Feb 26). Current stability masks vulnerability: deal odds fell from 50-60% to 30-40%; military odds rose to 50-60%. Current $4.517 reflects nervous 50-50 outcome hedging, not confidence in either path. If Trump authorizes military May 21-22, gas spikes sharply to $4.70-5.00 within 48 hours (4-11% spike) as traders reprice intensified blockade and Iranian counter-operations. If deal somehow emerges (< 30% odds), gas would fall to $4.20-4.40 as Strait reopening becomes visible. Vulnerability window: May 17-22. If Trump-Iran show visible convergence by May 19, gas falls to $4.30-4.40. If talks stall and Trump authorizes military by May 20-21, gas spikes to $4.70-5.00 likely within 48 hours. Current $4.517 = 52% premium to pre-war baseline, reflecting balanced outcome odds. Watch: Trump rhetoric (authorization indicators), Iran-US draft exchanges (stall signals), daily oil prices (spike = escalation risk), AAA price updates (lag indicator of trader expectations)." },
+    { icon:"!!!",  iconColor:"var(--green)", text:"<strong>DIPLOMATIC WINDOW OPENS: TRUMP PAUSES MILITARY, SERIOUS NEGOTIATIONS MAY 19-22 — Trump cancels Tuesday attack; \"very good chance\" of deal; Iran submits 14-point proposal; deal odds repriced 69%; critical window determines escalation vs. de-escalation</strong> — On May 19, Trump announced he would pause military strike originally scheduled for Tuesday, representing dramatic reversal from May 17's combat-ready posture. Trump stated \"very good chance\" of agreement and \"very meaningful\" movement in Iran's revised 14-point proposal submitted May 18 via Pakistan. Iran's demands: war termination, sanctions lifting, asset unfrozen, compensation for damages, Strait reopening, nuclear discussion deferred pending political settlement. Trump paused because proposal shifted negotiating framework from strict sequencing deadlock toward integrated bundled approach. White House officials privately maintain proposal insufficient (verification gaps on uranium, Strait specifics), but Trump's public pause signals genuine diplomatic confidence. Traders repriced deal odds sharply upward from May 17's 30-40% to 69% by Dec 31, 38% by June 30, 13.5% by May 31 (Polymarket 28-point repricing). Critical window: May 19-22. If US-Iran exchange revised proposals May 19-20 with visible convergence on sequencing/verification, framework could emerge by May 22-23 triggering Strait reopening May 24-June 7, oil repricing to $95-105, gas to $4.20-4.40, and regional de-escalation. If negotiations stall through May 20, military authorization likely returns May 21-22 triggering oil spike $115-130, gas $4.70-5.00, Lebanon ceasefire collapse, Hezbollah escalation May 24-25. Trump maintains \"full, large scale assault of Iran, on a moment's notice\" readiness. Visible indicators: draft response timing (rapid = momentum, silence = stall), Trump rhetoric tone (diplomatic = confidence, combat-ready = stall signal), media reports of negotiation progress, oil price trend ($110-115 = equilibrium, $95-105 = deal spike, $115+ = escalation). Watch: draft exchange pace May 19-20, Trump rhetoric, Iran official statements, Gulf diplomatic activity, military movement pace." },
+    { icon:"!!",   iconColor:"var(--amber)", text:"<strong>CORE DEADLOCK PERSISTS: URANIUM, STRAIT, REPARATIONS — Trump 20-year moratorium non-negotiable; Iran defers nuclear discussion; Strait terms disputed; verification gaps remain; White House privately dismissive despite Trump's positive public tone</strong> — While Trump publicly optimistic, White House officials privately maintain fundamental deadlock on three core issues: (1) Uranium enrichment—Trump demands 20-year moratorium; Iran refuses until war ends, sanctions lifted, $100B+ assets unfrozen; (2) Strait Hormuz reopening—US wants immediate verification; Iran wants phased linked to sanctions lifting; (3) Reparations—Iran demands full compensation; US offering limited phased release. Iran's proposal defers nuclear details, suggesting political settlement (war end, sanctions lift, asset release) would precede nuclear discussion. White House privately skeptical this could enable Iran bait-and-switch (reclaim uranium rights after sanctions lifted). Verification gaps central: US wants full uranium site access; Iran wants phasing linked to sanctions parallel rather than sequential. If detailed proposal shows inadequate verification or Iran's repositioning accelerates, Trump authorization likely May 20-21. Watch: uranium enrichment language, Strait reopening specifics, frozen asset release mechanisms, verification protocols, Iran military repositioning pace." },
+    { icon:"!!",   iconColor:"var(--red)", text:"<strong>IRAN REPOSITIONS MILITARY WHILE NEGOTIATING — US Intel: Iran digging out missile sites, moving launchers, adjusting tactics; dual strategy suggests hedging between deal and escalation contingency; acceleration would signal stall</strong> — US Defense Intelligence reports Iran actively \"digging out multiple bombed ballistic missile sites, moving mobile missile launchers, and adjusting tactics\" during negotiations. Dual posture signals Iran hedging: if deal emerges, genuine; if talks collapse, enhanced readiness for escalation. Repositioning includes: recovering damaged Shahab/Fattah sites, redeploying mobile launchers, recalibrating air defense networks, adjusting tactics based on May 15-17 strike lessons. Ambiguity: traders cannot distinguish genuine deal pursuit with contingency planning vs. negotiation-as-cover. Trump maintains pause, suggesting he believes Iran overtures authentic, but continued repositioning keeps his authorization readiness engaged. If repositioning accelerates beyond normal operational tempo, Trump may interpret as stall signal and authorize May 20-21. Intelligence community split on intent: some assess genuine deal pursuit; others assess cover for weapons prep. Trump's May 20-22 decision likely hinges on imagery evidence of acceleration. Watch: satellite imagery of missile sites, US threat assessments on Iran readiness, Iran diplomatic statements (sincerity indicators), launcher movement pace, intel agency assessments." },
+    { icon:"!!",   iconColor:"var(--green)", text:"<strong>OIL REPRICES DOWN SHARPLY ON TRUMP DIPLOMACY; TRADERS REPRICING DEAL ODDS UP — Brent fell to $111.22 (down 0.79% May 19); WTI toward $103; traders moved deal odds from 30% to 69%; if framework emerges May 20-21, reprices to $95-105 within 48 hours</strong> — Crude repriced sharply downward May 19 as Trump's strike pause signaled renewed momentum. Brent fell to $111.22 (down 0.79% from May 18), WTI slipped toward $103 (from May 18's $108.66). Traders recalibrated deal odds from May 17's pessimistic 30-40% to 69% by Dec 31 (28-point repricing). Current $111.22 = 52% premium to pre-war $72 but declining trend from $112.10 reflects rising deal confidence. Repricing calculus: if Trump-Iran announce framework by May 20-21, Brent reprices sharply to $95-105 within 48 hours (reflecting Strait reopening May 24-June 7 and supply normalization). If stall and authorization May 21-22, Brent spikes to $115-130 (reversing decline and adding escalation premium). Brent-WTI spread narrowing signals rising deal confidence; widening would signal stall. Watch: Trump rhetoric (diplomatic = momentum, combat-ready = stall), oil price action ($110-115 = equilibrium, $95-105 = deal peak, $115+ = escalation), spread trend, draft exchange pace." },
+    { icon:"!",    iconColor:"var(--green)", text:"<strong>GAS PRICE MODERATING; POSITIONED FOR SHARP MOVES MAY 20-22 — AAA $4.515 on May 19 (down from May 17); up 56.1¢ from pre-war; vulnerable to $4.70-5.00 spike if talks stall; positioned for $4.20-4.40 drop if deal emerges</strong> — US gasoline prices at $4.515 on May 19, down 0.2¢ from May 17, as traders absorbed diplomacy signal. Elevated 56.1¢ from pre-war $2.98. Current modest decline reflects beginning of deal repricing. If Trump-Iran announce framework by May 20-21, gas reprices sharply down to $4.20-4.40 within 48 hours (Strait reopening May 24+, supply confidence rising). If stall through May 20 and Trump authorizes May 21-22, gas spikes sharply to $4.70-5.00 within 48 hours (4-11% spike). Current $4.515 = 52% premium reflecting balanced odds with rising deal weight. Traders positioning cautiously for May 20-22 inflection. Triggers: Trump statements (authorization language = spike signal), Iran-US draft exchange (silence = stall), oil price action, AAA updates. Watch: Trump rhetoric, draft exchange pace, daily oil, AAA reports." },
   ],
 
   // ── THREAT LEVELS ─────────────────────────────────────────
   threats: [
-    { name:"Trump authorizes military resumption by May 22",                   pct:58, color:"var(--red)",     label:"HIGH" },
-    { name:"Oil spikes to $115-130 if military authorized",                    pct:64, color:"var(--red)",     label:"HIGH" },
-    { name:"Strait blockade intensifies or holds through June",                pct:62, color:"var(--red)",     label:"HIGH" },
-    { name:"Lebanon ceasefire collapses and Hezbollah escalates May 24-25",   pct:56, color:"var(--red)",     label:"HIGH" },
-    { name:"Iran nuclear concessions don't emerge by May 22",                  pct:70, color:"var(--red)",     label:"HIGH" },
-    { name:"Gas price spikes to $4.70-5.00 if combat authorized",              pct:60, color:"var(--red)",     label:"HIGH" },
+    { name:"Trump authorizes military resumption by May 22",                   pct:45, color:"var(--amber)",     label:"MODERATE" },
+    { name:"Oil spikes to $115-130 if military authorized",                    pct:48, color:"var(--amber)",     label:"MODERATE" },
+    { name:"Strait blockade persists or holds through June if no deal",        pct:52, color:"var(--amber)",     label:"MODERATE" },
+    { name:"Lebanon ceasefire collapses and Hezbollah escalates May 24-25",   pct:48, color:"var(--amber)",     label:"MODERATE" },
+    { name:"Iran nuclear concessions don't emerge by May 22",                  pct:62, color:"var(--red)",     label:"HIGH" },
+    { name:"Gas price spikes to $4.70-5.00 if combat authorized",              pct:46, color:"var(--amber)",     label:"MODERATE" },
   ],
 
   // ── GAS CHART ─────────────────────────────────────────────
   gasTitle: "US Avg Gas Price — Daily (AAA national avg)",
-  gasSub: "Regular unleaded · Jan 8 – May 17, 2026 · sourced from AAA newsroom",
-  gasCurrentVal: "$4.517",
-  gasCurrentSub: "May 17 · stable vs May 16 at $4.517; up 53.9¢ from pre-war baseline ($2.98 Feb 26); traders cautious as deal odds fell from 50-60% to 30-40%; watch for $4.20-4.40 drop if deal emerges (unlikely), or $4.70-5.00 spike if Trump authorizes military May 21-22",
+  gasSub: "Regular unleaded · Jan 8 – May 19, 2026 · sourced from AAA newsroom",
+  gasCurrentVal: "$4.515",
+  gasCurrentSub: "May 19 · down 0.2¢ from May 17; up 56.1¢ from pre-war baseline ($2.98 Feb 26); traders repricing on 69% deal odds shift; positioned for sharp moves May 20-22: watch for $4.20-4.40 drop if deal emerges (improving odds), or $4.70-5.00 spike if Trump authorizes military May 20-22 (stall signal)",
   gasSplitIdx: 8,
   gasData: [
     { date:"Jan 8",  price:2.81 },
@@ -524,6 +345,7 @@ const DATA = {
     { date:"May 15", price:4.528 },
     { date:"May 16", price:4.517 },
     { date:"May 17", price:4.517 },
+    { date:"May 19", price:4.515 },
   ],
   gasEvents: [
     { label:["War begins","Feb 28"],        index:7.5,  color:"#e24b4a" },
@@ -589,6 +411,11 @@ const DATA = {
     { label:["Strait closed;","blockade full"], index:28.26, color:"#e24b4a" },
     { label:["Lebanon: 670+","killed; violence rises"], index:28.27, color:"#e24b4a" },
     { label:["Brent $109.26","May 17"], index:28.28, color:"#e24b4a" },
+    { label:["Trump pauses","military strike"], index:28.29, color:"#3dba7f" },
+    { label:["Iran submits","revised proposal"], index:28.295, color:"#3dba7f" },
+    { label:["\"Very good chance\"","of deal"], index:28.30, color:"#3dba7f" },
+    { label:["Deal odds 69%","by Dec 31"], index:28.305, color:"#3dba7f" },
+    { label:["Brent $111.22","May 19"], index:28.31, color:"#3dba7f" },
   ],
   gasYMin: 2.7,
   gasYMax: 4.8,
@@ -596,11 +423,11 @@ const DATA = {
     { label:"YTD low",    value:"$2.81",  sub:"Jan 8, 2026" },
     { label:"pre-event",  value:"$2.98",  sub:"Feb 26 — day before war" },
     { label:"peak (May 5)",       value:"$4.483", sub:"May 5 — Iran attacks UAE; Brent hits $116.55" },
-    { label:"May 17",    value:"$4.517", sub:"May 17 · stable vs May 16; up 53.9¢ from pre-war; traders cautious as deal odds fell 50-60% to 30-40%; if deal emerges (unlikely), reprices to $4.20-4.40 within 48 hours; if Trump authorizes military May 21-22, reprices sharply to $4.70-5.00 within 48 hours", red:false },
+    { label:"May 19",    value:"$4.515", sub:"May 19 · down 0.2¢ from May 17; up 56.1¢ from pre-war; traders repricing on 69% deal odds; if framework emerges by May 20-21, reprices to $4.20-4.40 within 48 hours; if Trump authorizes military May 20-22, reprices sharply to $4.70-5.00 within 48 hours", red:false },
   ],
 
   // ── FOOTER SOURCES ────────────────────────────────────────
-  sources: ["CNN","Al Jazeera","CNBC","NPR","Bloomberg","Trading Economics","OilPrice.com","AAA","Polymarket","NBC News","Fox News","Reuters","AP News","Investing.com","FRED","DHL"],
+  sources: ["CNN","Al Jazeera","CNBC","NPR","Bloomberg","Trading Economics","OilPrice.com","AAA","Polymarket","NBC News","Fox News","Reuters","AP News","Investing.com","FRED","DHL","Just Security","Fortune","Time","Phemex"],
 
 }; // ← END OF DATA — do not edit below this line
 </script>
