@@ -250,7 +250,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   function getServerUrl() { return _serverUrl; }
 
   async function initServerUrl() {
-    // 1. tunnel.json — update this file to change the active URL without redeploying
+    // 1. tunnel.json - update this file to change the active URL without redeploying
     try {
       const r = await fetch('/tunnel.json?_=' + Date.now());
       if (r.ok) {
@@ -370,7 +370,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       return stash('<div class="code-wrap"><button class="code-copy-btn" onclick="copyCode(this)" title="Copy code">' + COPY_ICON + '</button><pre><code>' + escapeHtml(code.trim()) + '</code></pre></div>');
     });
 
-    // 1b. LaTeX math — stash before escapeHtml so the content reaches KaTeX raw
+    // 1b. LaTeX math - stash before escapeHtml so the content reaches KaTeX raw
     if (window.katex) {
       const renderMath = (math, display) => {
         try {
@@ -403,7 +403,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     }
 
     // 1c. Stash safe HTML tags before escapeHtml mangles them
-    // <img> — allow only https? src, preserve style attr
+    // <img> - allow only https? src, preserve style attr
     text = text.replace(/<img\b([^>]*?)>/gi, (_, attrs) => {
       const src  = (attrs.match(/src=["']([^"']*?)["']/)   || [])[1] || '';
       const alt  = (attrs.match(/alt=["']([^"']*?)["']/)   || [])[1] || '';
@@ -412,7 +412,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       const sa = styl ? ' style="' + escapeHtml(styl) + '"' : '';
       return stash('<img src="' + escapeHtml(src) + '" alt="' + escapeHtml(alt) + '" class="md-img"' + sa + '>');
     });
-    // <a href> — allow https? and root-relative hrefs
+    // <a href> - allow https? and root-relative hrefs
     text = text.replace(/<a\b[^>]*?href=["']([^"']*?)["'][^>]*?>([\s\S]*?)<\/a>/gi, (_, href, inner) => {
       if (!/^(https?:\/\/|\/)/i.test(href)) return escapeHtml(inner);
       return stash('<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(inner) + '</a>');
@@ -441,7 +441,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
       s.replace(/`([^`]+)`/g, '<code>$1</code>')
        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-       // <u>, <sup>, <sub> — safe to restore after escaping
+       // <u>, <sup>, <sub> - safe to restore after escaping
        .replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>')
        .replace(/&lt;sup&gt;(.+?)&lt;\/sup&gt;/g, '<sup>$1</sup>')
        .replace(/&lt;sub&gt;(.+?)&lt;\/sub&gt;/g, '<sub>$1</sub>')
@@ -563,7 +563,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     // 4. Line breaks
     html = html.replace(/\n/g, '<br>');
 
-    // 5. Strip <br> adjacent to block placeholders — their own margins handle spacing
+    // 5. Strip <br> adjacent to block placeholders - their own margins handle spacing
     html = html.replace(/(?:<br>\s*)+(\u0000BLK\d+\u0000)/g, '$1');
     html = html.replace(/(\u0000BLK\d+\u0000)(?:\s*<br>)+/g, '$1');
 
@@ -767,7 +767,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     } catch (err) {
       removeTyping();
       if (err.name === 'AbortError') {
-        // User stopped — keep whatever partial response arrived, no error banner
+        // User stopped - keep whatever partial response arrived, no error banner
       } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('fetch')) {
         showError('AI is currently offline. Please try again later.');
       } else {
@@ -783,7 +783,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
         if (bubble) addCopyButton(bubble.parentElement);
         scrollToBottom();
       } else if (bubble && !fullResponse && bubble.parentElement) {
-        // Nothing streamed before abort — remove the empty bot bubble
+        // Nothing streamed before abort - remove the empty bot bubble
         bubble.parentElement.remove();
       }
       discardPartialResponse = false;
