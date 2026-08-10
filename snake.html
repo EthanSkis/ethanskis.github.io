@@ -462,7 +462,7 @@
     }
 
     if (safeMoves.length === 0) {
-      // No safe move — just follow cycle (will die, but nothing we can do)
+      // No safe move - just follow cycle (will die, but nothing we can do)
       const cn = cycleNext[cellIndex(head.x, head.y)];
       return { x: cn.x - head.x, y: cn.y - head.y };
     }

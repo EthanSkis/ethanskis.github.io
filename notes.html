@@ -807,7 +807,7 @@
     const range = sel.getRangeAt(0);
     const parentMark = closestTag(range.commonAncestorContainer, 'MARK');
     if (parentMark) {
-      // already highlighted — just change the color
+      // already highlighted - just change the color
       parentMark.className = colorClass;
     } else {
       wrapInMark(range, sel, colorClass);
@@ -821,7 +821,7 @@
     try {
       range.surroundContents(mark);
     } catch(e) {
-      // selection crosses element boundaries — use fragment approach
+      // selection crosses element boundaries - use fragment approach
       const frag = range.extractContents();
       mark.appendChild(frag);
       range.insertNode(mark);
