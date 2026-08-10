@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c1c1e">
+<title>Ethan Gardner</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='6' fill='%23ffffff'/></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1c1c1e;
+  --dot:#ffffff;
+  --gap:22px;
+  --dot-r:1px;
+  --dot-r2:1.4px;
+  --ox:0px;
+  --oy:0px;
+}
+html,body{height:100%;background:var(--bg);overscroll-behavior:none}
+body{
+  min-height:100svh;
+  min-height:100dvh;
+  overflow:hidden;
+  position:fixed;
+  inset:0;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  cursor:grab;
+}
+body.dragging{cursor:grabbing}
+.grid{
+  position:fixed;
+  inset:0;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle,var(--dot) var(--dot-r),transparent var(--dot-r2));
+  background-size:var(--gap) var(--gap);
+  background-position:calc(50% + var(--ox)) calc(50% + var(--oy));
+  will-change:background-position,background-size;
+}
+</style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+<script>
+(() => {
+  const body = document.body;
+  const SENS = 0.25;
+  const BASE_GAP = 22;
+  const MIN_GAP = 6;
+  const MAX_GAP = 240;
+
+  let ox = 0, oy = 0;
+  let gap = BASE_GAP;
+  let vx = 0, vy = 0;
+  let lastT = 0;
+  let raf = null;
+  let mode = 'idle';
+
+  const pointers = new Map();
+  let panLast = { x: 0, y: 0 };
+  let pinchStart = null;
+
+  const apply = () => {
+    body.style.setProperty('--ox', ox + 'px');
+    body.style.setProperty('--oy', oy + 'px');
+  };
+  const applyGap = () => {
+    body.style.setProperty('--gap', gap + 'px');
+    const r = gap / BASE_GAP;
+    body.style.setProperty('--dot-r', (1 * r) + 'px');
+    body.style.setProperty('--dot-r2', (1.4 * r) + 'px');
+  };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const center = () => ({ vw: window.innerWidth, vh: window.innerHeight });
+
+  const tick = () => {
+    if (mode !== 'idle') { raf = null; return; }
+    vx *= 0.94;
+    vy *= 0.94;
+    ox += vx;
+    oy += vy;
+    apply();
+    if (Math.abs(vx) > 0.05 || Math.abs(vy) > 0.05) {
+      raf = requestAnimationFrame(tick);
+    } else {
+      raf = null;
+    }
+  };
+
+  const startPan = (p) => {
+    mode = 'pan';
+    body.classList.add('dragging');
+    panLast.x = p.x; panLast.y = p.y;
+    lastT = performance.now();
+    vx = 0; vy = 0;
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  };
+
+  const startPinch = () => {
+    mode = 'pinch';
+    body.classList.remove('dragging');
+    const [a, b] = [...pointers.values()];
+    const midX = (a.x + b.x) / 2;
+    const midY = (a.y + b.y) / 2;
+    const dist = Math.hypot(b.x - a.x, b.y - a.y);
+    pinchStart = { dist, gap, ox, oy, midX, midY };
+    vx = 0; vy = 0;
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  };
+
+  const onDown = (e) => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    body.setPointerCapture(e.pointerId);
+    if (pointers.size === 1) {
+      startPan({ x: e.clientX, y: e.clientY });
+    } else if (pointers.size === 2) {
+      startPinch();
+    }
+  };
+
+  const onMove = (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (mode === 'pinch' && pointers.size >= 2) {
+      const [a, b] = [...pointers.values()];
+      const midX = (a.x + b.x) / 2;
+      const midY = (a.y + b.y) / 2;
+      const dist = Math.hypot(b.x - a.x, b.y - a.y);
+      const ratio = dist / Math.max(1, pinchStart.dist);
+      const newGap = clamp(pinchStart.gap * ratio, MIN_GAP, MAX_GAP);
+      const s = newGap / pinchStart.gap;
+      const { vw, vh } = center();
+      ox = (midX - vw / 2) - s * (pinchStart.midX - vw / 2 - pinchStart.ox);
+      oy = (midY - vh / 2) - s * (pinchStart.midY - vh / 2 - pinchStart.oy);
+      gap = newGap;
+      applyGap();
+      apply();
+    } else if (mode === 'pan' && pointers.size === 1) {
+      const now = performance.now();
+      const dx = (e.clientX - panLast.x) * SENS;
+      const dy = (e.clientY - panLast.y) * SENS;
+      const dt = Math.max(1, now - lastT);
+      ox += dx;
+      oy += dy;
+      vx = dx / dt * 16;
+      vy = dy / dt * 16;
+      panLast.x = e.clientX;
+      panLast.y = e.clientY;
+      lastT = now;
+      apply();
+    }
+  };
+
+  const onUp = (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.delete(e.pointerId);
+    if (pointers.size === 1) {
+      const [p] = [...pointers.values()];
+      startPan(p);
+    } else if (pointers.size === 0) {
+      const wasPan = mode === 'pan';
+      mode = 'idle';
+      body.classList.remove('dragging');
+      if (wasPan && !raf) raf = requestAnimationFrame(tick);
+    }
+  };
+
+  body.addEventListener('pointerdown', onDown);
+  body.addEventListener('pointermove', onMove);
+  body.addEventListener('pointerup', onUp);
+  body.addEventListener('pointercancel', onUp);
+  body.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  window.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (e.ctrlKey) {
+      const { vw, vh } = center();
+      const oldGap = gap;
+      const newGap = clamp(oldGap * Math.exp(-e.deltaY * 0.01), MIN_GAP, MAX_GAP);
+      const s = newGap / oldGap;
+      ox = (e.clientX - vw / 2) - s * (e.clientX - vw / 2 - ox);
+      oy = (e.clientY - vh / 2) - s * (e.clientY - vh / 2 - oy);
+      gap = newGap;
+      applyGap();
+      apply();
+    } else {
+      ox -= e.deltaX * SENS;
+      oy -= e.deltaY * SENS;
+      apply();
+    }
+  }, { passive: false });
+
+  window.addEventListener('gesturestart', (e) => e.preventDefault());
+})();
+</script>
+</body>
+</html>
