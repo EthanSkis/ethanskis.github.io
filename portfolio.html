@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ethan Gardner — Developer &amp; Detailer, McCall, Idaho</title>
+<meta name="description" content="Ethan Gardner is a developer and detailer from McCall, Idaho. Maker of Detail Valley, Etta, and ClearBot.">
+<meta name="theme-color" content="#FBFAF6">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M2 27 L11 7 L17 20 L22 10 L30 27 Z' fill='%23201d18'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#FBFAF6;
+  --card:#F0EEE6;
+  --panel:#E8E1D1;
+  --ink:#201D18;
+  --body:#57534A;
+  --faint:#8B867B;
+  --line:#E4E0D4;
+  --line-warm:#DCD4C0;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--body);
+  font-family:"Instrument Sans",ui-sans-serif,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{max-width:660px;margin:0 auto;padding:0 22px}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:10;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:20px;padding-bottom:20px;
+}
+.brand{
+  display:flex;align-items:center;gap:11px;
+  color:var(--ink);text-decoration:none;
+  font-weight:600;font-size:19px;letter-spacing:-0.02em;
+}
+.brand svg{width:21px;height:21px;flex:none}
+.loc{
+  font-size:13px;color:var(--faint);
+  letter-spacing:0.08em;text-transform:uppercase;
+}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 56px}
+h1{
+  color:var(--ink);
+  font-size:clamp(38px,9vw,54px);
+  font-weight:600;letter-spacing:-0.035em;line-height:1.06;
+  max-width:11ch;
+}
+.hero p{margin-top:22px;font-size:19px;max-width:34ch}
+
+/* ---------- section label ---------- */
+.label{
+  font-size:12px;font-weight:500;color:var(--faint);
+  letter-spacing:0.14em;text-transform:uppercase;
+  padding-bottom:14px;border-bottom:1px solid var(--line);
+}
+
+/* ---------- work cards ---------- */
+.work{display:flex;flex-direction:column;gap:14px;padding:26px 0 0}
+.card{
+  display:block;text-decoration:none;color:inherit;
+  background:var(--card);
+  padding:34px 30px 32px;
+  transition:background .25s ease;
+}
+.card:nth-child(even){background:color-mix(in srgb,var(--panel) 55%,var(--card))}
+.card:hover{background:var(--panel)}
+.card .num{
+  font-size:13px;color:var(--faint);
+  font-variant-numeric:tabular-nums;
+}
+.card .row{
+  display:flex;align-items:center;gap:16px;
+  margin-top:18px;
+}
+.card img{
+  width:46px;height:46px;flex:none;display:block;
+  border-radius:50%;
+}
+.card img.square{border-radius:8px}
+.card h2{
+  color:var(--ink);
+  font-size:clamp(26px,6vw,32px);
+  font-weight:600;letter-spacing:-0.03em;line-height:1.1;
+}
+.card p{margin-top:14px;max-width:38ch}
+.card .link{
+  display:inline-flex;align-items:center;gap:7px;
+  margin-top:22px;
+  font-size:14px;font-weight:500;color:var(--ink);
+  border-bottom:1px solid var(--line-warm);
+  padding-bottom:3px;
+  transition:border-color .2s ease;
+}
+.card:hover .link{border-color:var(--ink)}
+.card .link::after{content:"↗";font-size:13px;color:var(--faint)}
+
+/* ---------- practice list ---------- */
+.practice{padding:72px 0 0}
+.practice ul{list-style:none;margin-top:8px}
+.practice li{
+  display:flex;gap:20px;align-items:baseline;
+  padding:26px 0;border-bottom:1px solid var(--line);
+}
+.practice li:last-child{border-bottom:none}
+.practice .k{
+  flex:none;width:98px;
+  color:var(--ink);font-weight:600;font-size:16px;letter-spacing:-0.01em;
+}
+.practice .v{font-size:16px}
+
+/* ---------- footer ---------- */
+footer{
+  margin-top:84px;border-top:1px solid var(--line);
+  padding:28px 0 44px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:13px;color:var(--faint);
+}
+footer .fbrand{display:flex;align-items:center;gap:8px}
+footer svg{width:14px;height:14px;opacity:.6}
+
+/* ---------- reveal ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .hero,.section,.card,footer{
+    opacity:0;transform:translateY(14px);
+    animation:up .7s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .hero{animation-delay:.05s}
+  .section{animation-delay:.15s}
+  .card:nth-child(1){animation-delay:.25s}
+  .card:nth-child(2){animation-delay:.33s}
+  .card:nth-child(3){animation-delay:.41s}
+  footer{animation-delay:.5s}
+  @keyframes up{to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 27 L11 7 L17 20 L22 10 L30 27 Z" fill="currentColor"/></svg>
+      Ethan Gardner
+    </a>
+    <span class="loc">McCall, ID</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <h1>Developer &amp; detailer.</h1>
+    <p>I build small software products and detail cars out of McCall, Idaho. Three things I make and maintain:</p>
+  </section>
+
+  <section class="section">
+    <div class="label">Selected work</div>
+    <div class="work">
+
+      <a class="card" href="https://detailvalley.com">
+        <div class="num">01</div>
+        <div class="row">
+          <img src="assets/detailvalley.svg" alt="Detail Valley logo" width="46" height="46">
+          <h2>Detail Valley</h2>
+        </div>
+        <p>Mobile car detailing across Valley County — McCall, Cascade &amp; Donnelly. I come to your driveway.</p>
+        <span class="link">detailvalley.com</span>
+      </a>
+
+      <a class="card" href="https://ettacalls.com">
+        <div class="num">02</div>
+        <div class="row">
+          <img src="assets/ettacalls.svg" alt="Etta logo" width="46" height="46">
+          <h2>Etta</h2>
+        </div>
+        <p>The daily call you can't always make. Etta phones your parent for a warm, real conversation — then tells you how they're doing.</p>
+        <span class="link">ettacalls.com</span>
+      </a>
+
+      <a class="card" href="https://clearbot.io">
+        <div class="num">03</div>
+        <div class="row">
+          <img class="square" src="assets/clearbot.png" alt="ClearBot logo" width="46" height="46">
+          <h2>ClearBot</h2>
+        </div>
+        <p>Business license renewals, automated — tracked, prepared, and filed across every agency and jurisdiction.</p>
+        <span class="link">clearbot.io</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="practice section">
+    <div class="label">Practice</div>
+    <ul>
+      <li>
+        <span class="k">Develop</span>
+        <span class="v">Websites, bots, and small products — designed, built, and run end to end.</span>
+      </li>
+      <li>
+        <span class="k">Detail</span>
+        <span class="v">Interiors and exteriors, done by hand, wherever the car is parked.</span>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    <span class="fbrand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 27 L11 7 L17 20 L22 10 L30 27 Z" fill="currentColor"/></svg>
+      Ethan Gardner
+    </span>
+    <span>McCall, Idaho</span>
+  </footer>
+
+</main>
+
+</body>
+</html>
