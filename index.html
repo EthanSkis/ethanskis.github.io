@@ -135,6 +135,56 @@ h1{
 }
 .practice .v{font-size:16px}
 
+/* ---------- contact ---------- */
+.contact{padding:72px 0 0}
+.contact p{margin-top:24px;font-size:17px;max-width:40ch}
+.pill-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  margin-top:26px;
+  padding:14px 28px;border:0;border-radius:999px;
+  background:var(--ink);color:#F5F2EA;
+  font-family:inherit;font-size:15px;font-weight:500;letter-spacing:0.01em;
+  cursor:pointer;
+  transition:opacity .2s ease;
+}
+.pill-btn:hover{opacity:.85}
+
+dialog.modal{
+  border:1px solid var(--line-warm);
+  background:var(--bg);
+  padding:28px 26px 30px;
+  width:min(92vw,380px);
+  margin:auto;
+}
+dialog.modal::backdrop{background:rgba(32,29,24,.38)}
+.m-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.m-head h3{
+  color:var(--ink);font-size:21px;font-weight:600;letter-spacing:-0.02em;
+}
+.m-close{
+  border:0;background:none;cursor:pointer;
+  font-size:17px;line-height:1;color:var(--faint);
+  padding:4px;font-family:inherit;
+}
+.m-close:hover{color:var(--ink)}
+.modal form{margin-top:18px;display:flex;flex-direction:column;gap:16px}
+.modal label{
+  display:flex;flex-direction:column;gap:7px;
+  font-size:12px;font-weight:500;color:var(--faint);
+  letter-spacing:0.1em;text-transform:uppercase;
+}
+.modal input,.modal textarea{
+  border:1px solid var(--line-warm);
+  background:#FFFFFF;
+  padding:11px 12px;
+  font-family:inherit;font-size:15px;color:var(--ink);
+  border-radius:0;
+  resize:vertical;
+}
+.modal input:focus,.modal textarea:focus{outline:none;border-color:var(--ink)}
+.modal .pill-btn{margin-top:6px;width:100%}
+.m-note{font-size:12.5px;color:var(--faint);text-align:center;margin-top:12px}
+
 /* ---------- footer ---------- */
 footer{
   margin-top:84px;border-top:1px solid var(--line);
@@ -240,6 +290,12 @@ footer svg{width:14px;height:14px;opacity:.6}
     </ul>
   </section>
 
+  <section class="contact section">
+    <div class="label">Get in contact</div>
+    <p>Need a detail, or want to talk software? Leave your name, number, and what it's about, and I'll get back to you.</p>
+    <button class="pill-btn" id="contactBtn" type="button">Get in touch</button>
+  </section>
+
   <footer>
     <span class="fbrand">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 27 L11 7 L17 20 L22 10 L30 27 Z" fill="currentColor"/></svg>
@@ -249,6 +305,49 @@ footer svg{width:14px;height:14px;opacity:.6}
   </footer>
 
 </main>
+
+<dialog class="modal" id="contactModal">
+  <div class="m-head">
+    <h3>Get in touch</h3>
+    <button class="m-close" id="contactClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <form id="contactForm">
+    <label>Name
+      <input name="name" type="text" required autocomplete="name" placeholder="Your name">
+    </label>
+    <label>Phone number
+      <input name="phone" type="tel" required autocomplete="tel" placeholder="(208) 555-0100">
+    </label>
+    <label>Reason for contact
+      <textarea name="reason" rows="3" required placeholder="A detail, a project, a question…"></textarea>
+    </label>
+    <button class="pill-btn" type="submit">Send</button>
+  </form>
+  <p class="m-note">Opens your email app with the details filled in.</p>
+</dialog>
+
+<script>
+(() => {
+  const modal = document.getElementById('contactModal');
+  const form = document.getElementById('contactForm');
+  document.getElementById('contactBtn').addEventListener('click', () => modal.showModal());
+  document.getElementById('contactClose').addEventListener('click', () => modal.close());
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(form);
+    const subject = 'Hello from ' + d.get('name');
+    const body = 'Name: ' + d.get('name') +
+      '\nPhone: ' + d.get('phone') +
+      '\n\n' + d.get('reason');
+    location.href = 'mailto:ethangardner298@gmail.com' +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
+    modal.close();
+    form.reset();
+  });
+})();
+</script>
 
 </body>
 </html>
