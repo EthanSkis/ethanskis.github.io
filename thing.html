@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a0b0d">
-<title>Trailhome — homes near singletrack</title>
+<title>Trailhome: homes near singletrack</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M3 26 L11 12 L16 19 L21 10 L29 26 Z' fill='none' stroke='%234ade80' stroke-width='2.5' stroke-linejoin='round'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -336,12 +336,12 @@ input[type=range]::-moz-range-thumb{
     </div>
     <div class="stats">
       <div>
-        <div class="stat-big" id="statHomes">—</div>
+        <div class="stat-big" id="statHomes">–</div>
         homes
       </div>
       <span class="stat-sep">/</span>
       <div>
-        <div class="stat-big" id="statAvg">—</div>
+        <div class="stat-big" id="statAvg">–</div>
         min avg ride
       </div>
       <span class="stat-sep">/</span>
@@ -380,7 +380,7 @@ input[type=range]::-moz-range-thumb{
     <div class="listings" id="listings"></div>
 
     <div class="footer-note">
-      <b>MVP demo —</b> Listings &amp; trail geometry are synthetic, hand-placed near real Bend trailheads (Phil's, Wanoga, Tumalo Falls, Horse Butte, Pilot Butte). A production build would swap these for a RESO Web API / MLS feed and licensed Trailforks or OpenStreetMap data.
+      <b>MVP demo:</b> Listings &amp; trail geometry are synthetic, hand-placed near real Bend trailheads (Phil's, Wanoga, Tumalo Falls, Horse Butte, Pilot Butte). A production build would swap these for a RESO Web API / MLS feed and licensed Trailforks or OpenStreetMap data.
     </div>
   </div>
 </div>
@@ -635,7 +635,7 @@ function render(){
   els.statHomes.textContent = visible.length;
   els.statAvg.textContent = visible.length
     ? Math.round(visible.reduce((s,h) => s + h.rideMin, 0) / visible.length)
-    : '—';
+    : '–';
 }
 
 function focusHome(id){
