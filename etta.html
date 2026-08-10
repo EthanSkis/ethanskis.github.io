@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Etta · Ethan Gardner</title>
+<meta name="description" content="The story of Etta: a daily AI check-in call for aging parents, honest about being AI, designed and built by Ethan Gardner.">
+<meta name="theme-color" content="#FBFAF6">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M2 27 L11 7 L17 20 L22 10 L30 27 Z' fill='%23201d18'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="article.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 27 L11 7 L17 20 L22 10 L30 27 Z" fill="currentColor"/></svg>
+      Ethan Gardner
+    </a>
+    <a class="ext" href="https://ettacalls.com">ettacalls.com</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <div class="kicker">Project 02 · Software</div>
+    <div class="title-row">
+      <img src="assets/ettacalls.svg" alt="Etta logo" width="56" height="56">
+      <h1>Etta</h1>
+    </div>
+    <p class="dek">The daily call you can't always make.</p>
+  </div>
+
+  <article>
+    <p>Etta phones your mom or dad every day for a warm, unhurried conversation, then sends you a short note on how they're really doing. It's a product I'm designing and building around one hard rule: Etta is always honest about being AI, and it only ever calls with your parent's consent. It's early-stage, and the site says so plainly; what's live today is the design, published for feedback.</p>
+
+    <section class="sec">
+      <div class="num">01</div>
+      <h2>Between visits, you're guessing</h2>
+      <p>Most families patch the gap with fragments. A Sunday call catches one mood out of seven. A motion sensor says the coffee maker turned on. A text gets a thumbs-up back. Each one tells you she's alive; none of them tells you how she's doing.</p>
+      <div class="fig">
+        <svg viewBox="0 0 560 340" role="img" aria-label="Diagram: fragmented signals, each with a question mark, surround one person's week">
+          <polyline points="150,60 230,120" fill="none" stroke="#B4AE9F" stroke-dasharray="4 5"/>
+          <polyline points="425,75 385,120" fill="none" stroke="#B4AE9F" stroke-dasharray="4 5"/>
+          <polyline points="160,275 235,215" fill="none" stroke="#B4AE9F" stroke-dasharray="4 5"/>
+          <polyline points="420,262 380,215" fill="none" stroke="#B4AE9F" stroke-dasharray="4 5"/>
+          <!-- question boxes -->
+          <g>
+            <rect x="35" y="28" width="130" height="52" fill="#FDFCF9" stroke="#C9C4B4"/>
+            <rect x="82" y="40" width="36" height="28" fill="none" stroke="#8B867B"/>
+            <text x="100" y="60" text-anchor="middle" font-size="16" fill="#8B867B">?</text>
+            <text x="100" y="100" text-anchor="middle" font-size="12" fill="#8B867B">Sunday call</text>
+          </g>
+          <g>
+            <rect x="380" y="24" width="130" height="52" fill="#FDFCF9" stroke="#C9C4B4"/>
+            <rect x="427" y="36" width="36" height="28" fill="none" stroke="#8B867B"/>
+            <text x="445" y="56" text-anchor="middle" font-size="16" fill="#8B867B">?</text>
+            <text x="445" y="96" text-anchor="middle" font-size="12" fill="#8B867B">Motion sensor</text>
+          </g>
+          <g>
+            <rect x="40" y="252" width="130" height="52" fill="#FDFCF9" stroke="#C9C4B4"/>
+            <rect x="87" y="264" width="36" height="28" fill="none" stroke="#8B867B"/>
+            <text x="105" y="284" text-anchor="middle" font-size="16" fill="#8B867B">?</text>
+            <text x="105" y="322" text-anchor="middle" font-size="12" fill="#8B867B">Thumbs-up text</text>
+          </g>
+          <g>
+            <rect x="378" y="248" width="130" height="52" fill="#FDFCF9" stroke="#C9C4B4"/>
+            <rect x="425" y="260" width="36" height="28" fill="none" stroke="#8B867B"/>
+            <text x="443" y="280" text-anchor="middle" font-size="16" fill="#8B867B">?</text>
+            <text x="443" y="318" text-anchor="middle" font-size="12" fill="#8B867B">The neighbor</text>
+          </g>
+          <!-- central chip -->
+          <g>
+            <rect x="205" y="135" width="200" height="70" fill="#DCD2B8"/>
+            <path d="M205 135 l13 0 0 3 -10 0 0 10 -3 0 z" fill="#4E4A41"/>
+            <path d="M405 135 l-13 0 0 3 10 0 0 10 3 0 z" fill="#4E4A41"/>
+            <path d="M205 205 l13 0 0 -3 -10 0 0 -10 -3 0 z" fill="#4E4A41"/>
+            <path d="M405 205 l-13 0 0 -3 10 0 0 -10 3 0 z" fill="#4E4A41"/>
+            <text x="305" y="177" text-anchor="middle" font-size="19" fill="#33302A">Her week</text>
+          </g>
+        </svg>
+      </div>
+      <p class="figcap">Each signal exposes a different slice of how she's doing. None of them adds up to the picture.</p>
+    </section>
+
+    <section class="sec">
+      <div class="num">02</div>
+      <h2>A call, not an app</h2>
+      <p>Etta rings her own phone at the same time every day. There's no app for her to learn and no gadget to wear, just a ten-minute conversation about sleep, breakfast, the garden, and that knee. Etta opens every call as itself, an AI check-in companion, never pretending to be human. That honesty is the pledge the product is built on, and the consent step, your parent's own yes, matters most of all.</p>
+      <div class="fig">
+        <svg viewBox="0 0 560 250" role="img" aria-label="Diagram: Etta calls her phone daily, and you receive the note">
+          <defs>
+            <linearGradient id="comb2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#26231E"/>
+              <stop offset="1" stop-color="#26231E" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <circle cx="280" cy="110" r="78" fill="none" stroke="#C9C4B4" stroke-dasharray="3 6"/>
+          <circle cx="280" cy="110" r="118" fill="none" stroke="#D3CEBF" stroke-dasharray="3 6"/>
+          <polyline points="130,110 178,110" fill="none" stroke="#B4AE9F" stroke-dasharray="4 5"/>
+          <polyline points="382,110 430,110" fill="none" stroke="#B4AE9F" stroke-dasharray="4 5"/>
+          <circle cx="154" cy="110" r="4.5" fill="#57534A"/>
+          <circle cx="406" cy="110" r="4.5" fill="#57534A"/>
+          <g>
+            <rect x="20" y="87" width="110" height="46" fill="#F7F5EE"/>
+            <text x="75" y="115" text-anchor="middle" font-size="15" fill="#201D18">Etta</text>
+            <rect x="30" y="139" width="90" height="6" fill="#26231E"/>
+            <g fill="url(#comb2)">
+              <rect x="34" y="145" width="3.5" height="30"/><rect x="43" y="145" width="3.5" height="30"/>
+              <rect x="52" y="145" width="3.5" height="30"/><rect x="61" y="145" width="3.5" height="30"/>
+              <rect x="70" y="145" width="3.5" height="30"/><rect x="79" y="145" width="3.5" height="30"/>
+              <rect x="88" y="145" width="3.5" height="30"/><rect x="97" y="145" width="3.5" height="30"/>
+              <rect x="106" y="145" width="3.5" height="30"/><rect x="115" y="145" width="3.5" height="30"/>
+            </g>
+          </g>
+          <g>
+            <rect x="178" y="82" width="204" height="56" fill="#DCD2B8"/>
+            <path d="M178 82 l12 0 0 3 -9 0 0 9 -3 0 z" fill="#4E4A41"/>
+            <path d="M382 82 l-12 0 0 3 9 0 0 9 3 0 z" fill="#4E4A41"/>
+            <path d="M178 138 l12 0 0 -3 -9 0 0 -9 -3 0 z" fill="#4E4A41"/>
+            <path d="M382 138 l-12 0 0 -3 9 0 0 -9 3 0 z" fill="#4E4A41"/>
+            <text x="280" y="105" text-anchor="middle" font-size="14" fill="#33302A">8:00 AM daily</text>
+            <text x="280" y="125" text-anchor="middle" font-size="13" fill="#6E6753">her own phone</text>
+          </g>
+          <g>
+            <rect x="430" y="87" width="110" height="46" fill="#F7F5EE"/>
+            <text x="485" y="115" text-anchor="middle" font-size="15" fill="#201D18">You</text>
+            <rect x="440" y="139" width="90" height="6" fill="#26231E"/>
+            <g fill="url(#comb2)">
+              <rect x="444" y="145" width="3.5" height="30"/><rect x="453" y="145" width="3.5" height="30"/>
+              <rect x="462" y="145" width="3.5" height="30"/><rect x="471" y="145" width="3.5" height="30"/>
+              <rect x="480" y="145" width="3.5" height="30"/><rect x="489" y="145" width="3.5" height="30"/>
+              <rect x="498" y="145" width="3.5" height="30"/><rect x="507" y="145" width="3.5" height="30"/>
+              <rect x="516" y="145" width="3.5" height="30"/><rect x="525" y="145" width="3.5" height="30"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <p class="figcap">If she doesn't pick up, Etta retries, texts her, then works through the contact chain you chose.</p>
+    </section>
+
+    <section class="sec">
+      <div class="num">03</div>
+      <h2>The note after every call</h2>
+      <p>A few minutes after each conversation, you get a short note by text: mood, meals, medication, and anything worth knowing. No app, no inbox, no login, for them or for you. It's the difference between "alive" and "doing well." A sensor tells you the coffee maker turned on; Etta tells you how she sounded.</p>
+      <div class="panel" role="img" aria-label="Mockup of the morning check-in note">
+        <div class="panel-label">Morning check-in · 8:05 AM · 4 min</div>
+        <div class="panel-rows">
+          <div class="prow">MOOD · BRIGHT <span class="pencil">✎</span></div>
+          <div class="prow">ATE · TOAST AND JAM <span class="pencil">✎</span></div>
+          <div class="prow">MEDS · TAKEN <span class="pencil">✎</span></div>
+          <div class="prow">WATCH · KNEE, STIFF AGAIN <span class="pencil">✎</span></div>
+          <div class="prow">NEXT CALL · TOMORROW 8:00 AM <span class="pencil">✎</span></div>
+        </div>
+      </div>
+      <p class="figcap">The note that follows a real morning call: cheerful, slept well, watering the garden later. And the knee, flagged for the second time this week.</p>
+    </section>
+
+    <section class="sec">
+      <div class="num">04</div>
+      <h2>Patterns over time</h2>
+      <p>Single days lie; weeks don't. Etta rolls the daily notes into weekly trends across sleep, appetite, and spirits, so slow changes don't slip past anyone. One stiff knee is a Tuesday. The same knee twice in a week is something to mention, and Etta mentions it.</p>
+      <div class="sliders" role="img" aria-label="Diagram of weekly trend readings for sleep, appetite, spirits, and flags">
+        <div class="edge"></div>
+        <div class="srow"><div class="track"></div><div class="dot tan" style="left:72%"></div></div>
+        <div class="srow"><div class="track thin"></div><div class="dot dark" style="left:58%"></div></div>
+        <div class="srow"><div class="track"></div><div class="dot tan" style="left:80%"></div></div>
+        <div class="srow"><div class="track thin"></div><div class="dot dark" style="left:26%"></div></div>
+        <div class="edge" style="margin-top:10px"></div>
+        <div class="slabels"><span>Watch</span><span>Well</span></div>
+        <div class="skey">
+          <span>Sleep · steady</span>
+          <span>Appetite · steady</span>
+          <span>Spirits · bright</span>
+          <span>Knee · flagged twice this week</span>
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <nav class="pager">
+    <a href="detailvalley.html"><span class="sub">Previous</span>← Detail Valley</a>
+    <a href="clearbot.html" style="text-align:right"><span class="sub">Next project</span>ClearBot →</a>
+  </nav>
+
+  <footer>
+    <span class="fbrand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 27 L11 7 L17 20 L22 10 L30 27 Z" fill="currentColor"/></svg>
+      Ethan Gardner
+    </span>
+    <span>McCall, Idaho</span>
+  </footer>
+
+</main>
+
+</body>
+</html>
