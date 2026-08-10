@@ -79,7 +79,7 @@ h1{
 /* ---------- work cards ---------- */
 .work{display:flex;flex-direction:column;gap:14px;padding:26px 0 0}
 .card{
-  display:block;text-decoration:none;color:inherit;
+  position:relative;
   background:var(--card);
   padding:34px 30px 32px;
   transition:background .25s ease;
@@ -105,16 +105,21 @@ h1{
   font-weight:600;letter-spacing:-0.03em;line-height:1.1;
 }
 .card p{margin-top:14px;max-width:38ch}
-.card .link{
+.card .links{display:flex;align-items:center;gap:26px;margin-top:22px}
+.card .more,.card .link{
   display:inline-flex;align-items:center;gap:7px;
-  margin-top:22px;
   font-size:14px;font-weight:500;color:var(--ink);
+  text-decoration:none;
   border-bottom:1px solid var(--line-warm);
   padding-bottom:3px;
   transition:border-color .2s ease;
 }
-.card:hover .link{border-color:var(--ink)}
+.card:hover .more{border-color:var(--ink)}
+.card .link:hover{border-color:var(--ink)}
+.card .more::after{content:"→";font-size:13px;color:var(--faint)}
 .card .link::after{content:"↗";font-size:13px;color:var(--faint)}
+.card .more::before{content:"";position:absolute;inset:0}
+.card .link{position:relative;z-index:1}
 
 /* ---------- practice list ---------- */
 .practice{padding:72px 0 0}
@@ -179,35 +184,44 @@ footer svg{width:14px;height:14px;opacity:.6}
     <div class="label">Selected work</div>
     <div class="work">
 
-      <a class="card" href="https://detailvalley.com">
+      <div class="card">
         <div class="num">01</div>
         <div class="row">
           <img src="assets/detailvalley.svg" alt="Detail Valley logo" width="46" height="46">
           <h2>Detail Valley</h2>
         </div>
         <p>Mobile car detailing across Valley County: McCall, Cascade &amp; Donnelly. I come to your driveway.</p>
-        <span class="link">detailvalley.com</span>
-      </a>
+        <div class="links">
+          <a class="more" href="detailvalley.html">Read more</a>
+          <a class="link" href="https://detailvalley.com">detailvalley.com</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://ettacalls.com">
+      <div class="card">
         <div class="num">02</div>
         <div class="row">
           <img src="assets/ettacalls.svg" alt="Etta logo" width="46" height="46">
           <h2>Etta</h2>
         </div>
         <p>The daily call you can't always make. Etta phones your parent for a warm, real conversation, then tells you how they're doing.</p>
-        <span class="link">ettacalls.com</span>
-      </a>
+        <div class="links">
+          <a class="more" href="etta.html">Read more</a>
+          <a class="link" href="https://ettacalls.com">ettacalls.com</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://clearbot.io">
+      <div class="card">
         <div class="num">03</div>
         <div class="row">
           <img class="square" src="assets/clearbot.png" alt="ClearBot logo" width="46" height="46">
           <h2>ClearBot</h2>
         </div>
         <p>Business license renewals, automated. Tracked, prepared, and filed across every agency and jurisdiction.</p>
-        <span class="link">clearbot.io</span>
-      </a>
+        <div class="links">
+          <a class="more" href="clearbot.html">Read more</a>
+          <a class="link" href="https://clearbot.io">clearbot.io</a>
+        </div>
+      </div>
 
     </div>
   </section>
