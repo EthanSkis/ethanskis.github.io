@@ -105,6 +105,19 @@ h1{
   font-weight:600;letter-spacing:-0.03em;line-height:1.1;
 }
 .card p{margin-top:14px;max-width:38ch}
+.card .stats{
+  display:flex;align-items:baseline;gap:12px;
+  margin-top:20px;padding-top:16px;
+  border-top:1px solid var(--line-warm);
+}
+.card .stats .k{
+  font-size:12px;font-weight:500;color:var(--faint);
+  letter-spacing:0.14em;text-transform:uppercase;
+}
+.card .stats .v{
+  color:var(--ink);font-size:16px;font-weight:600;letter-spacing:-0.01em;
+  font-variant-numeric:tabular-nums;
+}
 .card .links{display:flex;align-items:center;gap:26px;margin-top:22px}
 .card .more,.card .link{
   display:inline-flex;align-items:center;gap:7px;
@@ -241,6 +254,10 @@ footer svg{width:14px;height:14px;opacity:.6}
           <h2>Detail Valley</h2>
         </div>
         <p>Mobile car detailing across Valley County: McCall, Cascade &amp; Donnelly. I come to your driveway.</p>
+        <div class="stats">
+          <span class="k">MMR</span>
+          <span class="v">$3,000</span>
+        </div>
         <div class="links">
           <a class="more" href="detailvalley.html">Read more</a>
           <a class="link" href="https://detailvalley.com">detailvalley.com</a>
