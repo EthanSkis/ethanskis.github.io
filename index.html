@@ -212,6 +212,10 @@ dialog.modal::backdrop{background:rgba(32,29,24,.38)}
 .li-badge:hover{background:var(--panel)}
 .li-badge .LI-profile-badge{max-width:100%}
 .li-badge iframe{max-width:100%;display:block}
+.li-badge .LI-profile-badge:has(iframe) .LI-simple-link{display:none}
+@media (max-width:440px){
+  .li-badge{display:block;padding:10px}
+}
 .li-badge .LI-simple-link{
   display:inline-flex;align-items:center;gap:7px;
   font-size:14px;font-weight:500;color:var(--ink);
@@ -396,6 +400,25 @@ footer svg{width:14px;height:14px;opacity:.6}
     modal.close();
     form.reset();
   });
+})();
+</script>
+<script>
+(() => {
+  // LinkedIn renders its badge as a fixed-width iframe. On narrow phones,
+  // scale it to the column instead of letting the right edge get clipped.
+  const wrap = document.querySelector('.li-badge');
+  if (!wrap) return;
+  const fit = () => {
+    const f = wrap.querySelector('iframe');
+    if (!f) return;
+    f.style.zoom = '';
+    const cs = getComputedStyle(wrap);
+    const avail = wrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const w = parseInt(f.getAttribute('width'), 10) || f.offsetWidth;
+    if (w > avail && avail > 0) f.style.zoom = String(avail / w);
+  };
+  new MutationObserver(fit).observe(wrap, { childList: true, subtree: true, attributes: true, attributeFilter: ['width'] });
+  addEventListener('resize', fit);
 })();
 </script>
 <script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>
