@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ethan Gardner · Developer, Web Design &amp; Detailing · McCall, Idaho</title>
-<meta name="description" content="Ethan Gardner is a developer, web designer, and detailer from McCall, Idaho. Websites for small businesses, plus Detail Valley.">
+<title>Ethan Gardner · Websites for McCall, New Meadows &amp; Cascade businesses</title>
+<meta name="description" content="Websites for local businesses in McCall, New Meadows and Cascade, Idaho. Free homepage mockup first. One-page sites from $750. Call or text (208) 315-1420.">
 <meta name="theme-color" content="#FBFAF6">
 <link rel="canonical" href="https://ethgrd.com/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ethgrd.com/">
-<meta property="og:title" content="Ethan Gardner · Developer, Web Design &amp; Detailing">
-<meta property="og:description" content="Websites for small businesses, small software products, and mobile car detailing out of McCall, Idaho.">
+<meta property="og:title" content="Ethan Gardner · Websites for McCall, New Meadows &amp; Cascade businesses">
+<meta property="og:description" content="Local web design in Valley County, Idaho. Free homepage mockup first, flat pricing, and you own your domain.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M2 27 L11 7 L17 20 L22 10 L30 27 Z' fill='%23201d18'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,9 +70,74 @@ h1{
   color:var(--ink);
   font-size:clamp(38px,9vw,54px);
   font-weight:600;letter-spacing:-0.035em;line-height:1.06;
-  max-width:11ch;
+  max-width:15ch;
 }
-.hero p{margin-top:22px;font-size:19px;max-width:34ch}
+.hero p{margin-top:22px;font-size:19px;max-width:36ch}
+.hero p strong{color:var(--ink);font-weight:600}
+.reach{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;
+  margin-top:30px;
+}
+.reach .pill-btn{margin-top:0;text-decoration:none}
+.reach a.plain{
+  color:var(--ink);font-size:15px;font-weight:500;text-decoration:none;
+  border-bottom:1px solid var(--line-warm);padding-bottom:2px;
+}
+.reach a.plain:hover{border-color:var(--ink)}
+.call{
+  color:var(--ink);text-decoration:none;font-size:14px;font-weight:500;
+  font-variant-numeric:tabular-nums;
+}
+.call:hover{text-decoration:underline}
+
+/* ---------- steps ---------- */
+.steps{padding:72px 0 0}
+.steps ol{list-style:none;margin-top:8px;counter-reset:s}
+.steps li{
+  counter-increment:s;
+  display:flex;gap:20px;align-items:baseline;
+  padding:22px 0;border-bottom:1px solid var(--line);
+}
+.steps li:last-child{border-bottom:none}
+.steps li::before{
+  content:counter(s,decimal-leading-zero);
+  flex:none;width:30px;font-size:13px;color:var(--faint);
+  font-variant-numeric:tabular-nums;
+}
+.steps b{color:var(--ink);font-weight:600}
+
+/* ---------- pricing ---------- */
+.pricing{padding:72px 0 0}
+.plans{display:flex;flex-direction:column;gap:14px;padding:26px 0 0}
+.plan{background:var(--card);padding:28px 30px 26px}
+.plan .top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.plan .name{
+  font-size:12px;font-weight:500;color:var(--faint);
+  letter-spacing:0.14em;text-transform:uppercase;
+}
+.plan .price{
+  color:var(--ink);font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.plan .price small{font-size:15px;font-weight:500;color:var(--faint);letter-spacing:0}
+.plan .for{margin-top:12px;font-size:16px}
+.plan ul{
+  list-style:none;margin-top:16px;padding-top:14px;
+  border-top:1px solid var(--line-warm);
+  display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;
+  font-size:15px;color:var(--ink);
+}
+.plan li::before{content:"·";color:var(--faint);margin-right:8px}
+.plan.care{background:var(--ink);color:#CFC9BC}
+.plan.care .name{color:#A39D90}
+.plan.care .price{color:#F5F2EA}
+.plan.care .price small{color:#A39D90}
+.terms{margin-top:22px;font-size:15px;display:flex;flex-direction:column;gap:10px}
+.terms b{color:var(--ink);font-weight:600}
+@media (max-width:480px){
+  .plan{padding:24px 22px 22px}
+  .plan ul{grid-template-columns:1fr}
+}
 
 /* ---------- section label ---------- */
 .label{
@@ -265,19 +330,77 @@ footer svg{width:14px;height:14px;opacity:.6}
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 27 L11 7 L17 20 L22 10 L30 27 Z" fill="currentColor"/></svg>
       Ethan Gardner
     </a>
-    <span class="loc">McCall, ID</span>
+    <a class="call" href="tel:+12083151420">(208) 315-1420</a>
   </div>
 </header>
 
 <main class="wrap">
 
   <section class="hero">
-    <h1>Developer &amp; detailer.</h1>
-    <p>I build small software products, design websites for small businesses, and detail cars out of McCall, Idaho.</p>
+    <h1>Websites for McCall, New Meadows &amp; Cascade businesses.</h1>
+    <p>I'll design your new homepage <strong>for free</strong> before you pay anything. If you like it, I build it. If not, no hard feelings and no cost.</p>
+    <div class="reach">
+      <a class="pill-btn" href="tel:+12083151420">Call or text (208) 315-1420</a>
+      <a class="plain" href="mailto:ethan@ethgrd.com">ethan@ethgrd.com</a>
+    </div>
   </section>
 
-  <section class="section">
-    <div class="label">Selected work</div>
+  <section class="steps section">
+    <div class="label">How it works</div>
+    <ol>
+      <li><span><b>Free mockup.</b> Tell me about your business and I'll design your homepage. No cost, no commitment.</span></li>
+      <li><span><b>You approve.</b> We agree on the pages and the price in writing before any work starts.</span></li>
+      <li><span><b>I build it.</b> Two rounds of revisions so it looks the way you want.</span></li>
+      <li><span><b>It goes live.</b> On a domain registered in your name. Changes later are a text away.</span></li>
+    </ol>
+  </section>
+
+  <section class="pricing section">
+    <div class="label">Pricing</div>
+    <div class="plans">
+
+      <div class="plan">
+        <div class="top"><span class="name">One-page site</span><span class="price">$750</span></div>
+        <p class="for">For shops, restaurants, trades, and anyone who just needs to be found.</p>
+        <ul>
+          <li>One polished homepage</li>
+          <li>Services, hours, photos</li>
+          <li>Click-to-call &amp; map</li>
+          <li>Looks right on phones</li>
+        </ul>
+      </div>
+
+      <div class="plan">
+        <div class="top"><span class="name">Standard site</span><span class="price">$1,500</span></div>
+        <p class="for">For lodging, restaurants with menus, realtors, and builders.</p>
+        <ul>
+          <li>Up to 5 pages</li>
+          <li>Menu, gallery, or listings</li>
+          <li>Contact form</li>
+          <li>Basic Google search setup</li>
+        </ul>
+      </div>
+
+      <div class="plan">
+        <div class="top"><span class="name">Custom</span><span class="price"><small>from</small> $2,000</span></div>
+        <p class="for">For businesses that need the site to do more than inform: online booking, ordering, or a store. Quoted after a quick call.</p>
+      </div>
+
+      <div class="plan care">
+        <div class="top"><span class="name">Care plan</span><span class="price">$50<small>/month</small></span></div>
+        <p class="for">Hosting, security certificate, and small updates (hours, prices, photos, menu changes) whenever you need them. Text or call me and it's done. You never have to log into anything.</p>
+      </div>
+
+    </div>
+    <div class="terms">
+      <p><b>Payment:</b> 50% to start, 50% when your site goes live.</p>
+      <p><b>Rather not pay upfront?</b> Get the One-Page Site for $0 down and $125/month for 12 months, care plan included. After that it drops to $50/month.</p>
+      <p><b>What you can count on:</b> your domain is registered in your name, so you own it. Scope is agreed in writing before work starts. And I'm local, so you can meet me in person.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:72px">
+    <div class="label">Work</div>
     <div class="work">
 
       <div class="card">
@@ -286,13 +409,12 @@ footer svg{width:14px;height:14px;opacity:.6}
           <img src="assets/detailvalley.svg" alt="Detail Valley logo" width="46" height="46">
           <h2>Detail Valley</h2>
         </div>
-        <p>Mobile car detailing across Valley County: McCall, Cascade &amp; Donnelly. I come to your driveway.</p>
+        <p>My own mobile detailing business, serving McCall, Cascade &amp; Donnelly. I designed and built the site to do one job: get people in Valley County to book.</p>
         <div class="stats">
-          <span class="stat"><span class="k">MRR</span><span class="v">$3,000</span></span>
           <span class="stat"><span class="k">Website</span><span class="v">Designed &amp; built by me</span></span>
         </div>
         <div class="links">
-          <a class="more" href="detailvalley.html">Read more</a>
+          <a class="more" href="detailvalley.html">How I built it</a>
           <a class="link" href="https://detailvalley.com">detailvalley.com</a>
         </div>
       </div>
@@ -300,33 +422,16 @@ footer svg{width:14px;height:14px;opacity:.6}
     </div>
   </section>
 
-  <section class="practice section">
-    <div class="label">Practice</div>
-    <ul>
-      <li>
-        <span class="k">Design</span>
-        <span class="v">Clean, fast websites for small businesses. Designed, built, and launched.</span>
-      </li>
-      <li>
-        <span class="k">Develop</span>
-        <span class="v">Bots, tools, and small products. Built and run end to end.</span>
-      </li>
-      <li>
-        <span class="k">Detail</span>
-        <span class="v">Interiors and exteriors, done by hand, wherever the car is parked.</span>
-      </li>
-    </ul>
-  </section>
-
   <section class="contact section">
-    <div class="label">Get in contact</div>
-    <p>Need a website, a detail, or want to talk software? Leave your name, number, and what it's about, and I'll get back to you.</p>
-    <button class="pill-btn" id="contactBtn" type="button">Get in touch</button>
+    <div class="label">About</div>
+    <p>I'm Ethan. I live in McCall and I run Detail Valley, so I know what it's like to run a small business here and how much of it comes from people finding you online.</p>
+    <p>Want your free mockup? Call or text <a class="call" href="tel:+12083151420">(208) 315-1420</a>, email <a class="call" href="mailto:ethan@ethgrd.com">ethan@ethgrd.com</a>, or leave your info below.</p>
+    <button class="pill-btn" id="contactBtn" type="button">Get my free mockup</button>
   </section>
 
   <section class="elsewhere section">
     <div class="label">Elsewhere</div>
-    <p>Work history, and the occasional post, live on LinkedIn.</p>
+    <p>Work history lives on LinkedIn.</p>
     <div class="li-badge">
       <div class="badge-base LI-profile-badge" data-locale="en_US" data-size="medium" data-theme="light" data-type="HORIZONTAL" data-vanity="ethgrd" data-version="v1"><a class="badge-base__link LI-simple-link" href="https://www.linkedin.com/in/ethgrd?trk=profile-badge">Ethan Gardner on LinkedIn</a></div>
     </div>
@@ -344,7 +449,7 @@ footer svg{width:14px;height:14px;opacity:.6}
 
 <dialog class="modal" id="contactModal">
   <div class="m-head">
-    <h3>Get in touch</h3>
+    <h3>Free mockup</h3>
     <button class="m-close" id="contactClose" type="button" aria-label="Close">✕</button>
   </div>
   <form id="contactForm">
@@ -354,8 +459,8 @@ footer svg{width:14px;height:14px;opacity:.6}
     <label>Phone number
       <input name="phone" type="tel" required autocomplete="tel" placeholder="(208) 555-0100">
     </label>
-    <label>Reason for contact
-      <textarea name="reason" rows="3" required placeholder="A detail, a project, a question…"></textarea>
+    <label>Your business
+      <textarea name="reason" rows="3" required placeholder="Business name, and your current website if you have one"></textarea>
     </label>
     <button class="pill-btn" type="submit">Send</button>
   </form>
@@ -372,11 +477,11 @@ footer svg{width:14px;height:14px;opacity:.6}
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const d = new FormData(form);
-    const subject = 'Hello from ' + d.get('name');
+    const subject = 'Free mockup request from ' + d.get('name');
     const body = 'Name: ' + d.get('name') +
       '\nPhone: ' + d.get('phone') +
       '\n\n' + d.get('reason');
-    location.href = 'mailto:ethangardner298@gmail.com' +
+    location.href = 'mailto:ethan@ethgrd.com' +
       '?subject=' + encodeURIComponent(subject) +
       '&body=' + encodeURIComponent(body);
     modal.close();
