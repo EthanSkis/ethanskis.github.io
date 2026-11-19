@@ -240,6 +240,10 @@ h1{
 /* ---------- contact ---------- */
 .contact{padding:72px 0 0}
 .contact p{margin-top:24px;font-size:17px;max-width:40ch}
+.me{display:flex;align-items:center;gap:20px;margin-top:26px}
+.me img{width:92px;height:92px;border-radius:50%;object-fit:cover;flex:none;background:var(--card)}
+.me p{margin-top:0}
+.contact p .call{font-size:inherit}
 .pill-btn{
   display:inline-flex;align-items:center;justify-content:center;
   margin-top:26px;
@@ -492,7 +496,10 @@ footer svg{width:14px;height:14px;opacity:.6}
 
   <section class="contact section">
     <div class="label">About</div>
-    <p>I'm Ethan. I live in McCall and I run Detail Valley, so I know what it's like to run a small business here and how much of it comes from people finding you online.</p>
+    <div class="me">
+      <img src="assets/ethan.jpg" alt="Ethan Gardner" width="92" height="92" loading="lazy">
+      <p>I'm Ethan. I live in McCall and I run Detail Valley, so I know what it's like to run a small business here and how much of it comes from people finding you online.</p>
+    </div>
     <p>Want your free mockup? Call or text <a class="call" href="tel:+12083151420">(208) 315-1420</a>, email <a class="call" href="mailto:ethan@ethgrd.com">ethan@ethgrd.com</a>, or leave your info below.</p>
     <button class="pill-btn" id="contactBtn" type="button">Get my free mockup</button>
   </section>
